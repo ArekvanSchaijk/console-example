@@ -35,6 +35,7 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->processCrowdLogin($input, $output);
         $bitbucket = ServiceUtility::getBitbucketService();
         $table = new Table($output);
         $table->setHeaders(
