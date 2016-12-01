@@ -1,0 +1,25 @@
+{
+  "chmod": "0755",
+  "directories": [
+    "src"
+  ],
+  "files": [
+    "config.yaml",
+    "constants.php",
+    "vendor/autoload.php",
+    "vendor/symfony/console/Resources/bin/hiddeninput.exe"
+  ],
+  "finder": [
+    {
+      "in": "bin",
+      "name": "*"
+    },
+    {
+      "in": "vendor",
+      "name": "*.php"
+    }
+  ],
+  "main": "bin/alternet.php",
+  "output": "alternet.phar",
+  "stub": true
+}

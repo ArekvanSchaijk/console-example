@@ -1,0 +1,12 @@
+# Metadata about the CLI application itself.
+application:
+  name: 'Alternet B.V.'
+  version: '1.x-dev'
+
+hipchat:
+  token: 'Y7CCnr9OyukxnYtnAUYGBBVjgAjNRGb3bvVspfdK'
+
+bitbucket:
+  endpoint: 'https://source.alternet.nl'
+  username: 'arek'
+  password: 'Dreamer12!'

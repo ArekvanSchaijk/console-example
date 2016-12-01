@@ -1,0 +1,28 @@
+{
+  "name": "alternet/cli",
+  "description": "Alternet's CLI",
+  "license": "GPL-3.0",
+  "require": {
+    "php": ">=7.0",
+    "symfony/console": "^3.2",
+    "symfony/filesystem": "^3.2",
+    "symfony/yaml": "^3.2",
+    "symfony/process": "^3.2",
+    "gorkalaucirica/hipchat-v2-api-client": "^1.5",
+    "arekvanschaijk/bitbucket-server-client": "dev-master"
+  },
+  "autoload": {
+    "files": ["constants.php"],
+    "psr-4": {
+      "AlterNET\\Cli\\": "src"
+    }
+  },
+  "authors": [
+    {
+      "name": "Arek van Schaijk"
+    }
+  ],
+  "bin": [
+    "bin/alternet.php"
+  ]
+}
