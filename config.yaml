@@ -8,5 +8,5 @@ hipchat:
 
 bitbucket:
   endpoint: 'https://source.alternet.nl'
-  username: 'arek'
-  password: 'Dreamer12!'
+  username: '*******'
+  password: '*******'
