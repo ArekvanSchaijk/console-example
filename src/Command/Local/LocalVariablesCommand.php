@@ -57,9 +57,10 @@ class LocalVariablesCommand extends CommandBase
                     // Hides passwords
                     if (!$input->getOption('show-passwords') && strpos(strtolower($key), 'pass') !== false) {
                         $value = '<info>[hidden]</info>';
+                    } else {
+                        // Crops the value
+                        $value = StringUtility::crop($value, (int)$input->getOption('crop'));
                     }
-                    // Crops the value
-                    $value = StringUtility::crop($value, (int)$input->getOption('crop'));
                     $lines[] = [
                         $this->highlightFilteredWords($input, $key),
                         $this->highlightFilteredWords($input, $value)
