@@ -3,6 +3,7 @@ namespace AlterNET\Cli;
 
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
 use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
+use AlterNET\Cli\Command\Hipchat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\Hipchat\HipChatListCommand;
 use AlterNET\Cli\Command\Hipchat\HipChatListUsersCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
@@ -55,7 +56,8 @@ class Application extends SymfonyConsoleApplication
             new CrowdAuthenticateCommand(),
             new BitbucketListCommand(),
             new HipChatListCommand(),
-            new HipChatListUsersCommand()
+            new HipChatListUsersCommand(),
+            new HipChatCreateRoomCommand()
         ];
     }
 
