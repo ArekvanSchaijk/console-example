@@ -4,7 +4,6 @@ namespace AlterNET\Cli\Command\Bitbucket;
 use AlterNET\Cli\Command\CommandBase;
 use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -24,6 +23,7 @@ class BitbucketListCommand extends CommandBase
     {
         $this->setName('bitbucket:list');
         $this->setDescription('Lists all projects from Bitbucket');
+        $this->addFilterOption();
     }
 
     /**
@@ -40,36 +40,35 @@ class BitbucketListCommand extends CommandBase
         // Creates a new Bitbucket API
         $bitbucket = new Api();
         // Sets the Bitbucket endpoint from the Cli Config
-        $bitbucket->setEndpoint(
-            self::$config->getBitbucketEndpoint()
-        );
+        $bitbucket->setEndpoint(self::$config->getBitbucketEndpoint());
         // Logs into Bitbcuket with the given Crowd Credentials
-        $bitbucket->login(
-            $credentials->username,
-            $credentials->password
-        );
+        $bitbucket->login($credentials->username, $credentials->password);
 
-
-
-
-        $table = new Table($output);
-        $table->setHeaders(
-            ['ID', 'Key', 'Name', 'Type', 'Public', 'Link']
-        );
-        $rows = [];
+        $projects = [[
+            '#', 'Key', 'Name', 'Type', 'Public', 'Link'
+        ]];
         /* @var Project $project */
         foreach ($bitbucket->getProjects() as $project) {
-            $rows[] = [
-                $project->getId(),
+            $values = [
                 $project->getKey(),
-                $project->getName(),
-                $project->getType(),
-                ($project->getIsPublic() ? '1' : ''),
-                $project->getLink()
+                $project->getName()
             ];
+            if ($this->passItemsThroughFilter($input, $values)) {
+                $projects[] = [
+                    $project->getId(),
+                    $this->highlightFilteredWords($input, $project->getKey()),
+                    $this->highlightFilteredWords($input, $project->getName()),
+                    $project->getType(),
+                    ($project->getIsPublic() ? '1' : ''),
+                    $project->getLink()
+                ];
+            }
         }
-        $table->setRows($rows);
-        $table->render();
+        $count = count($projects) - 1;
+        $this->renderFilter($input, $output, $count);
+        if ($count) {
+            $this->renderArrayAsTable($output, $projects);
+        }
     }
 
 }
