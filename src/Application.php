@@ -7,6 +7,7 @@ use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
 use AlterNET\Cli\Command\Hipchat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\Hipchat\HipChatListCommand;
 use AlterNET\Cli\Command\Hipchat\HipChatListUsersCommand;
+use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
@@ -69,6 +70,7 @@ class Application extends SymfonyConsoleApplication
 
             // Local
             new LocalVariablesCommand(),
+            new LocalIsConnectionCommand(),
 
             // App
             new AppInfoCommand()
