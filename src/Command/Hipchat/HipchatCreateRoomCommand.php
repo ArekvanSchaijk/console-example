@@ -25,7 +25,7 @@ class HipChatCreateRoomCommand extends CommandBase
     public function configure()
     {
         $this->setName('hipchat:createroom');
-        $this->setDescription('Create a new room on HipChat');
+        $this->setDescription('Creates a new room');
         $this->addArgument('name', InputArgument::REQUIRED, 'The name of the room');
     }
 
