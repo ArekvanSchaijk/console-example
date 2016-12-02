@@ -193,7 +193,7 @@ abstract class CommandBase extends Command
                 $output->writeln('<info>' . ($results ? $results . ' ' : null) . 'Filtered result(s)' .
                     ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':</info>');
             } else {
-                $output->writeln('<comment>There are no filtered results found. You may want to remove or change the filter.</comment>');
+                $output->writeln('<comment>There are no filtered results found. You may want to remove or change the filters value.</comment>');
             }
         }
     }
