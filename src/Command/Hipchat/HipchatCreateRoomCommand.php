@@ -54,7 +54,7 @@ class HipChatCreateRoomCommand extends CommandBase
         $room = new Room();
         $room->setName($roomName);
         if (($roomId = $roomApi->createRoom($room))) {
-            $output->writeln('<info>The room "' . $roomName . '" is succesfully created</info>');
+            $output->writeln('<info>The room "' . $roomName . '" (#' . $roomId . ') is succesfully created.</info>');
         }
     }
 
