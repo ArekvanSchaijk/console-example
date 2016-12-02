@@ -5,10 +5,15 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class Config
- * @author Arek van Schaijk <info@ucreation.nl>
+ * @author Arek van Schaijk <arek@alternet.nl>
  */
 class Config
 {
+
+    const
+
+        LOGIN_TEMPLATE_DEFAULT = 'default',
+        LOGIN_TEMPLATE_CROWD = 'crowd_template';
 
     /**
      * @var array
@@ -78,23 +83,15 @@ class Config
     }
 
     /**
-     * Gets the Bitbucket Username
+     * Gets the Bitbucket Login Template
      *
      * @return string
      */
-    public function getBitbucketUsername()
+    public function getBitbucketLoginTemplate()
     {
-        return $this->config['bitbucket']['username'];
-    }
-
-    /**
-     * Gets the Bitbucket Password
-     *
-     * @return string
-     */
-    public function getBitbucketPassword()
-    {
-        return $this->config['bitbucket']['password'];
+        if (isset($this->config['bitbucket']['login']) && is_array($this->config['bitbucket']['login'])) {
+            return self::LOGIN_TEMPLATE_DEFAULT;
+        }
     }
 
 }

@@ -1,15 +1,15 @@
 <?php
-namespace AlterNET\Cli\Command\Crowd;
+namespace AlterNET\Cli\Command\App;
 
-use AlterNET\Cli\Command\CommandBase;
+use AlterNET\Cli\Command\AppCommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CrowdAuthenticateCommand
+ * Class AppInfoCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class CrowdAuthenticateCommand extends CommandBase
+class AppInfoCommand extends AppCommandBase
 {
 
     /**
@@ -19,8 +19,8 @@ class CrowdAuthenticateCommand extends CommandBase
      */
     public function configure()
     {
-        $this->setName('crowd:authenticate');
-        $this->setDescription('Authenticates the ' . self::$config->getApplicationName());
+        $this->setName('app:info');
+        $this->setDescription('Displays info about the current application');
     }
 
     /**
@@ -32,7 +32,7 @@ class CrowdAuthenticateCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->processCrowdLogin($input, $output);
+
     }
 
 }

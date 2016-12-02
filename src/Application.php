@@ -1,16 +1,35 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppInfoCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
 use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
+use AlterNET\Cli\Command\Hipchat\HipChatCreateRoomCommand;
+use AlterNET\Cli\Command\Hipchat\HipChatListCommand;
+use AlterNET\Cli\Command\Hipchat\HipChatListUsersCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
  * Class Application
- * @author Arek van Schaijk <info@ucreation.nl>
+ * @author Arek van Schaijk <arek@alternet.nl>
  */
 class Application extends SymfonyConsoleApplication
 {
+
+    protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
+ /  \| |_   _| __| _ \  \| | __|_   _| |  \| \ / |
+| /\ | |_| | | _|| v / | \' | _|  | |   | -<`\ V /\'
+|_||_|___|_| |___|_|_\_|\__|___| |_|   |__/  \_/  ' . PHP_EOL;
+
+    /**
+     * Gets the help message.
+     *
+     * @return string A help message
+     */
+    public function getHelp()
+    {
+        return self::$logo . parent::getHelp();
+    }
 
     /**
      * Application constructor.
@@ -35,8 +54,20 @@ class Application extends SymfonyConsoleApplication
     public function getCommands()
     {
         return [
+
+            // Crowd
             new CrowdAuthenticateCommand(),
-            new BitbucketListCommand()
+
+            // Bitbucket
+            new BitbucketListCommand(),
+
+            // HipChat
+            new HipChatListCommand(),
+            new HipChatListUsersCommand(),
+            new HipChatCreateRoomCommand(),
+
+            // App
+            new AppInfoCommand()
         ];
     }
 

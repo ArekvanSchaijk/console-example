@@ -2,15 +2,14 @@
 namespace AlterNET\Cli\Command\Bitbucket;
 
 use AlterNET\Cli\Command\CommandBase;
-use AlterNET\Cli\Utility\ServiceUtility;
+use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class BitbucketListProjects
- * @author Arek van Schaijk <info@ucreation.nl>
+ * Class BitbucketListCommand
+ * @author Arek van Schaijk <arek@alternet.nl>
  */
 class BitbucketListCommand extends CommandBase
 {
@@ -23,7 +22,8 @@ class BitbucketListCommand extends CommandBase
     public function configure()
     {
         $this->setName('bitbucket:list');
-        $this->setDescription('Lists all projects from Bitbucket');
+        $this->setDescription('Lists all projects on Bitbucket');
+        $this->addFilterOption();
     }
 
     /**
@@ -35,26 +35,40 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->processCrowdLogin($input, $output);
-        $bitbucket = ServiceUtility::getBitbucketService();
-        $table = new Table($output);
-        $table->setHeaders(
-            ['ID', 'Key', 'Name', 'Type', 'Public', 'Link']
-        );
-        $rows = [];
+        // Retrieves the Crowd Credentials
+        $credentials = $this->processCollectCrowdCredentials($input, $output);
+        // Creates a new Bitbucket API
+        $bitbucket = new Api();
+        // Sets the Bitbucket endpoint from the Cli Config
+        $bitbucket->setEndpoint(self::$config->getBitbucketEndpoint());
+        // Logs into Bitbcuket with the given Crowd Credentials
+        $bitbucket->login($credentials->username, $credentials->password);
+
+        $projects = [[
+            '#', 'Key', 'Name', 'Type', 'Public', 'Link'
+        ]];
         /* @var Project $project */
-        foreach ($bitbucket->getApi()->getProjects() as $project) {
-            $rows[] = [
-                $project->getId(),
+        foreach ($bitbucket->getProjects() as $project) {
+            $values = [
                 $project->getKey(),
-                $project->getName(),
-                $project->getType(),
-                ($project->getIsPublic() ? '1' : ''),
-                $project->getLink()
+                $project->getName()
             ];
+            if ($this->passItemsThroughFilter($input, $values)) {
+                $projects[] = [
+                    $project->getId(),
+                    $this->highlightFilteredWords($input, $project->getKey()),
+                    $this->highlightFilteredWords($input, $project->getName()),
+                    $project->getType(),
+                    ($project->getIsPublic() ? '1' : ''),
+                    $project->getLink()
+                ];
+            }
         }
-        $table->setRows($rows);
-        $table->render();
+        $count = count($projects) - 1;
+        $this->renderFilter($input, $output, $count);
+        if ($count) {
+            $this->renderArrayAsTable($output, $projects);
+        }
     }
 
 }
