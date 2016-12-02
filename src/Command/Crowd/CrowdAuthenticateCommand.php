@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class CrowdAuthenticateCommand
- * @author Arek van Schaijk <info@ucreation.nl>
+ * @author Arek van Schaijk <arek@alternet.nl>
  */
 class CrowdAuthenticateCommand extends CommandBase
 {

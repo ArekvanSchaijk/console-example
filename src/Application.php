@@ -7,7 +7,7 @@ use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
  * Class Application
- * @author Arek van Schaijk <info@ucreation.nl>
+ * @author Arek van Schaijk <arek@alternet.nl>
  */
 class Application extends SymfonyConsoleApplication
 {
