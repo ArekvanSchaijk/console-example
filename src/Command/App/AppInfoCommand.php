@@ -32,7 +32,11 @@ class AppInfoCommand extends AppCommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $info = [[
+            'Name', 'Value'
+        ]];
 
+        $this->renderArrayAsTable($output, $info);
     }
 
 }

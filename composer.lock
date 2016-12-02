@@ -4,21 +4,82 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b6d9e576b8dd514dad4173352c05910d",
-    "content-hash": "46313fcc57094e11e3fbec3442b50a6d",
+    "hash": "c11b259eb7992a7fd5a13d2886a0f098",
+    "content-hash": "1634ff398f73b47e3b7d0dbe012b5785",
     "packages": [
+        {
+            "name": "alternet/configuration-api",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@source.alternet.nl:7999/t3pack/configuration-api.git",
+                "reference": "de0d20bd0ac00e0eeee4361003f68a6c4c71cbeb"
+            },
+            "require": {
+                "alternet/configuration-helper": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AlterNET\\Package\\": "src/"
+                }
+            },
+            "description": "Configuration API package",
+            "time": "2016-10-06 13:11:52"
+        },
+        {
+            "name": "alternet/configuration-helper",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@source.alternet.nl:7999/t3pack/configuration-helper.git",
+                "reference": "04b9ea5d311ab0f19a564f981e4b3f2b2b030e57"
+            },
+            "require": {
+                "alternet/environment": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AlterNET\\Package\\": "src/"
+                }
+            },
+            "description": "Configuration Helper package",
+            "time": "2016-12-02 10:43:16"
+        },
+        {
+            "name": "alternet/environment",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@source.alternet.nl:7999/t3pack/environment.git",
+                "reference": "31b2473054b197505a56af280abebb89b9bc35a1"
+            },
+            "require": {
+                "alternet/configuration-api": "^1",
+                "alternet/configuration-helper": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AlterNET\\Package\\": "src/"
+                }
+            },
+            "description": "OTAP Environment Helper package",
+            "time": "2016-10-11 12:18:15"
+        },
         {
             "name": "arekvanschaijk/bitbucket-server-client",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArekvanSchaijk/bitbucket-server-client.git",
-                "reference": "48512ef3f653de7d206b19d63b1e7ac3c12e5784"
+                "reference": "95f5b4e4aa871239786c16374f57fd4f70010aca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/48512ef3f653de7d206b19d63b1e7ac3c12e5784",
-                "reference": "48512ef3f653de7d206b19d63b1e7ac3c12e5784",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/95f5b4e4aa871239786c16374f57fd4f70010aca",
+                "reference": "95f5b4e4aa871239786c16374f57fd4f70010aca",
                 "shasum": ""
             },
             "require": {
@@ -33,7 +94,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Bitbucket Server Client for PHP",
-            "time": "2016-10-07 09:48:55"
+            "time": "2016-12-02 15:35:23"
         },
         {
             "name": "gorkalaucirica/hipchat-v2-api-client",

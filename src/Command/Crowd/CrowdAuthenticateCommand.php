@@ -32,7 +32,7 @@ class CrowdAuthenticateCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->processCrowdLogin($input, $output);
+        $this->processCollectCrowdCredentials($input, $output);
     }
 
 }

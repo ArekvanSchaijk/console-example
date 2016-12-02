@@ -39,6 +39,19 @@ abstract class CommandBase extends Command
     }
 
     /**
+     * Adds the Crop Option
+     *
+     * @param int $default
+     * @param null $description
+     * @return void
+     */
+    protected function addCropOption($default = 50, $description = null)
+    {
+        $description = ($description ?: 'Sets the crop length');
+        $this->addOption('crop', null, InputOption::VALUE_OPTIONAL, $description, $default);
+    }
+
+    /**
      * Adds a Filter Option
      *
      * @param string|null $description
