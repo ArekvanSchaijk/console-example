@@ -12,6 +12,21 @@ use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 class Application extends SymfonyConsoleApplication
 {
 
+    protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
+ /  \| |_   _| __| _ \  \| | __|_   _| |  \| \ / |
+| /\ | |_| | | _|| v / | \' | _|  | |   | -<`\ V /\'
+|_||_|___|_| |___|_|_\_|\__|___| |_|   |__/  \_/  ' . PHP_EOL;
+
+    /**
+     * Gets the help message.
+     *
+     * @return string A help message
+     */
+    public function getHelp()
+    {
+        return self::$logo . parent::getHelp();
+    }
+
     /**
      * Application constructor.
      */
