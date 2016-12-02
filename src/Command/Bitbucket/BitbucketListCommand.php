@@ -22,7 +22,7 @@ class BitbucketListCommand extends CommandBase
     public function configure()
     {
         $this->setName('bitbucket:list');
-        $this->setDescription('Lists all projects from Bitbucket');
+        $this->setDescription('Lists all projects on Bitbucket');
         $this->addFilterOption();
     }
 
