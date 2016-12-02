@@ -34,7 +34,6 @@ class LocalVariablesCommand extends CommandBase
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return void
-     * @throws \Exception
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
