@@ -1,7 +1,7 @@
 # Metadata about the CLI application itself.
 application:
   name: 'Alternet B.V.'
-  version: '1.x-dev'
+  version: '0.1.0'
 
 hipchat:
   token: 'Y7CCnr9OyukxnYtnAUYGBBVjgAjNRGb3bvVspfdK'
