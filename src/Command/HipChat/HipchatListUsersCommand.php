@@ -1,11 +1,11 @@
 <?php
-namespace AlterNET\Cli\Command\Hipchat;
+namespace AlterNET\Cli\Command\HipChat;
 
 use AlterNET\Cli\Command\CommandBase;
-use GorkaLaucirica\HipchatAPIv2Client\API\RoomAPI;
+use GorkaLaucirica\HipchatAPIv2Client\API\UserAPI;
 use GorkaLaucirica\HipchatAPIv2Client\Auth\OAuth2;
 use GorkaLaucirica\HipchatAPIv2Client\Client;
-use GorkaLaucirica\HipchatAPIv2Client\Model\Room;
+use GorkaLaucirica\HipchatAPIv2Client\Model\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class HipChatListCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class HipChatListCommand extends CommandBase
+class HipChatListUsersCommand extends CommandBase
 {
 
     /**
@@ -23,8 +23,8 @@ class HipChatListCommand extends CommandBase
      */
     public function configure()
     {
-        $this->setName('hipchat:list');
-        $this->setDescription('Lists all rooms');
+        $this->setName('hipchat:listusers');
+        $this->setDescription('Lists all users');
         $this->addFilterOption();
     }
 
@@ -41,28 +41,31 @@ class HipChatListCommand extends CommandBase
         $authentication = new OAuth2(self::$config->getHipChatToken());
         // Creates the the Hipchat client
         $client = new Client($authentication);
-        // Creates the RoomAPI
-        $roomApi = new RoomAPI($client);
+        // Creates the UserAPI
+        $userApi = new UserAPI($client);
 
-        $rooms = [[
-            '#', 'Name'
+        $users = [[
+            '#', 'Name', 'Mention Name'
         ]];
-        /* @var Room $room */
-        foreach ($roomApi->getRooms() as $room) {
+        /* @var User $user */
+        foreach ($userApi->getAllUsers() as $user) {
             $values = [
-                $room->getName()
+                $user->getId(),
+                $user->getName(),
+                $user->getMentionName()
             ];
             if ($this->passItemsThroughFilter($input, $values)) {
-                $rooms[] = [
-                    $room->getId(),
-                    $this->highlightFilteredWords($input, $room->getName())
+                $users[] = [
+                    $user->getId(),
+                    $this->highlightFilteredWords($input, $user->getName()),
+                    '@' . $this->highlightFilteredWords($input, $user->getMentionName())
                 ];
             }
         }
-        $count = count($rooms) - 1;
+        $count = count($users) - 1;
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $this->renderArrayAsTable($output, $rooms);
+            $this->renderArrayAsTable($output, $users);
         }
     }
 
