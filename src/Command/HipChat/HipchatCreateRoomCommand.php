@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Command\Hipchat;
+namespace AlterNET\Cli\Command\HipChat;
 
 use AlterNET\Cli\Command\CommandBase;
 use GorkaLaucirica\HipchatAPIv2Client\API\RoomAPI;
