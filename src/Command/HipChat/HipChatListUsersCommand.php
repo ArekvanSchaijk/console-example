@@ -8,6 +8,7 @@ use GorkaLaucirica\HipchatAPIv2Client\Client;
 use GorkaLaucirica\HipchatAPIv2Client\Model\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class HipChatListCommand
@@ -37,16 +38,16 @@ class HipChatListUsersCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        // Gets the Symfony Style object
+        $io = new SymfonyStyle($input, $output);
         // Retrieves the Hipchat authentication token from Cli Config
         $authentication = new OAuth2(self::$config->getHipChatToken());
         // Creates the the Hipchat client
         $client = new Client($authentication);
         // Creates the UserAPI
         $userApi = new UserAPI($client);
-
-        $users = [[
-            '#', 'Name', 'Mention Name'
-        ]];
+        // Renders the users into an array
+        $users = [];
         /* @var User $user */
         foreach ($userApi->getAllUsers() as $user) {
             $values = [
@@ -62,10 +63,11 @@ class HipChatListUsersCommand extends CommandBase
                 ];
             }
         }
-        $count = count($users) - 1;
+        $count = count($users);
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $this->renderArrayAsTable($output, $users);
+            $headers = ['#', 'Name', 'Mention Name'];
+            $io->table($headers, $users);
         }
     }
 

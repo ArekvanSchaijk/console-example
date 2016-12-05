@@ -8,6 +8,7 @@ use GorkaLaucirica\HipchatAPIv2Client\Client;
 use GorkaLaucirica\HipchatAPIv2Client\Model\Room;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class HipChatListCommand
@@ -37,16 +38,16 @@ class HipChatListCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        // Gets the Symfony Style object
+        $io = new SymfonyStyle($input, $output);
         // Retrieves the Hipchat authentication token from Cli Config
         $authentication = new OAuth2(self::$config->getHipChatToken());
         // Creates the the Hipchat client
         $client = new Client($authentication);
         // Creates the RoomAPI
         $roomApi = new RoomAPI($client);
-
-        $rooms = [[
-            '#', 'Name'
-        ]];
+        // Renders the rooms into an array
+        $rooms = [];
         /* @var Room $room */
         foreach ($roomApi->getRooms() as $room) {
             $values = [
@@ -59,10 +60,11 @@ class HipChatListCommand extends CommandBase
                 ];
             }
         }
-        $count = count($rooms) - 1;
+        $count = count($rooms);
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $this->renderArrayAsTable($output, $rooms);
+            $headers = ['#', 'Name'];
+            $io->table($headers, $rooms);
         }
     }
 
