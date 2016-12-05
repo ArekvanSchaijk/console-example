@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class CommandBase
@@ -201,30 +202,15 @@ abstract class CommandBase extends Command
      */
     protected function renderFilter(InputInterface $input, OutputInterface $output, $results = null, $addQuery = true)
     {
+        $io = new SymfonyStyle($input, $output);
         if ((bool)$input->getOption('filter')) {
             if ($results === null || $results > 0) {
-                $output->writeln('<info>' . ($results ? $results . ' ' : null) . 'Filtered result(s)' .
-                    ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':</info>');
+                $io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
+                    ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':');
             } else {
-                $output->writeln('<comment>There are no filtered results found. You may want to remove or change the filters value.</comment>');
+                $io->note('There are no filtered results found. You may want to remove or change the filters value.');
             }
         }
-    }
-
-    /**
-     * Renders an Array as a Table
-     *
-     * @param OutputInterface $output
-     * @param array $array
-     * @return void
-     */
-    protected function renderArrayAsTable(OutputInterface $output, array $array)
-    {
-        $table = new Table($output);
-        $table->setHeaders(array_values($array)[0]);
-        unset($array[0]);
-        $table->setRows(array_values($array));
-        $table->render();
     }
 
 }
