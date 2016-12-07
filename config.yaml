@@ -8,3 +8,12 @@ hipchat:
 
 bitbucket:
   endpoint: 'https://source.alternet.nl'
+  default_production_branch: 'master'
+  default_acceptance_branch: 'Acceptance'
+  default_testing_branch: 'Testing'
+  default_development_branch: 'Development'
+
+projects:
+  config_file_path: '.alternet/app.config.yaml'
+  bitbucket_repository_selectors:
+    - 'TYPO3'

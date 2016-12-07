@@ -1,30 +1,29 @@
 <?php
-namespace AlterNET\Cli\Command\App;
+namespace AlterNET\Cli\Command\Project;
 
-use AlterNET\Cli\Command\AppCommandBase;
+use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AppInfoCommand
+ * Class ProjectBuildCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppInfoCommand extends AppCommandBase
+class ProjectBuildCommand extends CommandBase
 {
 
     /**
      * Configure
      *
-     * @return void
      */
-    public function configure()
+    protected function configure()
     {
-        $this->setName('app:info');
-        $this->setDescription('Displays info about the current application');
+        $this->setName('project:build');
+        $this->setDescription('Builds the project');
     }
 
     /**
-     * Execute
+     * Executes the command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -32,11 +31,7 @@ class AppInfoCommand extends AppCommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $info = [[
-            'Name', 'Value'
-        ]];
 
-        $this->renderArrayAsTable($output, $info);
     }
 
 }

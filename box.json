@@ -17,6 +17,10 @@
     {
       "in": "vendor",
       "name": "*.php"
+    },
+    {
+      "in": "templates",
+      "name": "*"
     }
   ],
   "main": "bin/alternet.php",
