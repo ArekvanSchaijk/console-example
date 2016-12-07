@@ -88,7 +88,7 @@ class ProjectGetCommand extends CommandBase
                 ConsoleUtility::gitCheckout($branchName, $temporaryDirectory);
                 // Gets the projects app config
                 $appConfig = ProjectUtility::getConfig($temporaryDirectory);
-                if (($domain = $appConfig->environment()->current()->getServerName())) {
+                if (($domain = $appConfig->current()->getServerName())) {
                     $directory = getcwd() . '/' . $domain;
                     if (file_exists($directory)) {
                         if (($io->confirm('The directory "' . $domain . '" does already exists. Would you like to '

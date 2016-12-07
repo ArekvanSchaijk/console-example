@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\AppConfig\Environment\EnvironmentConfig;
 use AlterNET\Cli\AppConfig\Environment\EnvironmentSelector;
 use AlterNET\Cli\Utility\GeneralUtility;
 use AlterNET\Cli\Utility\TemplateUtility;
@@ -81,6 +82,16 @@ class AppConfig
             $this->environment = new EnvironmentSelector($this->config);
         }
         return $this->environment;
+    }
+
+    /**
+     * Current
+     *
+     * @return EnvironmentConfig
+     */
+    public function current()
+    {
+        return $this->environment()->current();
     }
 
 }
