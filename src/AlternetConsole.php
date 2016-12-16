@@ -17,10 +17,10 @@ use AlterNET\Cli\Command\Project\ProjectSyncCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
- * Class Application
+ * Class AlternetConsole
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class Application extends SymfonyConsoleApplication
+class AlternetConsole extends SymfonyConsoleApplication
 {
 
     protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
