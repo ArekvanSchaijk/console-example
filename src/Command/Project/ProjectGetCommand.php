@@ -5,6 +5,7 @@ use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\CurrentProjectUtility;
 use AlterNET\Cli\Utility\ProjectUtility;
+use AlterNET\Package\Environment;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -104,11 +105,12 @@ class ProjectGetCommand extends CommandBase
                         }
                     }
                     rename($temporaryDirectory, $directory);
-                }
-                if (file_exists($temporaryDirectory . '/composer.lock')) {
-                    ConsoleUtility::composerInstall($temporaryDirectory);
+                    if (file_exists($directory . '/composer.lock')) {
+                        ConsoleUtility::composerInstall($directory);
+                    }
                 }
             }
+            $io->success('The project is successfully retrieved.');
         }
     }
 

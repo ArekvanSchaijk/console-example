@@ -42,11 +42,11 @@ class ConsoleUtility
     /**
      * Composer Install
      *
-     * @param string $directory
+     * @param string|null $directory
      * @return void
      * @static
      */
-    static public function composerInstall($directory)
+    static public function composerInstall($directory = null)
     {
         $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'composer install');
         $process->run();
@@ -64,6 +64,18 @@ class ConsoleUtility
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
+    }
+
+    /**
+     * Is Internet Connection
+     * Checks if there is an internet connection (or not)
+     *
+     * @return bool
+     * @static
+     */
+    static public function isInternetConnection()
+    {
+        return (bool)@fsockopen('www.google.com', 80, $num, $error, 5);
     }
 
 }

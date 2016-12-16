@@ -40,16 +40,9 @@ class ProjectListCommand extends CommandBase
         $repositories = ProjectUtility::getRepositories($crowd);
 
 
-
-
-
-
-
-
-
         $choices = [];
         foreach ($repositories as $repository) {
-            $choices[] = $repository->getProject()->getKey() . '/'. $repository->getName();
+            $choices[] = $repository->getProject()->getKey() . '/' . $repository->getName();
         }
 
         $io->choice('Select the project you wish to get', $choices);

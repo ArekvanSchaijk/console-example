@@ -4,7 +4,9 @@ application:
   version: '1.x-dev'
 
 hipchat:
-  token: 'Y7CCnr9OyukxnYtnAUYGBBVjgAjNRGb3bvVspfdK'
+  token: '4RZwm3ayzNrDVma6z0493QIuHi5FhVPkwYemIkMm'
+  rooms:
+    - cli: 3373199
 
 bitbucket:
   endpoint: 'https://source.alternet.nl'

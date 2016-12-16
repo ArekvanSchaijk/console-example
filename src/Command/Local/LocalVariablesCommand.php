@@ -6,6 +6,7 @@ use AlterNET\Cli\Utility\StringUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class LocalVariablesCommand
@@ -37,22 +38,19 @@ class LocalVariablesCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $warnings = [];
-        $lines = [[
-            'Key', 'Value'
-        ]];
+        $io = new SymfonyStyle($input, $output);
         $variables = $_SERVER;
         unset($variables['argv']);
+        $rows = [];
         foreach ($variables as $key => $value) {
-            $values = [
-                $key,
-                $value
-            ];
             if (is_array($value)) {
-                $warnings[] = '<comment>Warning: Variable "' . $key . '" could not be displayed ' .
-                    'since the value is of type: Array</comment>';
+                $io->note('Variable "' . $key . '" could not be displayed since the value is of type: Array');
             } else {
-                if ($this->passItemsThroughFilter($input, $values)) {
+                if ($this->passItemsThroughFilter($input, [
+                    $key,
+                    $value
+                ])
+                ) {
                     // Hides passwords
                     if (!$input->getOption('show-passwords') && strpos(strtolower($key), 'pass') !== false) {
                         $value = '<info>[hidden]</info>';
@@ -60,22 +58,21 @@ class LocalVariablesCommand extends CommandBase
                         // Crops the value
                         $value = StringUtility::crop($value, (int)$input->getOption('crop'));
                     }
-                    $lines[] = [
+                    $rows[] = [
                         $this->highlightFilteredWords($input, $key),
                         $this->highlightFilteredWords($input, $value)
                     ];
                 }
             }
         }
-        $count = count($lines) - 1;
+        $count = count($rows);
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $this->renderArrayAsTable($output, $lines);
-        }
-        if ($warnings) {
-            foreach ($warnings as $warning) {
-                $output->writeln($warning);
-            }
+            $headers = [
+                'Key', 'Value'
+            ];
+            $io->table($headers, $rows);
+
         }
     }
 

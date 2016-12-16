@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Utility;
 
 use AlterNET\Cli\AppConfig;
+use AlterNET\Cli\AppConfig\Environment\EnvironmentConfig;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
 use AlterNET\Package\Environment;
