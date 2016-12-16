@@ -1,15 +1,15 @@
 <?php
-namespace AlterNET\Cli\Command\Project;
+namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ProjectSyncCommand
+ * Class AppEvaluateCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectSyncCommand extends CommandBase
+class AppEvaluateCommand extends CommandBase
 {
 
     /**
@@ -18,8 +18,8 @@ class ProjectSyncCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('project:sync');
-        $this->setDescription('Synchronizes the user content and/or database');
+        $this->setName('app:evaluate');
+        $this->setDescription('Evaluates an application');
     }
 
     /**

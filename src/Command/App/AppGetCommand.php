@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Command\Project;
+namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\ConsoleUtility;
@@ -14,10 +14,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Class ProjectGetCommand
+ * Class AppGetCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectGetCommand extends CommandBase
+class AppGetCommand extends CommandBase
 {
 
     /**
@@ -26,8 +26,8 @@ class ProjectGetCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('project:get');
-        $this->setDescription('Gets a project');
+        $this->setName('app:get');
+        $this->setDescription('Gets an application');
         $this->addArgument('project', InputArgument::OPTIONAL);
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Command\Project;
+namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Class ProjectGenerateVhostCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectGenerateVhostCommand extends CommandBase
+class AppGenerateVhostCommand extends CommandBase
 {
 
     /**
@@ -20,8 +20,8 @@ class ProjectGenerateVhostCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('project:generatevhost');
-        $this->setDescription('Generates the Vhost file for the project');
+        $this->setName('app:generatevhost');
+        $this->setDescription('Generates the Vhost file for the application');
     }
 
     /**

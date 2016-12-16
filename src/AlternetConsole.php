@@ -8,12 +8,12 @@ use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
 use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
-use AlterNET\Cli\Command\Project\ProjectBuildCommand;
-use AlterNET\Cli\Command\Project\ProjectEvaluateCommand;
-use AlterNET\Cli\Command\Project\ProjectGenerateVhostCommand;
-use AlterNET\Cli\Command\Project\ProjectGetCommand;
-use AlterNET\Cli\Command\Project\ProjectListCommand;
-use AlterNET\Cli\Command\Project\ProjectSyncCommand;
+use AlterNET\Cli\Command\App\AppBuildCommand;
+use AlterNET\Cli\Command\App\AppEvaluateCommand;
+use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
+use AlterNET\Cli\Command\App\AppGetCommand;
+use AlterNET\Cli\Command\App\AppListCommand;
+use AlterNET\Cli\Command\App\AppSyncCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
@@ -78,12 +78,12 @@ class AlternetConsole extends SymfonyConsoleApplication
             new LocalIsConnectionCommand(),
 
             // Project
-            new ProjectListCommand(),
-            new ProjectBuildCommand(),
-            new ProjectEvaluateCommand(),
-            new ProjectGenerateVhostCommand(),
-            new ProjectGetCommand(),
-            new ProjectSyncCommand()
+            new AppListCommand(),
+            new AppBuildCommand(),
+            new AppEvaluateCommand(),
+            new AppGenerateVhostCommand(),
+            new AppGetCommand(),
+            new AppSyncCommand()
         ];
     }
 

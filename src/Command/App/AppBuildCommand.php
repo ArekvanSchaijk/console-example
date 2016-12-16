@@ -1,15 +1,15 @@
 <?php
-namespace AlterNET\Cli\Command\Project;
+namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ProjectEvaluateCommand
+ * Class AppBuildCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectEvaluateCommand extends CommandBase
+class AppBuildCommand extends CommandBase
 {
 
     /**
@@ -18,8 +18,8 @@ class ProjectEvaluateCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('project:evaluate');
-        $this->setDescription('Evaluates the project');
+        $this->setName('app:build');
+        $this->setDescription('Builds the application');
     }
 
     /**

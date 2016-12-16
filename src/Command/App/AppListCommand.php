@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Command\Project;
+namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\ProjectUtility;
@@ -8,10 +8,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class ProjectListCommand
+ * Class AppListCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectListCommand extends CommandBase
+class AppListCommand extends CommandBase
 {
 
     /**
@@ -20,8 +20,8 @@ class ProjectListCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('project:list');
-        $this->setDescription('Lists all project');
+        $this->setName('app:list');
+        $this->setDescription('Lists all available applications');
     }
 
     /**
