@@ -1,7 +1,6 @@
 <?php
 namespace AlterNET\Cli;
 
-use AlterNET\Cli\Command\App\AppInfoCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
 use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
@@ -9,13 +8,19 @@ use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
 use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
+use AlterNET\Cli\Command\App\AppBuildCommand;
+use AlterNET\Cli\Command\App\AppEvaluateCommand;
+use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
+use AlterNET\Cli\Command\App\AppGetCommand;
+use AlterNET\Cli\Command\App\AppListCommand;
+use AlterNET\Cli\Command\App\AppSyncCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
- * Class Application
+ * Class AlternetConsole
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class Application extends SymfonyConsoleApplication
+class AlternetConsole extends SymfonyConsoleApplication
 {
 
     protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
@@ -38,7 +43,7 @@ class Application extends SymfonyConsoleApplication
      */
     public function __construct()
     {
-        $config = Config::load();
+        $config = Config::create();
         parent::__construct(
             $config->getApplicationName(),
             $config->getApplicationVersion()
@@ -72,8 +77,13 @@ class Application extends SymfonyConsoleApplication
             new LocalVariablesCommand(),
             new LocalIsConnectionCommand(),
 
-            // App
-            new AppInfoCommand()
+            // Project
+            new AppListCommand(),
+            new AppBuildCommand(),
+            new AppEvaluateCommand(),
+            new AppGenerateVhostCommand(),
+            new AppGetCommand(),
+            new AppSyncCommand()
         ];
     }
 

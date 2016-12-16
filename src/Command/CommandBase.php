@@ -1,15 +1,13 @@
 <?php
 namespace AlterNET\Cli\Command;
 
+use AlterNET\Cli\App\AppConfig;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -25,6 +23,11 @@ abstract class CommandBase extends Command
     static protected $config;
 
     /**
+     * @var AppConfig
+     */
+    static protected $appConfig;
+
+    /**
      * @var CrowdContainer
      */
     protected $crowdContainer;
@@ -35,7 +38,7 @@ abstract class CommandBase extends Command
      */
     public function __construct($name = null)
     {
-        self::$config = Config::load();
+        self::$config = Config::create();
         parent::__construct($name);
     }
 
@@ -67,23 +70,21 @@ abstract class CommandBase extends Command
     /**
      * Process Collects the Crowd Credentials
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param SymfonyStyle $io
      * @return CrowdContainer
      */
-    protected function processCollectCrowdCredentials(InputInterface $input, OutputInterface $output)
+    protected function processCollectCrowdCredentials(SymfonyStyle $io)
     {
         if (!$this->crowdContainer) {
-            $openingsMessage = '<question>Please login with your Crowd credentials</question>';
+            $openingsMessage = 'Please login with your Crowd credentials';
             if (!isset($_SERVER['ALTERNET_CLI_USERNAME']) || empty(trim($_SERVER['ALTERNET_CLI_USERNAME']))) {
-                $output->writeln($openingsMessage);
-                $username = $this->askCrowdUsername($input, $output);
-                $password = $this->askCrowdPassword($input, $output);
+                $io->note($openingsMessage);
+                $username = $this->askCrowdUsername($io);
+                $password = $this->askCrowdPassword($io);
             } elseif (!isset($_SERVER['ALTERNET_CLI_PASSWORD']) || empty(trim($_SERVER['ALTERNET_CLI_PASSWORD']))) {
-                $output->writeln($openingsMessage);
-                $username = trim($_SERVER['ALTERNET_CLI_USERNAME']);
-                $output->writeln('<info>Username: ' . $username . '</info>');
-                $password = $this->askCrowdPassword($input, $output);
+                $io->note($openingsMessage);
+                $username = $this->askCrowdUsername($io, trim($_SERVER['ALTERNET_CLI_USERNAME']));
+                $password = $this->askCrowdPassword($io);
             } else {
                 $username = trim($_SERVER['ALTERNET_CLI_USERNAME']);
                 $password = trim($_SERVER['ALTERNET_CLI_PASSWORD']);
@@ -111,49 +112,36 @@ abstract class CommandBase extends Command
     /**
      * Asks the Crowd Username
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param SymfonyStyle $io
+     * @param string|null $default
      * @return string
      */
-    protected function askCrowdUsername(InputInterface $input, OutputInterface $output)
+    protected function askCrowdUsername(SymfonyStyle $io, $default = null)
     {
-        /* @var QuestionHelper $helper */
-        $helper = $this->getHelper('question');
-        $question = new Question('Username: ');
-        $question->setValidator(function ($value) {
+        return $io->ask('Username', $default, function ($value) {
             $value = trim($value);
             if (empty($value)) {
                 throw new \Exception('The given username can\'t be empty');
             }
             return $value;
         });
-        $question->setMaxAttempts(3);
-        return $helper->ask($input, $output, $question);
     }
 
     /**
      * Asks the Crowd Password
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param SymfonyStyle $io
      * @return string
      */
-    protected function askCrowdPassword(InputInterface $input, OutputInterface $output)
+    protected function askCrowdPassword(SymfonyStyle $io)
     {
-        /* @var QuestionHelper $helper */
-        $helper = $this->getHelper('question');
-        $question = new Question('Password: ');
-        $question->setValidator(function ($value) {
+        return $io->askHidden('Password', function ($value) {
             $value = trim($value);
             if (empty($value)) {
                 throw new \Exception('The given password can\'t be empty');
             }
             return $value;
         });
-        $question->setHidden(true);
-        $question->setHiddenFallback(true);
-        $question->setMaxAttempts(3);
-        return $helper->ask($input, $output, $question);
     }
 
     /**

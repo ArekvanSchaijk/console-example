@@ -4,6 +4,7 @@ namespace AlterNET\Cli\Command\Crowd;
 use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class CrowdAuthenticateCommand
@@ -32,7 +33,8 @@ class CrowdAuthenticateCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->processCollectCrowdCredentials($input, $output);
+        $io = new SymfonyStyle($input, $output);
+        $this->processCollectCrowdCredentials($io);
     }
 
 }

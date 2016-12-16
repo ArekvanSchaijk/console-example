@@ -6,6 +6,7 @@ use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class BitbucketListCommand
@@ -35,26 +36,24 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         // Retrieves the Crowd Credentials
-        $credentials = $this->processCollectCrowdCredentials($input, $output);
+        $credentials = $this->processCollectCrowdCredentials($io);
         // Creates a new Bitbucket API
         $bitbucket = new Api();
         // Sets the Bitbucket endpoint from the Cli Config
-        $bitbucket->setEndpoint(self::$config->getBitbucketEndpoint());
+        $bitbucket->setEndpoint(self::$config->bitbucket()->getEndpoint());
         // Logs into Bitbcuket with the given Crowd Credentials
         $bitbucket->login($credentials->username, $credentials->password);
-
-        $projects = [[
-            '#', 'Key', 'Name', 'Type', 'Public', 'Link'
-        ]];
+        $rows = [];
         /* @var Project $project */
         foreach ($bitbucket->getProjects() as $project) {
-            $values = [
+            if ($this->passItemsThroughFilter($input, [
                 $project->getKey(),
                 $project->getName()
-            ];
-            if ($this->passItemsThroughFilter($input, $values)) {
-                $projects[] = [
+            ])
+            ) {
+                $rows[] = [
                     $project->getId(),
                     $this->highlightFilteredWords($input, $project->getKey()),
                     $this->highlightFilteredWords($input, $project->getName()),
@@ -64,10 +63,13 @@ class BitbucketListCommand extends CommandBase
                 ];
             }
         }
-        $count = count($projects) - 1;
+        $count = count($rows);
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $this->renderArrayAsTable($output, $projects);
+            $headers = [
+                '#', 'Key', 'Name', 'Type', 'Public', 'Link'
+            ];
+            $io->table($headers, $rows);
         }
     }
 

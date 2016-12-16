@@ -9,6 +9,7 @@ use GorkaLaucirica\HipchatAPIv2Client\Model\Room;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class HipChatListCommand
@@ -39,6 +40,7 @@ class HipChatCreateRoomCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $roomName = trim($input->getArgument('name'));
         // Validates the name arguments
         if (empty($roomName)) {
@@ -54,7 +56,7 @@ class HipChatCreateRoomCommand extends CommandBase
         $room = new Room();
         $room->setName($roomName);
         if (($roomId = $roomApi->createRoom($room))) {
-            $output->writeln('<info>The room "' . $roomName . '" (#' . $roomId . ') is succesfully created.</info>');
+            $io->success('The room "' . $roomName . '" (#' . $roomId . ') is succesfully created.');
         }
     }
 

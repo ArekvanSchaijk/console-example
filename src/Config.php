@@ -1,7 +1,9 @@
 <?php
 namespace AlterNET\Cli;
 
-use Symfony\Component\Yaml\Yaml;
+use AlterNET\Cli\Config\BitbucketConfig;
+use AlterNET\Cli\Config\ProjectsConfig;
+use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
  * Class Config
@@ -10,23 +12,54 @@ use Symfony\Component\Yaml\Yaml;
 class Config
 {
 
-    const
-
-        LOGIN_TEMPLATE_DEFAULT = 'default',
-        LOGIN_TEMPLATE_CROWD = 'crowd_template';
-
     /**
      * @var array
      */
     protected $config;
 
     /**
-     * Load
+     * @var ProjectsConfig
+     */
+    protected $projects;
+
+    /**
+     * @var BitbucketConfig
+     */
+    protected $bitbucket;
+
+    /**
+     * Projects
      *
-     * @return mixed
+     * @return ProjectsConfig
+     */
+    public function projects()
+    {
+        if (is_null($this->projects)) {
+            $this->projects = new ProjectsConfig($this->config['projects']);
+        }
+        return $this->projects;
+    }
+
+    /**
+     * Bitbucket
+     *
+     * @return BitbucketConfig
+     */
+    public function bitbucket()
+    {
+        if (is_null($this->bitbucket)) {
+            $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
+        }
+        return $this->bitbucket;
+    }
+
+    /**
+     * Creates the config
+     *
+     * @return Config
      * @static
      */
-    static public function load()
+    static public function create()
     {
         if (!isset($GLOBALS['ALTERNET_CLI_CONF_VARS'])) {
             $GLOBALS['ALTERNET_CLI_CONF_VARS'] = new Config();
@@ -39,7 +72,7 @@ class Config
      */
     public function __construct()
     {
-        $this->config = Yaml::parse(file_get_contents(CLI_ROOT . '/config.yaml'));
+        $this->config = GeneralUtility::parseYamlFile(CLI_ROOT . '/config.yaml');
     }
 
     /**
@@ -70,28 +103,6 @@ class Config
     public function getHipChatToken()
     {
         return $this->config['hipchat']['token'];
-    }
-
-    /**
-     * Gets the Bitbucket Endpoint
-     *
-     * @return string
-     */
-    public function getBitbucketEndpoint()
-    {
-        return $this->config['bitbucket']['endpoint'];
-    }
-
-    /**
-     * Gets the Bitbucket Login Template
-     *
-     * @return string
-     */
-    public function getBitbucketLoginTemplate()
-    {
-        if (isset($this->config['bitbucket']['login']) && is_array($this->config['bitbucket']['login'])) {
-            return self::LOGIN_TEMPLATE_DEFAULT;
-        }
     }
 
 }
