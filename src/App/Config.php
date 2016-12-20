@@ -1,16 +1,17 @@
 <?php
-namespace AlterNET\Cli;
+namespace AlterNET\Cli\App;
 
-use AlterNET\Cli\AppConfig\Environment\EnvironmentConfig;
-use AlterNET\Cli\AppConfig\Environment\EnvironmentSelector;
+use AlterNET\Cli\App\Config\Environment\EnvironmentConfig;
+use AlterNET\Cli\App\Config\Environment\EnvironmentSelector;
+use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\GeneralUtility;
 use AlterNET\Cli\Utility\TemplateUtility;
 
 /**
- * Class AppConfig
+ * Class Config
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppConfig
+class Config
 {
 
     /**

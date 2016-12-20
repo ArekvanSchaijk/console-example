@@ -1,6 +1,8 @@
 <?php
 namespace AlterNET\Cli\Utility;
 
+use AlterNET\Cli\Config;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -12,17 +14,14 @@ class ConsoleUtility
 {
 
     /**
-     * Git Clone
+     * Gets the Config
      *
-     * @param string $url
-     * @param string $destination
+     * @return Config
      * @static
      */
-    static public function gitClone($url, $destination)
+    static public function getConfig()
     {
-        $process = new Process('rm -rf ' . $destination . ';git clone ' . $url . ' ' . $destination);
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
+        return Config::create();
     }
 
     /**
@@ -35,20 +34,6 @@ class ConsoleUtility
     static public function gitCheckout($branch, $directory = null)
     {
         $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'git checkout ' . $branch);
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
-    }
-
-    /**
-     * Composer Install
-     *
-     * @param string|null $directory
-     * @return void
-     * @static
-     */
-    static public function composerInstall($directory = null)
-    {
-        $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'composer install');
         $process->run();
         self::unSuccessfulProcessExceptionHandler($process);
     }
@@ -76,6 +61,20 @@ class ConsoleUtility
     static public function isInternetConnection()
     {
         return (bool)@fsockopen('www.google.com', 80, $num, $error, 5);
+    }
+
+    /**
+     * File System
+     *
+     * @return Filesystem
+     * @static
+     */
+    static public function fileSystem()
+    {
+        if (!isset($GLOBALS['ALTERNET_CLI_FILESYSTEM']) || !$GLOBALS['ALTERNET_CLI_FILESYSTEM'] instanceof Filesystem) {
+            $GLOBALS['ALTERNET_CLI_FILESYSTEM'] = new Filesystem();
+        }
+        return $GLOBALS['ALTERNET_CLI_FILESYSTEM'];
     }
 
 }

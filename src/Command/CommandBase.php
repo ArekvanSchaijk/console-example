@@ -1,9 +1,12 @@
 <?php
 namespace AlterNET\Cli\Command;
 
-use AlterNET\Cli\App\AppConfig;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
+use AlterNET\Cli\Driver\BitbucketDriver;
+use AlterNET\Cli\Driver\HipChatDriver;
+use AlterNET\Cli\Utility\AppUtility;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,14 +21,14 @@ abstract class CommandBase extends Command
 {
 
     /**
-     * @var Config
+     * @var SymfonyStyle
      */
-    static protected $config;
+    protected $io;
 
     /**
-     * @var AppConfig
+     * @var Config
      */
-    static protected $appConfig;
+    protected $config;
 
     /**
      * @var CrowdContainer
@@ -33,13 +36,36 @@ abstract class CommandBase extends Command
     protected $crowdContainer;
 
     /**
+     * @var BitbucketDriver
+     */
+    protected $bitbucketDriver;
+
+    /**
+     * @var HipChatDriver
+     */
+    protected $hipChatDriver;
+
+    /**
      * CommandBase constructor.
      * @param string|null $name
      */
     public function __construct($name = null)
     {
-        self::$config = Config::create();
         parent::__construct($name);
+        $this->config = ConsoleUtility::getConfig();
+    }
+
+    /**
+     * Initialize
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return void
+     */
+    public function initialize(InputInterface $input, OutputInterface $output)
+    {
+        parent::initialize($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
     }
 
     /**
@@ -68,23 +94,37 @@ abstract class CommandBase extends Command
     }
 
     /**
+     * Prevents Being Within App
+     * This prevents the command to run if it is inside an app
+     *
+     * @return void
+     */
+    protected function preventBeingWithinAnApp()
+    {
+        if (AppUtility::isCwdInApp()) {
+            $this->io->error('It\'s not possible to get an app inside the directory of an existing app. '
+                . 'Please browse to your web root directory and try again.');
+            exit;
+        }
+    }
+
+    /**
      * Process Collects the Crowd Credentials
      *
-     * @param SymfonyStyle $io
      * @return CrowdContainer
      */
-    protected function processCollectCrowdCredentials(SymfonyStyle $io)
+    protected function processCollectCrowdCredentials()
     {
         if (!$this->crowdContainer) {
             $openingsMessage = 'Please login with your Crowd credentials';
             if (!isset($_SERVER['ALTERNET_CLI_USERNAME']) || empty(trim($_SERVER['ALTERNET_CLI_USERNAME']))) {
-                $io->note($openingsMessage);
-                $username = $this->askCrowdUsername($io);
-                $password = $this->askCrowdPassword($io);
+                $this->io->note($openingsMessage);
+                $username = $this->askCrowdUsername();
+                $password = $this->askCrowdPassword();
             } elseif (!isset($_SERVER['ALTERNET_CLI_PASSWORD']) || empty(trim($_SERVER['ALTERNET_CLI_PASSWORD']))) {
-                $io->note($openingsMessage);
-                $username = $this->askCrowdUsername($io, trim($_SERVER['ALTERNET_CLI_USERNAME']));
-                $password = $this->askCrowdPassword($io);
+                $this->io->note($openingsMessage);
+                $username = $this->askCrowdUsername(trim($_SERVER['ALTERNET_CLI_USERNAME']));
+                $password = $this->askCrowdPassword();
             } else {
                 $username = trim($_SERVER['ALTERNET_CLI_USERNAME']);
                 $password = trim($_SERVER['ALTERNET_CLI_PASSWORD']);
@@ -98,27 +138,14 @@ abstract class CommandBase extends Command
     }
 
     /**
-     * Destroys the CrowdContainer
-     *
-     * @return bool Returns true if the container was destroyed succesfully
-     */
-    protected function destroyCrowdContainer()
-    {
-        $hasContainer = (bool)$this->crowdContainer;
-        unset($this->crowdContainer);
-        return $hasContainer;
-    }
-
-    /**
      * Asks the Crowd Username
      *
-     * @param SymfonyStyle $io
      * @param string|null $default
      * @return string
      */
-    protected function askCrowdUsername(SymfonyStyle $io, $default = null)
+    protected function askCrowdUsername($default = null)
     {
-        return $io->ask('Username', $default, function ($value) {
+        return $this->io->ask('Username', $default, function ($value) {
             $value = trim($value);
             if (empty($value)) {
                 throw new \Exception('The given username can\'t be empty');
@@ -130,18 +157,29 @@ abstract class CommandBase extends Command
     /**
      * Asks the Crowd Password
      *
-     * @param SymfonyStyle $io
      * @return string
      */
-    protected function askCrowdPassword(SymfonyStyle $io)
+    protected function askCrowdPassword()
     {
-        return $io->askHidden('Password', function ($value) {
+        return $this->io->askHidden('Password', function ($value) {
             $value = trim($value);
             if (empty($value)) {
                 throw new \Exception('The given password can\'t be empty');
             }
             return $value;
         });
+    }
+
+    /**
+     * Destroys the CrowdContainer
+     *
+     * @return bool Returns true if the container was destroyed succesfully
+     */
+    protected function destroyCrowdContainer()
+    {
+        $hasContainer = (bool)$this->crowdContainer;
+        unset($this->crowdContainer);
+        return $hasContainer;
     }
 
     /**
@@ -190,15 +228,42 @@ abstract class CommandBase extends Command
      */
     protected function renderFilter(InputInterface $input, OutputInterface $output, $results = null, $addQuery = true)
     {
-        $io = new SymfonyStyle($input, $output);
         if ((bool)$input->getOption('filter')) {
             if ($results === null || $results > 0) {
-                $io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
+                $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
                     ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':');
             } else {
-                $io->note('There are no filtered results found. You may want to remove or change the filters value.');
+                $this->io->note('There are no filtered results found. You may want to remove or change the filters value.');
             }
         }
+    }
+
+    /**
+     * Bitbucket Driver
+     *
+     * @return BitbucketDriver
+     */
+    protected function bitbucketDriver()
+    {
+        if (!$this->bitbucketDriver) {
+            $this->bitbucketDriver = new BitbucketDriver(
+                $this->processCollectCrowdCredentials()
+            );
+        }
+        return $this->bitbucketDriver;
+    }
+
+    /**
+     * HipChat Driver
+     *
+     * @return HipChatDriver
+     */
+    protected function hipChatDriver()
+    {
+        if (!$this->hipChatDriver) {
+            $this->hipChatDriver = new HipChatDriver();
+        }
+        return $this->hipChatDriver;
     }
 
 }

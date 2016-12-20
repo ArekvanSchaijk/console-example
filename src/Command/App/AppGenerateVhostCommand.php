@@ -4,7 +4,6 @@ namespace AlterNET\Cli\Command\App;
 use AlterNET\Cli\Command\CommandBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -33,7 +32,7 @@ class AppGenerateVhostCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
+
         $fileSystem = new Filesystem();
 
         $fileSystem->touch([

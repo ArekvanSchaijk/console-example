@@ -1,8 +1,8 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Config\AppConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
-use AlterNET\Cli\Config\ProjectsConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
@@ -18,9 +18,9 @@ class Config
     protected $config;
 
     /**
-     * @var ProjectsConfig
+     * @var AppConfig
      */
-    protected $projects;
+    protected $app;
 
     /**
      * @var BitbucketConfig
@@ -28,29 +28,11 @@ class Config
     protected $bitbucket;
 
     /**
-     * Projects
-     *
-     * @return ProjectsConfig
+     * Config constructor.
      */
-    public function projects()
+    public function __construct()
     {
-        if (is_null($this->projects)) {
-            $this->projects = new ProjectsConfig($this->config['projects']);
-        }
-        return $this->projects;
-    }
-
-    /**
-     * Bitbucket
-     *
-     * @return BitbucketConfig
-     */
-    public function bitbucket()
-    {
-        if (is_null($this->bitbucket)) {
-            $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
-        }
-        return $this->bitbucket;
+        $this->config = GeneralUtility::parseYamlFile(CLI_ROOT . '/config.yaml');
     }
 
     /**
@@ -68,11 +50,29 @@ class Config
     }
 
     /**
-     * Config constructor.
+     * App
+     *
+     * @return AppConfig
      */
-    public function __construct()
+    public function app()
     {
-        $this->config = GeneralUtility::parseYamlFile(CLI_ROOT . '/config.yaml');
+        if (is_null($this->app)) {
+            $this->app = new AppConfig($this->config['app']);
+        }
+        return $this->app;
+    }
+
+    /**
+     * Bitbucket
+     *
+     * @return BitbucketConfig
+     */
+    public function bitbucket()
+    {
+        if (is_null($this->bitbucket)) {
+            $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
+        }
+        return $this->bitbucket;
     }
 
     /**
@@ -103,6 +103,16 @@ class Config
     public function getHipChatToken()
     {
         return $this->config['hipchat']['token'];
+    }
+
+    /**
+     * Gets the Cli Working Directory
+     *
+     * @return string
+     */
+    public function getCliWorkingDirectory()
+    {
+        return GeneralUtility::getHomeDirectory() . $this->config['application']['relative_cli_working_directory'];
     }
 
 }

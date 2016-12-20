@@ -2,16 +2,11 @@
 namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
-use AlterNET\Cli\Utility\ConsoleUtility;
-use AlterNET\Cli\Utility\CurrentProjectUtility;
-use AlterNET\Cli\Utility\ProjectUtility;
-use AlterNET\Package\Environment;
-use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
+use AlterNET\Cli\Utility\AppUtility;
+use AlterNET\Cli\Utility\GeneralUtility;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class AppGetCommand
@@ -28,7 +23,7 @@ class AppGetCommand extends CommandBase
     {
         $this->setName('app:get');
         $this->setDescription('Gets an application');
-        $this->addArgument('project', InputArgument::OPTIONAL);
+        $this->addArgument('application', InputArgument::OPTIONAL);
     }
 
     /**
@@ -40,77 +35,52 @@ class AppGetCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-        if (CurrentProjectUtility::isCwdInProject()) {
-            $io->error('It\'s not possible to get a project inside the directory of an existing project. '
-                . 'Please browse to your web root directory and try again.');
+        // This prevents the command from executing within a application's directory
+        $this->preventBeingWithinAnApp();
+        // Gets all repositories belonging to an app
+        $repositories = $this->bitbucketDriver()->getAppRepositories();
+        // Creates an array with the app options
+        $choices = [];
+        foreach ($repositories as $key => $_) {
+            $choices[] = $key;
+        }
+        // Selects the repository of the app we want to get
+        $repository = null;
+        // Checks if the $input argument 'application' was given
+        if ($input->getArgument('application')) {
+            if (isset($repositories[$input->getArgument('application')])) {
+                $repository = $repositories[$input->getArgument('application')];
+            } else {
+                $this->io->error('The given application does not exists.');
+            }
+        }
+        // If $repository is not defined here (i.e. by $input argument) then we offer a list of choices
+        if (!$repository) {
+            $option = $this->io->choice('Select the application you want to get', $choices);
+            $repository = $repositories[$option];
+        }
+        // Creates a new (still empty) app
+        $app = AppUtility::createNewApp(
+            $repository->getSshCloneUrl()
+        );
+        // If the branch belonging to this environment exists than we check out to it
+        if ($app->doesCurrentEnvironmentBranchExists()) {
+            $app->checkoutCurrentEnvironment();
+        }
+        // If there is no application config file
+        if (!$app->hasConfigFile()) {
+            // Moves the application to a temporary directory inside cwd
+            $newDirectoryName = $repository->getSlug() . '_' . GeneralUtility::generateRandomString(10);
+            $newWorkingDirectory = getcwd() . '/' . $newDirectoryName;
+            $app->move($newWorkingDirectory);
+            // Shows a warning about it
+            $this->io->warning('The application has (still) no configuration file ('
+                . $this->config->app()->getRelativeConfigFilePath() . ').');
+            // Notify's the user about the temporary created directory
+            $this->io->note('The application is created in the directory named "' . $newDirectoryName . '".');
         } else {
-            // Collects the Crowd Container
-            $crowd = $this->processCollectCrowdCredentials($io);
-            // Retrieves all Repositories belonging to a project
-            $repositories = ProjectUtility::getRepositories($crowd);
-            $choices = [];
-            foreach ($repositories as $key => $repository) {
-                $choices[] = $key;
-            }
-            // Select project
-            if ($input->getArgument('project')) {
-                if (isset($repositories[$input->getArgument('project')])) {
-                    $repository = $repositories[$input->getArgument('project')];
-                } else {
-                    $io->error('No project with key ' . $input->getArgument('project') . ' exists');
-                    $repository = $repositories[$io->choice('Select the project you want to get', $choices)];
-                }
-            } else {
-                $repository = $repositories[$io->choice('Select the project you want to get', $choices)];
-            }
-            // Select branch
-            $branchName = null;
-            if (($branch = ProjectUtility::getCurrentEnvironmentBranch($repository))) {
-                $branchName = $branch->getName();
-            } else {
-                $choices = [];
-                /* @var Branch $branch */
-                foreach ($repository->getBranches() as $branch) {
-                    if (ProjectUtility::isEnvironmentBranchName($branch->getName())) {
-                        $choices[] = $branch->getName();
-                    }
-                }
-                if ($choices) {
-                    $branchName = $io->choice('Select the environment you want to check out', $choices);
-                }
-            }
-            // Creates a temporary directory
-            $temporaryDirectory = getcwd() . '/alternet_temp_' . md5(microtime());
-            // Clones the project into the temporary directory
-            ConsoleUtility::gitClone($repository->getSshCloneUrl(), $temporaryDirectory);
-            if ($branchName) {
-                // Check out on the given branch name
-                ConsoleUtility::gitCheckout($branchName, $temporaryDirectory);
-                // Gets the projects app config
-                $appConfig = ProjectUtility::getConfig($temporaryDirectory);
-                if (($domain = $appConfig->current()->getServerName())) {
-                    $directory = getcwd() . '/' . $domain;
-                    if (file_exists($directory)) {
-                        if (($io->confirm('The directory "' . $domain . '" does already exists. Would you like to '
-                            . 'remove the existing directory?'))
-                        ) {
-                            $fileSystem = new Filesystem();
-                            $fileSystem->remove($directory);
-                        } elseif ($io->confirm('Do you want to backup the old directory?')) {
-                            rename($directory, $directory . '_backup_' . date('Y-m-d_H-i-s'));
-                        } else {
-                            $directory = $directory . '_' . substr(md5(microtime()), 0, 6);
-                            $io->note('The project is written to directory ' . $directory);
-                        }
-                    }
-                    rename($temporaryDirectory, $directory);
-                    if (file_exists($directory . '/composer.lock')) {
-                        ConsoleUtility::composerInstall($directory);
-                    }
-                }
-            }
-            $io->success('The project is successfully retrieved.');
+
+            echo $app->getConfig()->current()->getServerName();
         }
     }
 

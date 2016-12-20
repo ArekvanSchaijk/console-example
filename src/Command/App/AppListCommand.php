@@ -5,7 +5,6 @@ use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\ProjectUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class AppListCommand
@@ -33,9 +32,8 @@ class AppListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
         // Collects the Crowd Container
-        $crowd = $this->processCollectCrowdCredentials($io);
+        $crowd = $this->processCollectCrowdCredentials();
         // Retrieves all Repositories belonging to a project
         $repositories = ProjectUtility::getRepositories($crowd);
 
@@ -45,7 +43,7 @@ class AppListCommand extends CommandBase
             $choices[] = $repository->getProject()->getKey() . '/' . $repository->getName();
         }
 
-        $io->choice('Select the project you wish to get', $choices);
+        $this->io->choice('Select the project you wish to get', $choices);
 
     }
 

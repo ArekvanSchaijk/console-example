@@ -8,7 +8,6 @@ use GorkaLaucirica\HipchatAPIv2Client\Client;
 use GorkaLaucirica\HipchatAPIv2Client\Model\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class HipChatListCommand
@@ -38,10 +37,8 @@ class HipChatListUsersCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        // Gets the Symfony Style object
-        $io = new SymfonyStyle($input, $output);
         // Retrieves the Hipchat authentication token from Cli Config
-        $authentication = new OAuth2(self::$config->getHipChatToken());
+        $authentication = new OAuth2($this->config->getHipChatToken());
         // Creates the the Hipchat client
         $client = new Client($authentication);
         // Creates the UserAPI
@@ -67,7 +64,7 @@ class HipChatListUsersCommand extends CommandBase
         $this->renderFilter($input, $output, $count);
         if ($count) {
             $headers = ['#', 'Name', 'Mention Name'];
-            $io->table($headers, $users);
+            $this->io->table($headers, $users);
         }
     }
 

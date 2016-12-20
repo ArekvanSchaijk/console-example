@@ -6,7 +6,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class BitbucketListCommand
@@ -36,13 +35,12 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
         // Retrieves the Crowd Credentials
-        $credentials = $this->processCollectCrowdCredentials($io);
+        $credentials = $this->processCollectCrowdCredentials();
         // Creates a new Bitbucket API
         $bitbucket = new Api();
         // Sets the Bitbucket endpoint from the Cli Config
-        $bitbucket->setEndpoint(self::$config->bitbucket()->getEndpoint());
+        $bitbucket->setEndpoint($this->config->bitbucket()->getEndpoint());
         // Logs into Bitbcuket with the given Crowd Credentials
         $bitbucket->login($credentials->username, $credentials->password);
         $rows = [];
@@ -69,7 +67,7 @@ class BitbucketListCommand extends CommandBase
             $headers = [
                 '#', 'Key', 'Name', 'Type', 'Public', 'Link'
             ];
-            $io->table($headers, $rows);
+            $this->io->table($headers, $rows);
         }
     }
 

@@ -1,8 +1,8 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppShareCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
-use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
@@ -17,10 +17,10 @@ use AlterNET\Cli\Command\App\AppSyncCommand;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
- * Class AlternetConsole
+ * Class Application
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AlternetConsole extends SymfonyConsoleApplication
+class Application extends SymfonyConsoleApplication
 {
 
     protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
@@ -62,9 +62,6 @@ class AlternetConsole extends SymfonyConsoleApplication
     {
         return [
 
-            // Crowd
-            new CrowdAuthenticateCommand(),
-
             // Bitbucket
             new BitbucketListCommand(),
 
@@ -81,6 +78,7 @@ class AlternetConsole extends SymfonyConsoleApplication
             new AppListCommand(),
             new AppBuildCommand(),
             new AppEvaluateCommand(),
+            new AppShareCommand(),
             new AppGenerateVhostCommand(),
             new AppGetCommand(),
             new AppSyncCommand()

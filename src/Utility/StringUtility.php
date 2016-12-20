@@ -12,7 +12,7 @@ class StringUtility
      * Crop
      *
      * @param string $string
-     * @param int|bool$length
+     * @param int|bool $length
      * @param string|null $append
      * @return string
      * @static

@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\AppConfig\Environment;
+namespace AlterNET\Cli\App\Config\Environment;
 
 use AlterNET\Cli\Config\AbstractConfig;
 use AlterNET\Cli\Utility\TemplateUtility;
@@ -89,5 +89,5 @@ class EnvironmentConfig extends AbstractConfig
         }
         return false;
     }
-    
+
 }

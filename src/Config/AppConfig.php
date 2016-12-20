@@ -2,10 +2,10 @@
 namespace AlterNET\Cli\Config;
 
 /**
- * Class ProjectsConfig
+ * Class AppConfig
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ProjectsConfig extends AbstractConfig
+class AppConfig extends AbstractConfig
 {
 
     /**
@@ -20,13 +20,23 @@ class ProjectsConfig extends AbstractConfig
     }
 
     /**
-     * Gets the Config File Path
+     * Gets the Relative Config File Path
      *
      * @return string
      */
-    public function getProjectConfigFilePath()
+    public function getRelativeConfigFilePath()
     {
-        return (string)$this->config['config_file_path'];
+        return (string)$this->config['app_config']['relative_file_path'];
+    }
+
+    /**
+     * Gets the Config Maximum Search Depth
+     *
+     * @return int
+     */
+    public function getConfigMaxSearchDepth()
+    {
+        return (int)$this->config['app_config']['max_search_depth'];
     }
 
 }

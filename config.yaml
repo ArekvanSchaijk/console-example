@@ -1,10 +1,10 @@
-# Metadata about the CLI application itself.
 application:
   name: 'Alternet B.V.'
   version: '1.x-dev'
+  relative_cli_working_directory: '/alternet_cli'
 
 hipchat:
-  token: '4RZwm3ayzNrDVma6z0493QIuHi5FhVPkwYemIkMm'
+  token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
   rooms:
     - cli: 3373199
 
@@ -15,7 +15,9 @@ bitbucket:
   default_testing_branch: 'Testing'
   default_development_branch: 'Development'
 
-projects:
-  config_file_path: '.alternet/app.config.yaml'
+app:
+  app_config:
+    relative_file_path: '.alternet/app.config.yaml'
+    max_search_depth: 20
   bitbucket_repository_selectors:
     - 'TYPO3'

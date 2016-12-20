@@ -6,7 +6,6 @@ use AlterNET\Cli\Utility\StringUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class LocalVariablesCommand
@@ -38,13 +37,12 @@ class LocalVariablesCommand extends CommandBase
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
         $variables = $_SERVER;
         unset($variables['argv']);
         $rows = [];
         foreach ($variables as $key => $value) {
             if (is_array($value)) {
-                $io->note('Variable "' . $key . '" could not be displayed since the value is of type: Array');
+                $this->io->note('Variable "' . $key . '" could not be displayed since the value is of type: Array');
             } else {
                 if ($this->passItemsThroughFilter($input, [
                     $key,
@@ -71,7 +69,7 @@ class LocalVariablesCommand extends CommandBase
             $headers = [
                 'Key', 'Value'
             ];
-            $io->table($headers, $rows);
+            $this->io->table($headers, $rows);
 
         }
     }
