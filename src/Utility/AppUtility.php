@@ -65,7 +65,7 @@ class AppUtility
                 return realpath($workingDirectory);
             }
         }
-        return FALSE;
+        return false;
     }
 
     /**

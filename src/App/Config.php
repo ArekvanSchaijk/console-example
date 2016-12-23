@@ -79,7 +79,7 @@ class Config
      */
     public function getHipChatRoomId()
     {
-        return (isset($this->config['Application']['hipchat']) ? (int)$this->config['Application']['hipchat'] : FALSE);
+        return (isset($this->config['Application']['hipchat']) ? (int)$this->config['Application']['hipchat'] : false);
     }
 
     /**

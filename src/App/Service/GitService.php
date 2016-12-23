@@ -71,7 +71,7 @@ class GitService implements AppServiceInterface
      * @param bool $origin
      * @return void
      */
-    public function checkout($branchName, $origin = TRUE)
+    public function checkout($branchName, $origin = true)
     {
         $this->app->process('git checkout ' . ($origin ? 'origin/' : null) . $branchName);
     }

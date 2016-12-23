@@ -203,12 +203,12 @@ abstract class CommandBase extends Command
         if ((bool)$input->getOption('filter')) {
             foreach ($values as $value) {
                 if (stripos($value, $input->getOption('filter')) !== false) {
-                    return TRUE;
+                    return true;
                 }
             }
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     /**
