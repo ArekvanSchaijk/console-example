@@ -3,6 +3,7 @@ namespace AlterNET\Cli;
 
 use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
@@ -13,8 +14,8 @@ use AlterNET\Cli\Command\App\AppBuildCommand;
 use AlterNET\Cli\Command\App\AppEvaluateCommand;
 use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
 use AlterNET\Cli\Command\App\AppGetCommand;
-use AlterNET\Cli\Command\App\AppListCommand;
 use AlterNET\Cli\Command\App\AppSyncCommand;
+use AlterNET\Cli\Command\Test\TestCommand;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
@@ -79,8 +80,11 @@ class Application extends SymfonyConsoleApplication
     {
         return [
 
+            new TestCommand(),
+
             // Bitbucket
             new BitbucketListCommand(),
+            new BitbucketCreateProjectCommand(),
 
             // HipChat
             new HipChatListCommand(),

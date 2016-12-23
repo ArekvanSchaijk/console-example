@@ -2,7 +2,7 @@
 namespace AlterNET\Cli\Command\Bitbucket;
 
 use AlterNET\Cli\Command\CommandBase;
-use ArekvanSchaijk\BitbucketServerClient\Api;
+use AlterNET\Cli\Utility\IOHelperUtility;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,7 +22,7 @@ class BitbucketListCommand extends CommandBase
     public function configure()
     {
         $this->setName('bitbucket:list');
-        $this->setDescription('Lists all projects on Bitbucket');
+        $this->setDescription('Lists all projects');
         $this->addFilterOption();
     }
 
@@ -35,17 +35,9 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Retrieves the Crowd Credentials
-        $credentials = $this->processCollectCrowdCredentials();
-        // Creates a new Bitbucket API
-        $bitbucket = new Api();
-        // Sets the Bitbucket endpoint from the Cli Config
-        $bitbucket->setEndpoint($this->config->bitbucket()->getEndpoint());
-        // Logs into Bitbcuket with the given Crowd Credentials
-        $bitbucket->login($credentials->username, $credentials->password);
         $rows = [];
         /* @var Project $project */
-        foreach ($bitbucket->getProjects() as $project) {
+        foreach ($this->bitbucketDriver()->getApi()->getProjects() as $project) {
             if ($this->passItemsThroughFilter($input, [
                 $project->getKey(),
                 $project->getName()
@@ -64,10 +56,7 @@ class BitbucketListCommand extends CommandBase
         $count = count($rows);
         $this->renderFilter($input, $output, $count);
         if ($count) {
-            $headers = [
-                '#', 'Key', 'Name', 'Type', 'Public', 'Link'
-            ];
-            $this->io->table($headers, $rows);
+            $this->io->table(IOHelperUtility::getBitbucketProjectHeaders(), $rows);
         }
     }
 
