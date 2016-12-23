@@ -65,7 +65,9 @@ class HipChatDriver
      */
     static public function createMessage()
     {
-        return new Message();
+        $newMessage = new Message();
+        $newMessage->setMessageFormat(Message::FORMAT_TEXT);
+        return $newMessage;
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli\Utility;
 
+use AlterNET\Cli\Exception;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -15,11 +16,17 @@ class GeneralUtility
      *
      * @param string $filePath
      * @return array
+     * @throws Exception
      * @static
      */
     static public function parseYamlFile($filePath)
     {
-        return Yaml::parse(file_get_contents($filePath));
+        try {
+            $yaml = Yaml::parse(file_get_contents($filePath));
+            return (is_array($yaml) ? $yaml : []);
+        } catch (\Exception $exception) {
+            throw new Exception('Could not parse Yaml file "' . $filePath . '" because:' . PHP_EOL . $exception->getMessage());
+        }
     }
 
     /**

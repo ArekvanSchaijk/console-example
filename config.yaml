@@ -1,7 +1,6 @@
 application:
   name: 'Alternet B.V.'
   version: '1.x-dev'
-  relative_cli_working_directory: '/alternet_cli'
 
 hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'

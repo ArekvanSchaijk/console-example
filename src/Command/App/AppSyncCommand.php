@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
+use AlterNET\Cli\Utility\AppUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,6 +32,9 @@ class AppSyncCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // This prevents that the command is being executed outside an app
+        $this->preventNotBeingInAnApp();
+        $app = AppUtility::load();
 
     }
 

@@ -35,25 +35,51 @@ class AppUtility
 
     /**
      * Is Cwd In App
-     * Checks if the Current Working Directory is in the directory of an App
      *
      * @return bool
      * @static
      */
     static public function isCwdInApp()
     {
+        return (bool)self::getAppWorkingDirectory();
+    }
+
+    /**
+     * Gets the App Working Directory
+     *
+     *
+     * @param string|null $workingDirectory
+     * @return string|bool
+     * @static
+     */
+    static public function getAppWorkingDirectory($workingDirectory = null)
+    {
         $config = ConsoleUtility::getConfig();
-        $workingDirectory = getcwd();
+        $workingDirectory = ($workingDirectory ?: getcwd());
         $configFilePath = $config->app()->getRelativeConfigFilePath();
         for ($i = 0; $i < $config->app()->getConfigMaxSearchDepth(); $i++) {
             if ($i > 0) {
                 $workingDirectory .= '/..';
             }
             if (file_exists($workingDirectory . '/' . $configFilePath)) {
-                return TRUE;
+                return realpath($workingDirectory);
             }
         }
         return FALSE;
+    }
+
+    /**
+     * Load
+     * Loads an application
+     *
+     * @param string|null $workingDirectory
+     * @return App
+     * @static
+     */
+    static public function load($workingDirectory = null)
+    {
+        $workingDirectory = ($workingDirectory ? : AppUtility::getAppWorkingDirectory());
+        return new App($workingDirectory);
     }
 
     /**
@@ -65,9 +91,7 @@ class AppUtility
      */
     static public function createNewApp($gitCloneUrl = null)
     {
-        $config = ConsoleUtility::getConfig();
-        $workingDirectory = $config->getCliWorkingDirectory()
-            . '/builds/app_' . GeneralUtility::generateRandomString(20);
+        $workingDirectory = CLI_HOME . '/builds/app_' . GeneralUtility::generateRandomString(20);
         ConsoleUtility::fileSystem()->mkdir($workingDirectory);
         $newApp = new App($workingDirectory);
         if ($gitCloneUrl) {

@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
@@ -14,6 +15,7 @@ use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
 use AlterNET\Cli\Command\App\AppGetCommand;
 use AlterNET\Cli\Command\App\AppListCommand;
 use AlterNET\Cli\Command\App\AppSyncCommand;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
@@ -51,6 +53,21 @@ class Application extends SymfonyConsoleApplication
         $this->addCommands(
             $this->getCommands()
         );
+        $this->prepare();
+    }
+
+    /**
+     * Prepare
+     * Prepares the console application
+     *
+     * @return void
+     */
+    protected function prepare()
+    {
+        // This makes sure the CLI_HOME directory does always exists
+        if (!file_exists(CLI_HOME)) {
+            ConsoleUtility::fileSystem()->mkdir(CLI_HOME);
+        }
     }
 
     /**
@@ -58,7 +75,7 @@ class Application extends SymfonyConsoleApplication
      *
      * @return array
      */
-    public function getCommands()
+    protected function getCommands()
     {
         return [
 
@@ -75,12 +92,12 @@ class Application extends SymfonyConsoleApplication
             new LocalIsConnectionCommand(),
 
             // Project
-            new AppListCommand(),
             new AppBuildCommand(),
             new AppEvaluateCommand(),
             new AppShareCommand(),
             new AppGenerateVhostCommand(),
             new AppGetCommand(),
+            new AppRemoveCommand(),
             new AppSyncCommand()
         ];
     }

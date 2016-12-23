@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli\Command;
 
+use AlterNET\Cli\App;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
 use AlterNET\Cli\Driver\BitbucketDriver;
@@ -104,6 +105,14 @@ abstract class CommandBase extends Command
         if (AppUtility::isCwdInApp()) {
             $this->io->error('It\'s not possible to get an app inside the directory of an existing app. '
                 . 'Please browse to your web root directory and try again.');
+            exit;
+        }
+    }
+
+    protected function preventNotBeingInAnApp()
+    {
+        if (!AppUtility::isCwdInApp()) {
+            $this->io->error('This command can only be used within the directory of an application.');
             exit;
         }
     }

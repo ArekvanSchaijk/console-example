@@ -67,20 +67,49 @@ class AppGetCommand extends CommandBase
         if ($app->doesCurrentEnvironmentBranchExists()) {
             $app->checkoutCurrentEnvironment();
         }
+        // Creates a temporary directory name
+        $temporaryDirectoryName = $repository->getSlug() . '_' . GeneralUtility::generateRandomString(10);
         // If there is no application config file
         if (!$app->hasConfigFile()) {
             // Moves the application to a temporary directory inside cwd
-            $newDirectoryName = $repository->getSlug() . '_' . GeneralUtility::generateRandomString(10);
-            $newWorkingDirectory = getcwd() . '/' . $newDirectoryName;
-            $app->move($newWorkingDirectory);
+            $app->move(getcwd() . '/' . $temporaryDirectoryName);
             // Shows a warning about it
             $this->io->warning('The application has (still) no configuration file ('
                 . $this->config->app()->getRelativeConfigFilePath() . ').');
             // Notify's the user about the temporary created directory
-            $this->io->note('The application is created in the directory named "' . $newDirectoryName . '".');
+            $this->io->note('The application is created in the directory named: "' . $temporaryDirectoryName . '".');
         } else {
-
-            echo $app->getConfig()->current()->getServerName();
+            // Uses the server name of the application as the new directory name
+            $directoryName = $app->getConfig()->current()->getServerName();
+            // If this server name is unknown (e.g. missing) then we use the temporary name
+            if (!$directoryName) {
+                $app->move(getcwd() . $temporaryDirectoryName);
+                // And here we notify about it
+                $this->io->note('Could not resolve the server name for the current environment. The application is '
+                    . 'created in the directory named: "' . $temporaryDirectoryName . '".');
+            } else {
+                $newWorkingDirectory = getcwd() . '/' . $directoryName;
+                // Actions when the directory of the new application already exists
+                if (file_exists($newWorkingDirectory)) {
+                    // Asks if the user wants to abort the operation
+                    if ($this->io->confirm('The application directory "' . $directoryName . '" does already exists. Do'
+                        . ' you want to abort the app:get operation?', false)
+                    ) {
+                        // Removes the app (including all build files)
+                        $app->remove();
+                        // And here we notify about it
+                        $this->io->note('Command aborted. All build files are removed.');
+                        exit;
+                    }
+                    // Asks the user if he would like to backup the already existing app
+                    if ($this->io->confirm('Do you want to backup the already existing app?')) {
+                        // Loads the existing application
+                        $existingApp = AppUtility::load($newWorkingDirectory);
+                        $backupWorkingDirectory = $existingApp->backup();
+                    }
+                }
+                $app->move($newWorkingDirectory);
+            }
         }
     }
 

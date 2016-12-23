@@ -73,6 +73,16 @@ class Config
     }
 
     /**
+     * Gets the HipChat Room Id
+     *
+     * @return int|bool
+     */
+    public function getHipChatRoomId()
+    {
+        return (isset($this->config['Application']['hipchat']) ? (int)$this->config['Application']['hipchat'] : FALSE);
+    }
+
+    /**
      * Environment
      *
      * @return EnvironmentSelector

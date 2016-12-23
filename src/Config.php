@@ -3,6 +3,7 @@ namespace AlterNET\Cli;
 
 use AlterNET\Cli\Config\AppConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
+use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
@@ -16,6 +17,11 @@ class Config
      * @var array
      */
     protected $config;
+
+    /**
+     * @var LocalConfig
+     */
+    protected $local;
 
     /**
      * @var AppConfig
@@ -47,6 +53,19 @@ class Config
             $GLOBALS['ALTERNET_CLI_CONF_VARS'] = new Config();
         }
         return $GLOBALS['ALTERNET_CLI_CONF_VARS'];
+    }
+
+    /**
+     * Local
+     *
+     * @return LocalConfig
+     */
+    public function local()
+    {
+        if (!$this->local) {
+            $this->local = new LocalConfig();
+        }
+        return $this->local;
     }
 
     /**
@@ -103,16 +122,6 @@ class Config
     public function getHipChatToken()
     {
         return $this->config['hipchat']['token'];
-    }
-
-    /**
-     * Gets the Cli Working Directory
-     *
-     * @return string
-     */
-    public function getCliWorkingDirectory()
-    {
-        return GeneralUtility::getHomeDirectory() . $this->config['application']['relative_cli_working_directory'];
     }
 
 }

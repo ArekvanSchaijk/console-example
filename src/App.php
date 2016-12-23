@@ -68,6 +68,16 @@ class App
     }
 
     /**
+     * Gets the Basename
+     *
+     * @return string
+     */
+    public function getBasename()
+    {
+        return basename($this->getWorkingDirectory());
+    }
+
+    /**
      * Sets the Previous Working Directory
      *
      * @param string $previousWorkingDirectory
@@ -105,7 +115,8 @@ class App
     }
 
     /**
-     *
+     * Move
+     * Moves the project to a new working directory
      *
      * @param string $newWorkingDirectory
      * @return void
@@ -117,6 +128,27 @@ class App
         );
         rename($this->getPreviousWorkingDirectory(), $newWorkingDirectory);
         $this->setWorkingDirectory($newWorkingDirectory);
+    }
+
+    /**
+     * Remove
+     * Removes the Application
+     *
+     * @return void
+     */
+    public function remove()
+    {
+        ConsoleUtility::fileSystem()->remove($this->getWorkingDirectory());
+    }
+
+    /**
+     * Backup
+     *
+     * @return string
+     */
+    public function backup()
+    {
+
     }
 
     /**

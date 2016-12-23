@@ -25,4 +25,16 @@ class StringUtility
         return $string;
     }
 
+    /**
+     * Gets the First Character
+     *
+     * @param string $string
+     * @return string
+     * @static
+     */
+    static public function getFirstCharacter($string)
+    {
+        return substr($string, 0, 1);
+    }
+
 }
