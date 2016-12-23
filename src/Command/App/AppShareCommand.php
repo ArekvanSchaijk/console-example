@@ -46,6 +46,7 @@ class AppShareCommand extends CommandBase
     {
         return [
             'config' => 'executeCategoryConfig',
+            'important_message' => 'executeImportantMessage'
         ];
     }
 
@@ -112,6 +113,28 @@ class AppShareCommand extends CommandBase
     protected function executeCategoryConfig(InputInterface $input, OutputInterface $output, App $app)
     {
         $this->hipChatFileContent($app->getConfigFilePath(), $app->getConfig()->getHipChatRoomId());
+    }
+
+    /**
+     * Executes the Important Message
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param App $app
+     * @return void
+     */
+    protected function executeImportantMessage(InputInterface $input, OutputInterface $output, App $app)
+    {
+        if (($setMessage = $this->io->ask('Set the message'))) {
+            // Makes a new HipChat message
+            $message = HipChatDriver::createMessage();
+            $message->setColor(Message::COLOR_RED);
+            $message->setMessage($setMessage);
+            $message->setNotify(true);
+            // And sends it
+            $this->hipChatDriver()->sendMessage($message, $app->getConfig()->getHipChatRoomId());
+            $this->io->success('The message was sent successfully.');
+        }
     }
 
     /**
