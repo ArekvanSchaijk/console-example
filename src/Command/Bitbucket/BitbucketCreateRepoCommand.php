@@ -200,6 +200,10 @@ class BitbucketCreateRepoCommand extends CommandBase
             ConsoleUtility::fileSystem()->touch($buildDirectory . '/master.txt');
             $process = new Process('git add .;git commit -m \'Initial commit of master.txt\';git push origin master');
             $process->run();
+            if (!$process->isSuccessful()) {
+                ConsoleUtility::fileSystem()->remove($buildDirectory);
+                ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+            }
         }
     }
 
