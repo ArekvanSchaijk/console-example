@@ -45,9 +45,30 @@ class AppShareCommand extends CommandBase
     static protected function getCategories()
     {
         return [
-            'config' => 'executeCategoryConfig',
-            'important_message' => 'executeImportantMessage'
+            'config' => [
+                'method' => 'executeCategoryConfig',
+                'description' => 'Shares the application config file in the room.'
+            ],
+            'important_message' => [
+                'method' => 'executeCategoryImportantMessage',
+                'description' => 'Send a important message to the room.',
+            ]
         ];
+    }
+
+    /**
+     * Gets the Category Choices
+     *
+     * @return array
+     * @static
+     */
+    static protected function getCategoryChoices()
+    {
+        $choices = [];
+        foreach (self::getCategories() as $category => $value) {
+            $choices[$category] = $value['description'];
+        }
+        return $choices;
     }
 
     /**
@@ -75,7 +96,7 @@ class AppShareCommand extends CommandBase
         $subject = trim($input->getArgument('subject'));
         // Offers a list of categories to choose from if the argument 'subject' is missing
         if (!$subject) {
-            $category = $this->io->choice('What do you want to share on HipChat?', $categories);
+            $category = $this->io->choice('What do you like to share on HipChat?', self::getCategoryChoices());
         } elseif (StringUtility::getFirstCharacter($subject) === '[') {
             $category = $category = str_replace(['[', ']'], null, $subject);
         }
@@ -85,10 +106,10 @@ class AppShareCommand extends CommandBase
                 $this->io->error('The given category [' . $category . '] does not exists.');
                 exit;
             }
-            $method = $categories[$category];
+            $method = $categories[$category]['method'];
             // Executes the category method
             if (method_exists($this, $method)) {
-                $this->$method($input, $output, $app);
+                $this->$method($app);
             } else {
                 throw new Exception('The method belonging to the category [' . $category . '] does not exists.');
             }
@@ -105,12 +126,10 @@ class AppShareCommand extends CommandBase
     /**
      * Executes the Category Config
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param App $app
      * @return void
      */
-    protected function executeCategoryConfig(InputInterface $input, OutputInterface $output, App $app)
+    protected function executeCategoryConfig(App $app)
     {
         $this->hipChatFileContent($app->getConfigFilePath(), $app->getConfig()->getHipChatRoomId());
     }
@@ -118,19 +137,18 @@ class AppShareCommand extends CommandBase
     /**
      * Executes the Important Message
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param App $app
      * @return void
      */
-    protected function executeImportantMessage(InputInterface $input, OutputInterface $output, App $app)
+    protected function executeCategoryImportantMessage(App $app)
     {
         if (($setMessage = $this->io->ask('Set the message'))) {
             // Makes a new HipChat message
             $message = HipChatDriver::createMessage();
-            $message->setColor(Message::COLOR_RED);
+            $message->setColor(Message::COLOR_PURPLE);
             $message->setMessage($setMessage);
             $message->setNotify(true);
+            $message->setFrom('Important message');
             // And sends it
             $this->hipChatDriver()->sendMessage($message, $app->getConfig()->getHipChatRoomId());
             $this->io->success('The message was sent successfully.');

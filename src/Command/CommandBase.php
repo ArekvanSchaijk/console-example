@@ -1,7 +1,6 @@
 <?php
 namespace AlterNET\Cli\Command;
 
-use AlterNET\Cli\App;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
 use AlterNET\Cli\Driver\BitbucketDriver;
@@ -9,6 +8,7 @@ use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,6 +25,16 @@ abstract class CommandBase extends Command
      * @var SymfonyStyle
      */
     protected $io;
+
+    /**
+     * @var InputInterface
+     */
+    protected $input;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
 
     /**
      * @var Config
@@ -67,6 +77,8 @@ abstract class CommandBase extends Command
     {
         parent::initialize($input, $output);
         $this->io = new SymfonyStyle($input, $output);
+        $this->input = $input;
+        $this->output = $output;
     }
 
     /**
@@ -194,15 +206,14 @@ abstract class CommandBase extends Command
     /**
      * Passes the Value Through the Filter
      *
-     * @param InputInterface $input
      * @param array $values
      * @return bool
      */
-    protected function passItemsThroughFilter(InputInterface $input, array $values)
+    protected function passItemsThroughFilter(array $values)
     {
-        if ((bool)$input->getOption('filter')) {
+        if ((bool)$this->input->getOption('filter')) {
             foreach ($values as $value) {
-                if (stripos($value, $input->getOption('filter')) !== false) {
+                if (stripos($value, $this->input->getOption('filter')) !== false) {
                     return true;
                 }
             }
@@ -214,33 +225,30 @@ abstract class CommandBase extends Command
     /**
      * Highlight
      *
-     * @param InputInterface $input
      * @param string $value
      * @return string
      */
-    protected function highlightFilteredWords(InputInterface $input, $value)
+    protected function highlightFilteredWords($value)
     {
-        if (!(bool)$input->getOption('filter')) {
+        if (!(bool)$this->input->getOption('filter')) {
             return $value;
         }
-        return preg_replace('/(\S*' . $input->getOption('filter') . '\S*)/i', '<comment>$1</comment>', $value);
+        return preg_replace('/(\S*' . $this->input->getOption('filter') . '\S*)/i', '<comment>$1</comment>', $value);
     }
 
     /**
      * Renders the Filter
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param int|null $results
      * @param bool $addQuery
      * @return void
      */
-    protected function renderFilter(InputInterface $input, OutputInterface $output, $results = null, $addQuery = true)
+    protected function renderFilter($results = null, $addQuery = true)
     {
-        if ((bool)$input->getOption('filter')) {
+        if ((bool)$this->input->getOption('filter')) {
             if ($results === null || $results > 0) {
                 $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
-                    ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':');
+                    ($addQuery ? ' for "' . $this->input->getOption('filter') . '"' : null) . ':');
             } else {
                 $this->io->note('There are no filtered results found. You may want to remove or change the filters value.');
             }
@@ -273,6 +281,19 @@ abstract class CommandBase extends Command
             $this->hipChatDriver = new HipChatDriver();
         }
         return $this->hipChatDriver;
+    }
+
+    /**
+     * Runs a Command
+     *
+     * @param string $command
+     * @param array $arguments
+     * @return void
+     */
+    protected function runCommand($command, array $arguments)
+    {
+        $command = $this->getApplication()->find($command);
+        $command->run(new ArrayInput(array_merge(['command' => $command], $arguments)), $this->output);
     }
 
 }

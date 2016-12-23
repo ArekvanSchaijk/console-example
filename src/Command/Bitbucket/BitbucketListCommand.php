@@ -2,7 +2,6 @@
 namespace AlterNET\Cli\Command\Bitbucket;
 
 use AlterNET\Cli\Command\CommandBase;
-use AlterNET\Cli\Utility\IOHelperUtility;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,18 +34,17 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Gets the bitbucket api
+        $bitbucket = $this->bitbucketDriver()->getApi();
         $rows = [];
         /* @var Project $project */
-        foreach ($this->bitbucketDriver()->getApi()->getProjects() as $project) {
-            if ($this->passItemsThroughFilter($input, [
-                $project->getKey(),
-                $project->getName()
-            ])
+        foreach ($bitbucket->getProjects() as $project) {
+            if ($this->passItemsThroughFilter([$project->getKey(), $project->getName()])
             ) {
                 $rows[] = [
                     $project->getId(),
-                    $this->highlightFilteredWords($input, $project->getKey()),
-                    $this->highlightFilteredWords($input, $project->getName()),
+                    $this->highlightFilteredWords($project->getKey()),
+                    $this->highlightFilteredWords($project->getName()),
                     $project->getType(),
                     ($project->getIsPublic() ? '1' : ''),
                     $project->getLink()
@@ -54,9 +52,12 @@ class BitbucketListCommand extends CommandBase
             }
         }
         $count = count($rows);
-        $this->renderFilter($input, $output, $count);
+        $this->renderFilter($count);
         if ($count) {
-            $this->io->table(IOHelperUtility::getBitbucketProjectHeaders(), $rows);
+            $headers = [
+                '#', 'Key', 'Name', 'Type', 'Public', 'Link'
+            ];
+            $this->io->table($headers, $rows);
         }
     }
 

@@ -4,8 +4,6 @@ application:
 
 hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
-  rooms:
-    - cli: 3373199
 
 bitbucket:
   endpoint: 'https://source.alternet.nl'
@@ -13,6 +11,28 @@ bitbucket:
   default_acceptance_branch: 'Acceptance'
   default_testing_branch: 'Testing'
   default_development_branch: 'Development'
+  projects:
+    all:
+      options:
+        create_repo:
+          - 'validator_default'
+          - 'execute_create_master_branch'
+    T3EXT:
+      hipchat: 3176502
+      options:
+        create_repo:
+          - 'validator_no_app_prefix'
+          - 'validator_extension_name'
+          - 'excute_hipchat_integration'
+          - 'wizard_create_composer_file'
+    T3PACK:
+      hipchat: 3174582
+      options:
+        create_repo:
+          - 'validator_no_app_prefix'
+          - 'validator_package_name'
+          - 'excute_hipchat_integration'
+          - 'wizard_create_composer_file'
 
 app:
   app_config:

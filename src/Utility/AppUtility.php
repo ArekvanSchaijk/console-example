@@ -91,7 +91,7 @@ class AppUtility
      */
     static public function createNewApp($gitCloneUrl = null)
     {
-        $workingDirectory = CLI_HOME . '/builds/app_' . GeneralUtility::generateRandomString(20);
+        $workingDirectory = CLI_HOME_BUILDS . '/app_' . GeneralUtility::generateRandomString(20);
         ConsoleUtility::fileSystem()->mkdir($workingDirectory);
         $newApp = new App($workingDirectory);
         if ($gitCloneUrl) {

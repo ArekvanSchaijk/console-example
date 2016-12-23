@@ -3,7 +3,6 @@ namespace AlterNET\Cli\Command\Bitbucket;
 
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Exception;
-use AlterNET\Cli\Utility\IOHelperUtility;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,11 +43,14 @@ class BitbucketCreateProjectCommand extends CommandBase
         // Sets the project key
         $project->setKey($this->io->ask('Project key', null, function ($value) {
             $value = trim($value);
+            if (empty($value)) {
+                throw new Exception('The name cannot be empty.');
+            }
             if (!ctype_alnum($value)) {
                 throw new Exception('Only letters and numbers are allowed.');
             }
             if (!ctype_upper($value)) {
-                throw new Exception('The input must be upper case.');
+                throw new Exception('The input must be uppercase.');
             }
             return $value;
         }));
@@ -57,14 +59,8 @@ class BitbucketCreateProjectCommand extends CommandBase
         $project = $bitbucket->createProject($project);
         // Success message and table with project displayed
         $this->io->success('The project has been created successfully.');
-        $this->io->table(IOHelperUtility::getBitbucketProjectHeaders(), [[
-            $project->getId(),
-            $project->getKey(),
-            $project->getName(),
-            $project->getType(),
-            ($project->getIsPublic() ? '1' : ''),
-            $project->getLink()
-        ]]);
+        // Runs the bitbucket:list command with a --filter which displays the created project
+        $this->runCommand('bitbucket:list', ['--filter' => $project->getKey()]);
     }
 
 }

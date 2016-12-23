@@ -37,4 +37,16 @@ class StringUtility
         return substr($string, 0, 1);
     }
 
+    /**
+     * Gets the Last Character of a string
+     *
+     * @param string $string
+     * @return string
+     * @static
+     */
+    static public function getLastCharacter($string)
+    {
+        return substr($string, -1);
+    }
+
 }
