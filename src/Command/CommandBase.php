@@ -8,6 +8,7 @@ use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,6 +41,11 @@ abstract class CommandBase extends Command
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var ProgressBar
+     */
+    protected $progress;
 
     /**
      * @var CrowdContainer
@@ -104,6 +110,21 @@ abstract class CommandBase extends Command
     {
         $description = ($description ?: 'Filters the result by a given value');
         $this->addOption('filter', 'f', InputOption::VALUE_REQUIRED, $description);
+        $this->addOption('filter-no-count', null, InputOption::VALUE_NONE,
+            'Prevents the filter from outputting the count.');
+    }
+
+    /**
+     * Creates a new Progress Bar
+     *
+     * @param int $max
+     * @return ProgressBar
+     */
+    protected function createProgressBar($max = 100)
+    {
+        $this->progress = $this->io->createProgressBar($max);
+        $this->progress->setMessage('Preparing...');
+        $this->progress->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
     }
 
     /**
@@ -121,6 +142,12 @@ abstract class CommandBase extends Command
         }
     }
 
+    /**
+     * Prevent Not Being In An App
+     * This prevents the command to run if it is not inside an app
+     *
+     * @return void
+     */
     protected function preventNotBeingInAnApp()
     {
         if (!AppUtility::isCwdInApp()) {
@@ -245,12 +272,14 @@ abstract class CommandBase extends Command
      */
     protected function renderFilter($results = null, $addQuery = true)
     {
-        if ((bool)$this->input->getOption('filter')) {
-            if ($results === null || $results > 0) {
-                $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
-                    ($addQuery ? ' for "' . $this->input->getOption('filter') . '"' : null) . ':');
-            } else {
-                $this->io->note('There are no filtered results found. You may want to remove or change the filters value.');
+        if (!$this->input->getOption('filter-no-count')) {
+            if ((bool)$this->input->getOption('filter')) {
+                if ($results === null || $results > 0) {
+                    $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
+                        ($addQuery ? ' for "' . $this->input->getOption('filter') . '"' : null) . ':');
+                } else {
+                    $this->io->note('There are no filtered results found. You may want to remove or change the filters value.');
+                }
             }
         }
     }

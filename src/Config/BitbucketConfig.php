@@ -1,7 +1,6 @@
 <?php
 namespace AlterNET\Cli\Config;
-
-use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
+use AlterNET\Cli\Utility\ConsoleUtility;
 
 /**
  * Class BitbucketConfig
@@ -99,6 +98,23 @@ class BitbucketConfig extends AbstractConfig
             }
         }
         return $roomId;
+    }
+
+    /**
+     * Gets the Project Composer Config
+     *
+     * @param $projectKey
+     * @return array
+     */
+    public function getProjectComposerConfig($projectKey)
+    {
+        $composerConfig = ConsoleUtility::getConfig()->composer()->getArray();
+        if (isset($this->config['projects'][$projectKey]['composer'])
+            && is_array($this->config['projects'][$projectKey]['composer'])
+        ) {
+            return array_merge($composerConfig, $this->config['projects'][$projectKey]['composer']);
+        }
+        return $composerConfig;
     }
 
 }

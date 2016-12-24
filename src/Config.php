@@ -3,6 +3,7 @@ namespace AlterNET\Cli;
 
 use AlterNET\Cli\Config\AppConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
+use AlterNET\Cli\Config\ComposerConfig;
 use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
@@ -17,6 +18,11 @@ class Config
      * @var array
      */
     protected $config;
+
+    /**
+     * @var ComposerConfig
+     */
+    protected $composer;
 
     /**
      * @var LocalConfig
@@ -53,6 +59,19 @@ class Config
             $GLOBALS['ALTERNET_CLI_CONF_VARS'] = new Config();
         }
         return $GLOBALS['ALTERNET_CLI_CONF_VARS'];
+    }
+
+    /**
+     * Composer
+     *
+     * @return ComposerConfig
+     */
+    public function composer()
+    {
+        if (!$this->composer) {
+            $this->composer = new ComposerConfig($this->config['composer']);
+        }
+        return $this->composer;
     }
 
     /**
@@ -122,6 +141,16 @@ class Config
     public function getHipChatToken()
     {
         return $this->config['hipchat']['token'];
+    }
+
+    /**
+     * Gets the Array
+     *
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->config;
     }
 
 }

@@ -39,9 +39,9 @@ class BitbucketCreateProjectCommand extends CommandBase
         // Creates a new project object
         $project = new Project();
         // Sets the project name
-        $project->setName($this->io->ask('Project name'));
+        $project->setName($this->io->ask('Set the name'));
         // Sets the project key
-        $project->setKey($this->io->ask('Project key', null, function ($value) {
+        $project->setKey($this->io->ask('Set the key', null, function ($value) {
             $value = trim($value);
             if (empty($value)) {
                 throw new Exception('The name cannot be empty.');
@@ -60,7 +60,10 @@ class BitbucketCreateProjectCommand extends CommandBase
         // Success message and table with project displayed
         $this->io->success('The project has been created successfully.');
         // Runs the bitbucket:list command with a --filter which displays the created project
-        $this->runCommand('bitbucket:list', ['--filter' => $project->getKey()]);
+        $this->runCommand('bitbucket:list', [
+            '--filter' => $project->getKey(),
+            '--filter-no-count'
+        ]);
     }
 
 }

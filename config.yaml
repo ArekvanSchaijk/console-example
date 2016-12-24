@@ -5,6 +5,19 @@ application:
 hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
 
+composer:
+  available_licenses:
+    - 'GPL-2.0'
+    - 'GPL-2.0+'
+    - 'GPL-3.0'
+    - 'GPL-3.0+'
+  default_vendor: 'alternet'
+  license: 'GPL-3.0+'
+  author:
+    name: 'AlterNET B.V.'
+    email: 'support@alternet.nl'
+    homepage: 'https://www.alternet.nl'
+
 bitbucket:
   endpoint: 'https://source.alternet.nl'
   default_production_branch: 'master'
@@ -16,14 +29,18 @@ bitbucket:
       options:
         create_repo:
           - 'validator_default'
+          - 'excute_hipchat_integration'
           - 'execute_create_master_branch'
     T3EXT:
       hipchat: 3176502
+      composer:
+        license: 'GPL-2.0'
+        default_vendor: 'tx_alternet'
+        type: 'typo3-cms-extension'
       options:
         create_repo:
           - 'validator_no_app_prefix'
           - 'validator_extension_name'
-          - 'excute_hipchat_integration'
           - 'wizard_create_composer_file'
     T3PACK:
       hipchat: 3174582
@@ -31,7 +48,6 @@ bitbucket:
         create_repo:
           - 'validator_no_app_prefix'
           - 'validator_package_name'
-          - 'excute_hipchat_integration'
           - 'wizard_create_composer_file'
 
 app:

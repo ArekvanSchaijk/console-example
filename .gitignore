@@ -1,5 +1,4 @@
 .idea*
 /vendor
 /*.phar
-/Web
 /.alternet

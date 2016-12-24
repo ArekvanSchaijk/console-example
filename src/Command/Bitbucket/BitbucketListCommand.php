@@ -39,8 +39,7 @@ class BitbucketListCommand extends CommandBase
         $rows = [];
         /* @var Project $project */
         foreach ($bitbucket->getProjects() as $project) {
-            if ($this->passItemsThroughFilter([$project->getKey(), $project->getName()])
-            ) {
+            if ($this->passItemsThroughFilter([$project->getKey(), $project->getName()])) {
                 $rows[] = [
                     $project->getId(),
                     $this->highlightFilteredWords($project->getKey()),
@@ -58,6 +57,8 @@ class BitbucketListCommand extends CommandBase
                 '#', 'Key', 'Name', 'Type', 'Public', 'Link'
             ];
             $this->io->table($headers, $rows);
+        } else {
+            $this->io->error('There are no projects to show.');
         }
     }
 

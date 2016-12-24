@@ -4,7 +4,6 @@ namespace AlterNET\Cli\Command\Bitbucket;
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\ConsoleUtility;
-use AlterNET\Cli\Utility\GeneralUtility;
 use AlterNET\Cli\Utility\StringUtility;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
@@ -28,8 +27,17 @@ class BitbucketCreateRepoCommand extends CommandBase
 
     const
 
-        EXECUTE_HIPCHAT_INTEGRATION = 'excute_hipchat_integration',
-        EXECUTE_CREATE_MASTER_BRANCH = 'execute_create_master_branch';
+        EXECUTE_CREATE_MASTER_BRANCH = 'execute_create_master_branch',
+        EXECUTE_HIPCHAT_INTEGRATION = 'excute_hipchat_integration';
+
+    const
+
+        WIZARD_CREATE_COMPOSER_FILE = 'wizard_create_composer_file';
+
+    /**
+     * @var string
+     */
+    protected $workingDirectory;
 
     /**
      * Configure
@@ -40,7 +48,7 @@ class BitbucketCreateRepoCommand extends CommandBase
     {
         $this->setName('bitbucket:createrepo');
         $this->setDescription('Creates a new repository');
-        $this->addArgument('project', InputArgument::OPTIONAL, 'The project key where the repository should be created.');
+        $this->addArgument('project', InputArgument::OPTIONAL, 'The key of the project where the repository should be created.');
     }
 
     /**
@@ -54,7 +62,7 @@ class BitbucketCreateRepoCommand extends CommandBase
     {
         // Gets the bitbucket api
         $bitbucket = $this->bitbucketDriver()->getApi();
-        // Creates a array with project to choose from
+        // Creates a array with projects to choose from
         $choices = [];
         $projects = [];
         /* @var Project $project */
@@ -81,7 +89,7 @@ class BitbucketCreateRepoCommand extends CommandBase
         // Creates a new repository
         $repository = new Repository();
         // Sets the repository name
-        $repository->setName($this->io->ask('Repository name', null, function ($value) use ($options) {
+        $repository->setName($this->io->ask('Set the repository name', null, function ($value) use ($options) {
             $value = trim($value);
             if (empty(str_replace(['_', '-', ' '], null, $value))) {
                 throw new Exception('The name cannot be empty.');
@@ -159,16 +167,18 @@ class BitbucketCreateRepoCommand extends CommandBase
         // A friendly note: the exception handling is done by the api itself
         $repository = $project->createRepository($repository);
         $this->io->success('The repository has been created successfully.');
-        // Runs the execute options
+        // Creates a working directory
+        $this->workingDirectory = ConsoleUtility::createBuildWorkingDirectory('createrepo_');
+        // Runs the "execute" options for this repository
         foreach ($options as $option) {
             switch ($option) {
 
-                case self::EXECUTE_CREATE_MASTER_BRANCH:
-                    $this->executeCreateMasterBranch($repository);
-                    break;
-
                 case self::EXECUTE_HIPCHAT_INTEGRATION:
                     $this->executeHipChatIntegration($repository);
+                    break;
+
+                case self::EXECUTE_CREATE_MASTER_BRANCH:
+                    $this->executeCreateMasterBranch($repository);
                     break;
 
                 default:
@@ -177,34 +187,26 @@ class BitbucketCreateRepoCommand extends CommandBase
 
             }
         }
-    }
+        // Runs the "wizards" for this repository
+        foreach ($options as $option) {
+            switch ($option) {
+                case self::WIZARD_CREATE_COMPOSER_FILE:
+                    $this->wizardCreateComposerFile($repository);
+                    break;
 
-    /**
-     * Executes the Creation of the Master Branch
-     *
-     * @param Repository $repository
-     * @return void
-     */
-    protected function executeCreateMasterBranch(Repository $repository)
-    {
-        // This clones the repository locally
-        $buildDirectory = CLI_HOME_BUILDS . '/createrepo_' . GeneralUtility::generateRandomString(20);
-        $process = new Process('git clone ' . $repository->getSshCloneUrl() . ' ' . $buildDirectory);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            if (file_exists($buildDirectory)) {
-                ConsoleUtility::fileSystem()->remove($buildDirectory);
-            }
-            ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
-        } else {
-            ConsoleUtility::fileSystem()->touch($buildDirectory . '/master.txt');
-            $process = new Process('git add .;git commit -m \'Initial commit of master.txt\';git push origin master');
-            $process->run();
-            if (!$process->isSuccessful()) {
-                ConsoleUtility::fileSystem()->remove($buildDirectory);
-                ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+                default:
+                    // Do nothing here :)
+                    break;
             }
         }
+        // Removes the working directory
+        ConsoleUtility::fileSystem()->remove($this->workingDirectory);
+        // Runs the bitbucket:listrepos command with a --filter which displays the created repository
+        $this->runCommand('bitbucket:listrepos', [
+            'project' => $repository->getProject()->getKey(),
+            '--filter' => $repository->getName(),
+            '--filter-no-count'
+        ]);
     }
 
     /**
@@ -222,6 +224,108 @@ class BitbucketCreateRepoCommand extends CommandBase
             } catch (\Exception $exception) {
                 $this->io->error('Could not create the HipChat integration.');
             }
+        }
+    }
+
+    /**
+     * Executes the Creation of the Master Branch
+     *
+     * @param Repository $repository
+     * @return void
+     */
+    protected function executeCreateMasterBranch(Repository $repository)
+    {
+        // This clones the repository locally
+        $process = new Process('git clone ' . $repository->getSshCloneUrl() . ' .', $this->workingDirectory);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+        } else {
+            $masterFile = $this->workingDirectory . '/master.txt';
+            // This creates the master branch
+            ConsoleUtility::fileSystem()->touch($masterFile);
+            file_put_contents($masterFile, date('Y-m-d H:i:s'));
+            $process = new Process('git add .;git commit -m \'[CLI] Initial commit of master.txt\';git push origin master',
+                $this->workingDirectory);
+            $process->run();
+            if ($process->isSuccessful()) {
+                $this->io->success('The "master" branch has been created successfully.');
+            } else {
+                ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+            }
+        }
+    }
+
+    /**
+     * Wizard Create Composer File
+     *
+     * @param Repository $repository
+     * @return void
+     */
+    protected function wizardCreateComposerFile(Repository $repository)
+    {
+        if ($this->io->confirm('Do you want to create a Composer.json file right away?')) {
+            $composer = [];
+            // Gets the Composer configuration belonging to this repository
+            $config = $this->config->bitbucket()->getProjectComposerConfig($repository->getProject()->getKey());
+            // Sets the vendor/name
+            $vendor = $this->io->ask('Set the vendor name',
+                (isset($config['default_vendor']) ? $config['default_vendor'] : null),
+                function ($value) {
+                    trim($value);
+                    if (empty(str_replace([' ', '_', '-', '.'], null, $value))) {
+                        throw new Exception('The vendor name cannot be empty.');
+                    }
+                    return $value;
+                }
+            );
+            $composer['name'] = $vendor . '/' . $repository->getName();
+            // Sets the description
+            $composer['description'] = (string)$this->io->ask('Set the description', null, function ($value) {
+                return trim($value);
+            });
+            // Sets the license
+            $composer['license'] = $this->io->choice('Set the license', $this->config->composer()->getAvailableLicenses(),
+                (isset($config['license']) ? $config['license'] : null));
+            // Sets the author
+            $composer['authors'] = $config['author'];
+            // Creates the composer.json file and puts the contents into it
+            $composerFilePath = $this->workingDirectory . '/composer.json';
+            ConsoleUtility::fileSystem()->touch($composerFilePath);
+            file_put_contents($composerFilePath, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            // Notes that the process can take some time.
+            $this->io->note('The file will now be generated, pushed and merged. This can take some time.');
+            // Create a new branch on the server
+            $masterBranch = $repository->getBranchByName('master');
+            $branch = $repository->createBranch(
+                $masterBranch,
+                'CLI/AddComposerFileWizard'
+            );
+            // Checks out the created branch, adds the composer file, commits it and push it ;)
+            $process = new Process('git fetch;git checkout -b ' . $branch->getName() . ';git add composer.json;'
+                . ' git commit -m \'[CLI] Added the Composer.json file\';git push -u origin ' . $branch->getName(),
+                $this->workingDirectory);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+            }
+            // Creates a new pull request
+            $pullRequest = $repository->createPullRequest(
+                '[CLI] Composer Release',
+                'Added the Composer.json file',
+                $branch,
+                $masterBranch
+            );
+            // And merges it ;-)
+            $pullRequest->merge();
+            // And lets remove the remote branch now
+            $process = new Process('git push origin --delete ' . $branch->getName(), $this->workingDirectory);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
+            }
+            // And finally show some success :-)
+            $this->io->success('The composer.json file is successfully generated and added to the master branch.');
         }
     }
 

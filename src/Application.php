@@ -5,7 +5,9 @@ use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketCreateRepoCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketDeleteRepoCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketListReposCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
@@ -84,8 +86,10 @@ class Application extends SymfonyConsoleApplication
 
             // Bitbucket
             new BitbucketListCommand(),
+            new BitbucketListReposCommand(),
             new BitbucketCreateProjectCommand(),
             new BitbucketCreateRepoCommand(),
+            new BitbucketDeleteRepoCommand(),
 
             // HipChat
             new HipChatListCommand(),

@@ -25,20 +25,6 @@ class ConsoleUtility
     }
 
     /**
-     * Git Checkout
-     *
-     * @param string $branch
-     * @param string|null $directory
-     * @static
-     */
-    static public function gitCheckout($branch, $directory = null)
-    {
-        $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'git checkout ' . $branch);
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
-    }
-
-    /**
      * Un Successful Process Exception Handler
      *
      * @param Process $process
@@ -75,6 +61,20 @@ class ConsoleUtility
             $GLOBALS['ALTERNET_CLI_FILESYSTEM'] = new Filesystem();
         }
         return $GLOBALS['ALTERNET_CLI_FILESYSTEM'];
+    }
+
+    /**
+     * Creates a Build Working Directory
+     *
+     * @param string $prefix
+     * @return string
+     * @static
+     */
+    static public function createBuildWorkingDirectory($prefix)
+    {
+        $workingDirectory = CLI_HOME_BUILDS . '/' . $prefix . GeneralUtility::generateRandomString(40 - strlen($prefix));
+        self::fileSystem()->mkdir($workingDirectory);
+        return $workingDirectory;
     }
 
 }
