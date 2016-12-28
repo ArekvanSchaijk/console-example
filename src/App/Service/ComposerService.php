@@ -34,4 +34,14 @@ class ComposerService implements AppServiceInterface
         $this->app->process('composer install');
     }
 
+    /**
+     * Update
+     *
+     * @return void
+     */
+    public function update()
+    {
+        $this->app->process('composer update');
+    }
+
 }

@@ -90,4 +90,30 @@ class EnvironmentConfig extends AbstractConfig
         return false;
     }
 
+    /**
+     * Gets the Git Branch
+     *
+     * @return string|bool
+     */
+    public function getGitBranch()
+    {
+        if (isset($this->config['git_branch'])) {
+            return $this->config['git_branch'];
+        }
+        return false;
+    }
+
+    /**
+     * Gets the Builds
+     *
+     * @return array|bool
+     */
+    public function getBuilds()
+    {
+        if (isset($this->config['build']) && is_array($this->config['build'])) {
+            return $this->config['build'];
+        }
+        return false;
+    }
+
 }

@@ -59,6 +59,8 @@ class AppGetCommand extends CommandBase
             $option = $this->io->choice('Select the application you want to get', $choices);
             $repository = $repositories[$option];
         }
+        // Notes that the process can take some time.
+        $this->io->note('The application will now be retrieved. This can take some time.');
         // Creates a new (still empty) app
         $app = AppUtility::createNewApp(
             $repository->getSshCloneUrl()
@@ -70,7 +72,7 @@ class AppGetCommand extends CommandBase
         // Creates a temporary directory name
         $temporaryDirectoryName = $repository->getSlug() . '_' . GeneralUtility::generateRandomString(10);
         // If there is no application config file
-        if (!$app->hasConfigFile()) {
+        if (!$app->getMostRecentConfig()) {
             // Moves the application to a temporary directory inside cwd
             $app->move(getcwd() . '/' . $temporaryDirectoryName);
             // Shows a warning about it
@@ -80,7 +82,7 @@ class AppGetCommand extends CommandBase
             $this->io->note('The application is created in the directory named: "' . $temporaryDirectoryName . '".');
         } else {
             // Uses the server name of the application as the new directory name
-            $directoryName = $app->getConfig()->current()->getServerName();
+            $directoryName = $app->getMostRecentConfig()->current()->getServerName();
             // If this server name is unknown (e.g. missing) then we use the temporary name
             if (!$directoryName) {
                 $app->move(getcwd() . $temporaryDirectoryName);
@@ -111,6 +113,9 @@ class AppGetCommand extends CommandBase
                 $app->move($newWorkingDirectory);
             }
         }
+        // Builds the application
+        $this->io->note('Building... This can take some time.');
+        $app->build();
     }
 
 }

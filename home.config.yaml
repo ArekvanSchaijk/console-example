@@ -1,0 +1,7 @@
+mysql:
+  username: 'root'
+  password: ''
+
+crowd:
+  username: false
+  password: false

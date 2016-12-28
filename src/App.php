@@ -8,6 +8,7 @@ use AlterNET\Cli\App\Service\ComposerService;
 use AlterNET\Cli\App\Service\GitService;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
+use AlterNET\Package\Environment;
 use Symfony\Component\Process\Process;
 
 /**
@@ -21,6 +22,11 @@ class App
      * @var AppConfig
      */
     protected $config;
+
+    /**
+     * @var AppConfig|bool
+     */
+    protected $mostRecentConfig;
 
     /**
      * @var CliConfig
@@ -132,7 +138,7 @@ class App
 
     /**
      * Remove
-     * Removes the Application
+     * Removes the application
      *
      * @return void
      */
@@ -147,6 +153,51 @@ class App
      * @return string
      */
     public function backup()
+    {
+
+    }
+
+    /**
+     * Build
+     * Builds the application
+     *
+     * @return void
+     */
+    public function build()
+    {
+        // Composer install
+        if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
+            $this->getComposerService()->install();
+        }
+        // Performs the environment builds
+        if (($builds = $this->getConfig()->current()->getBuilds())) {
+            $this->processBuildCommands($builds);
+        }
+        // Performs the application builds
+        if (($builds = $this->getConfig()->getBuilds())) {
+            $this->processBuildCommands($builds);
+        }
+
+    }
+
+    /**
+     * Process Build Commands
+     *
+     * @param array $commands
+     * @return void
+     */
+    protected function processBuildCommands(array $commands)
+    {
+        foreach ($commands as $command) {
+            $this->process($command);
+        }
+    }
+
+    /**
+     * Builds the application Database
+     *
+     */
+    public function buildDatabase()
     {
 
     }
@@ -176,6 +227,32 @@ class App
                 . $this->cliConfig->app()->getRelativeConfigFilePath() . ' does not exists.');
         }
         $this->config = new AppConfig($this->getConfigFilePath());
+    }
+
+    /**
+     * Gets the Most Recent Config
+     *
+     * @return AppConfig|bool
+     */
+    public function getMostRecentConfig()
+    {
+        if (is_null($this->mostRecentConfig)) {
+            $this->mostRecentConfig = false;
+            $remoteBranches = $this->getGitService()->getRemoteBranches();
+            foreach (AppUtility::getDefaultEnvironmentBranchNames() as $branchName) {
+                if (in_array($branchName, $remoteBranches)) {
+                    $tempApp = AppUtility::createNewApp($this->getRemoteUrl());
+                    $tempApp->getGitService()->checkout($branchName);
+                    if ($tempApp->hasConfigFile()) {
+                        $this->mostRecentConfig = $tempApp->getConfig();
+                        $tempApp->remove();
+                        break;
+                    }
+                    $tempApp->remove();
+                }
+            }
+        }
+        return $this->mostRecentConfig;
     }
 
     /**
@@ -262,13 +339,33 @@ class App
     }
 
     /**
+     * Gets the Current Environment Branch
+     *
+     * @return string|bool
+     */
+    public function getCurrentEnvironmentBranch()
+    {
+        if ($this->getMostRecentConfig() instanceof AppConfig) {
+            if (($branchName = $this->getMostRecentConfig()->current()->getGitBranch())) {
+                return $branchName;
+            }
+            if (Environment::isLocalEnvironment()) {
+                if (($branchName = $this->getMostRecentConfig()->environment()->development()->getGitBranch())) {
+                    return $branchName;
+                }
+            }
+        }
+        return AppUtility::getCurrentDefaultEnvironmentBranchName();
+    }
+
+    /**
      * Does Current Environment Branch Exists
      *
      * @return bool
      */
     public function doesCurrentEnvironmentBranchExists()
     {
-        return in_array(AppUtility::getCurrentEnvironmentBranchName(), $this->getEnvironmentBranches());
+        return in_array($this->getCurrentEnvironmentBranch(), $this->getEnvironmentBranches());
     }
 
     /**
@@ -279,12 +376,22 @@ class App
      */
     public function checkoutCurrentEnvironment()
     {
-        $currentEnvironmentBranch = AppUtility::getCurrentEnvironmentBranchName();
+        $currentEnvironmentBranch = $this->getCurrentEnvironmentBranch();
         if (!$this->doesCurrentEnvironmentBranchExists()) {
             throw new Exception('Could not check out current environment since the branch '
                 . $currentEnvironmentBranch . ' does not exists on the server.');
         }
         $this->getGitService()->checkout($currentEnvironmentBranch);
+    }
+
+    /**
+     * Gets the Remote Url
+     *
+     * @return string
+     */
+    public function getRemoteUrl()
+    {
+        return $this->getGitService()->getRemoteUrl();
     }
 
 }

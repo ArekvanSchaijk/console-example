@@ -83,7 +83,7 @@ class AppShareCommand extends CommandBase
     {
         // This prevents that the command is being executed outside an app
         $this->preventNotBeingInAnApp();
-        // This loads the app we're working with
+        // This loads the app where we are in (working directory)
         $app = AppUtility::load();
         // This checks if the app has a HipChat integration (if the room id is known)
         if (!$app->getConfig()->getHipChatRoomId()) {

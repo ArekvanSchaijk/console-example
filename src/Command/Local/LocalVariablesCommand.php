@@ -44,11 +44,7 @@ class LocalVariablesCommand extends CommandBase
             if (is_array($value)) {
                 $this->io->note('Variable "' . $key . '" could not be displayed since the value is of type: Array');
             } else {
-                if ($this->passItemsThroughFilter($input, [
-                    $key,
-                    $value
-                ])
-                ) {
+                if ($this->passItemsThroughFilter([$key, $value])) {
                     // Hides passwords
                     if (!$input->getOption('show-passwords') && strpos(strtolower($key), 'pass') !== false) {
                         $value = '<info>[hidden]</info>';
@@ -57,14 +53,14 @@ class LocalVariablesCommand extends CommandBase
                         $value = StringUtility::crop($value, (int)$input->getOption('crop'));
                     }
                     $rows[] = [
-                        $this->highlightFilteredWords($input, $key),
-                        $this->highlightFilteredWords($input, $value)
+                        $this->highlightFilteredWords($key),
+                        $this->highlightFilteredWords($value)
                     ];
                 }
             }
         }
         $count = count($rows);
-        $this->renderFilter($input, $output, $count);
+        $this->renderFilter($count);
         if ($count) {
             $headers = [
                 'Key', 'Value'

@@ -43,7 +43,7 @@ class AppRemoveCommand extends CommandBase
     {
         // This prevents that the command is being executed outside an app
         $this->preventNotBeingInAnApp();
-        // This loads the app we're working with
+        // This loads the app where we are in (working directory)
         $app = AppUtility::load();
         // This asks the user for confirmation
         if ($this->io->confirm('Are you sure you would like to remove the application "'

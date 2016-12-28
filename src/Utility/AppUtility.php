@@ -100,6 +100,7 @@ class AppUtility
 
     /**
      * Gets the Default Environment Branch Names
+     * Caution: The sequence must from Development to Production!
      *
      * @return array
      * @static
@@ -116,13 +117,13 @@ class AppUtility
     }
 
     /**
-     * Gets the Current Environment Branch Name
+     * Gets the Current Default Environment Branch Name
      * Gets the branch name belonging to the current environment
      *
-     * @return string|string
+     * @return string|bool
      * @static
      */
-    static public function getCurrentEnvironmentBranchName()
+    static public function getCurrentDefaultEnvironmentBranchName()
     {
         $config = ConsoleUtility::getConfig();
         if (Environment::isProductionEnvironment()) {

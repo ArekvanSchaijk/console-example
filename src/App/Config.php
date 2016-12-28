@@ -73,6 +73,39 @@ class Config
     }
 
     /**
+     * Gets the Builds
+     *
+     * @return array|bool
+     */
+    public function getBuilds()
+    {
+        if (isset($this->config['Application']['build']) && is_array($this->config['Application']['build'])) {
+            return $this->config['Application']['build'];
+        }
+        return false;
+    }
+
+    /**
+     * Gets the Post Builds
+     *
+     * @return bool
+     */
+    public function getPostBuilds()
+    {
+
+    }
+
+    public function getDatabaseBuilds()
+    {
+
+    }
+
+    public function getPostDatabaseBuilds()
+    {
+
+    }
+
+    /**
      * Gets the HipChat Room Id
      *
      * @return int|bool

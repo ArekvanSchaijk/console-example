@@ -6,6 +6,13 @@ hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
 
 composer:
+  hipchat: 3329930
+  satis:
+    defaults:
+      name: 'Alternet Private Composer Repository'
+      homepage: 'https://composer.alternet.nl'
+      repositories:
+      require-all: true
   available_licenses:
     - 'GPL-2.0'
     - 'GPL-2.0+'
@@ -32,6 +39,7 @@ bitbucket:
           - 'excute_hipchat_integration'
           - 'execute_create_master_branch'
     T3EXT:
+      satis: true
       hipchat: 3176502
       composer:
         license: 'GPL-2.0'
@@ -43,6 +51,7 @@ bitbucket:
           - 'validator_extension_name'
           - 'wizard_create_composer_file'
     T3PACK:
+      satis: true
       hipchat: 3174582
       options:
         create_repo:
@@ -56,3 +65,4 @@ app:
     max_search_depth: 20
   bitbucket_repository_selectors:
     - 'TYPO3'
+    - 'SATIS'

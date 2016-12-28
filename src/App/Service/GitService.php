@@ -54,6 +54,16 @@ class GitService implements AppServiceInterface
     }
 
     /**
+     * Gets the Remote Url
+     *
+     * @return string
+     */
+    public function getRemoteUrl()
+    {
+        return trim($this->app->process('git config --get remote.origin.url'));
+    }
+
+    /**
      * Has Remote Branch
      *
      * @param $branchName

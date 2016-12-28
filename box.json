@@ -5,6 +5,7 @@
   ],
   "files": [
     "config.yaml",
+    "home.config.yaml",
     "constants.php",
     "vendor/autoload.php",
     "vendor/symfony/console/Resources/bin/hiddeninput.exe"

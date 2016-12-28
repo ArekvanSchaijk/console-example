@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppComposerUpdateCommand;
 use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
@@ -11,6 +12,7 @@ use AlterNET\Cli\Command\Bitbucket\BitbucketListReposCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
+use AlterNET\Cli\Command\Local\LocalConfigureCommand;
 use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
 use AlterNET\Cli\Command\App\AppBuildCommand;
@@ -18,6 +20,7 @@ use AlterNET\Cli\Command\App\AppEvaluateCommand;
 use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
 use AlterNET\Cli\Command\App\AppGetCommand;
 use AlterNET\Cli\Command\App\AppSyncCommand;
+use AlterNET\Cli\Command\Satis\SatisGenerateCommand;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
@@ -99,6 +102,7 @@ class Application extends SymfonyConsoleApplication
             // Local
             new LocalVariablesCommand(),
             new LocalIsConnectionCommand(),
+            new LocalConfigureCommand(),
 
             // Project
             new AppBuildCommand(),
@@ -107,7 +111,11 @@ class Application extends SymfonyConsoleApplication
             new AppGenerateVhostCommand(),
             new AppGetCommand(),
             new AppRemoveCommand(),
-            new AppSyncCommand()
+            new AppSyncCommand(),
+            new AppComposerUpdateCommand(),
+
+            // Satis
+            new SatisGenerateCommand()
         ];
     }
 

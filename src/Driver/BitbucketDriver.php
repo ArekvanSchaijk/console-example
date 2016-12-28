@@ -90,4 +90,26 @@ class BitbucketDriver
         return $repositories;
     }
 
+    /**
+     * Gets the Repository By its Remote Url
+     * This gets the repository by its (ssh clone url) remote url
+     *
+     * @param string $remoteUrl
+     * @return Repository|null
+     */
+    public function getRepositoryByRemoteUrl($remoteUrl)
+    {
+        // Match on the project key
+        preg_match('/7999\/(.*?)\//', $remoteUrl, $matches);
+        if (isset($matches[1])) {
+            /* @var Repository $repository */
+            foreach ($this->getApi()->getRepositoriesByProject(trim(strtoupper($matches[1]))) as $repository) {
+                if ($repository->getSshCloneUrl() === $remoteUrl) {
+                    return $repository;
+                }
+            }
+        }
+        return null;
+    }
+
 }

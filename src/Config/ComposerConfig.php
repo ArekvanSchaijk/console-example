@@ -28,4 +28,24 @@ class ComposerConfig extends AbstractConfig
         return $this->config['available_licenses'];
     }
 
+    /**
+     * Gets the Hip Chat RoomId
+     *
+     * @return int
+     */
+    public function getHipChatRoomId()
+    {
+        return (int)$this->config['hipchat'];
+    }
+
+    /**
+     * Gets the Satis Defaults
+     *
+     * @return array
+     */
+    public function getSatisDefaults()
+    {
+        return $this->config['satis']['defaults'];
+    }
+
 }

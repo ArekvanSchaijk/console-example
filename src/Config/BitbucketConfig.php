@@ -117,4 +117,20 @@ class BitbucketConfig extends AbstractConfig
         return $composerConfig;
     }
 
+    /**
+     * Gets the Satis Projects
+     *
+     * @return array
+     */
+    public function getSatisProjects()
+    {
+        $projects = [];
+        foreach ($this->config['projects'] as $key => $project) {
+            if ($key != 'all' && isset($project['satis']) && (bool)$project['satis']) {
+                $projects[] = $key;
+            }
+        }
+        return $projects;
+    }
+
 }

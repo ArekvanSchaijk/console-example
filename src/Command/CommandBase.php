@@ -165,17 +165,32 @@ abstract class CommandBase extends Command
     {
         if (!$this->crowdContainer) {
             $openingsMessage = 'Please login with your Crowd credentials';
-            if (!isset($_SERVER['ALTERNET_CLI_USERNAME']) || empty(trim($_SERVER['ALTERNET_CLI_USERNAME']))) {
+            $remember = false;
+            // Retrieving the credentials from the local configuration file
+            $username = $this->config->local()->getCrowdUsername();
+            $password = $this->config->local()->getCrowdPassword();
+            if (!$username) {
+                $remember = true;
                 $this->io->note($openingsMessage);
+                // This asks the user for the crowd username
                 $username = $this->askCrowdUsername();
+                // This asks the user for the crowd password
                 $password = $this->askCrowdPassword();
-            } elseif (!isset($_SERVER['ALTERNET_CLI_PASSWORD']) || empty(trim($_SERVER['ALTERNET_CLI_PASSWORD']))) {
+            } elseif (!$password) {
+                $remember = true;
                 $this->io->note($openingsMessage);
-                $username = $this->askCrowdUsername(trim($_SERVER['ALTERNET_CLI_USERNAME']));
+                // This asks the user for the crowd username
+                $username = $this->askCrowdUsername($username);
+                // This asks the user for the crowd password
                 $password = $this->askCrowdPassword();
-            } else {
-                $username = trim($_SERVER['ALTERNET_CLI_USERNAME']);
-                $password = trim($_SERVER['ALTERNET_CLI_PASSWORD']);
+            }
+            // Asks the user if the CLI should remember the credentials
+            if ($remember) {
+                if ($this->io->confirm('Would you like the CLI to remember your credentials?', false)) {
+                    $this->config->local()->setCrowdUsername($username);
+                    $this->config->local()->setCrowdPassword($password);
+                    $this->config->local()->write();
+                }
             }
             // Creates a new CrowdContainer and stores here the credentials
             $this->crowdContainer = new CrowdContainer();
@@ -278,7 +293,8 @@ abstract class CommandBase extends Command
                     $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
                         ($addQuery ? ' for "' . $this->input->getOption('filter') . '"' : null) . ':');
                 } else {
-                    $this->io->note('There are no filtered results found. You may want to remove or change the filters value.');
+                    $this->io->note('There are no filtered results found. You may want to remove or change the filters'
+                        . ' value.');
                 }
             }
         }

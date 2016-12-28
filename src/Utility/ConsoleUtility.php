@@ -28,11 +28,16 @@ class ConsoleUtility
      * Un Successful Process Exception Handler
      *
      * @param Process $process
+     * @param callable|null $function
+     * @return void
      * @static
      */
-    static public function unSuccessfulProcessExceptionHandler(Process $process)
+    static public function unSuccessfulProcessExceptionHandler(Process $process, callable $function = null)
     {
         if (!$process->isSuccessful()) {
+            if ($function) {
+                $function();
+            }
             throw new ProcessFailedException($process);
         }
     }
