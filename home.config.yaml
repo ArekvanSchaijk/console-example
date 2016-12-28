@@ -1,3 +1,6 @@
+backup:
+  path: false
+
 mysql:
   username: 'root'
   password: ''

@@ -137,6 +137,17 @@ class App
     }
 
     /**
+     * Copy's the project to a working directory
+     *
+     * @param string $toWorkingDirectory
+     * @return void
+     */
+    public function copy($toWorkingDirectory)
+    {
+        $this->process('cp -r . ' . $toWorkingDirectory);
+    }
+
+    /**
      * Remove
      * Removes the application
      *
@@ -154,7 +165,19 @@ class App
      */
     public function backup()
     {
-
+        $date = date('Y-m-d_H-i-s');
+        // Gets the root backup directory
+        if (!($rootBackupDirectory = $this->cliConfig->local()->getBackupPath())) {
+            $rootBackupDirectory = CLI_DEFAULT_BACKUP_PATH;
+        }
+        // Creates a new backup directory
+        $backupDirectory = $rootBackupDirectory . '/' . $date . '_' . $this->getBasename();
+        if ($this->getConfig()->getApplicationKey()) {
+            $backupDirectory = $rootBackupDirectory . '/' . $this->getConfig()->getApplicationKey() . '/' . $date;
+        }
+        ConsoleUtility::fileSystem()->mkdir($backupDirectory);
+        $this->copy($backupDirectory);
+        return $backupDirectory;
     }
 
     /**
@@ -239,9 +262,10 @@ class App
         if (is_null($this->mostRecentConfig)) {
             $this->mostRecentConfig = false;
             $remoteBranches = $this->getGitService()->getRemoteBranches();
+            $remoteUrl = $this->getRemoteUrl();
             foreach (AppUtility::getDefaultEnvironmentBranchNames() as $branchName) {
                 if (in_array($branchName, $remoteBranches)) {
-                    $tempApp = AppUtility::createNewApp($this->getRemoteUrl());
+                    $tempApp = AppUtility::createNewApp($remoteUrl);
                     $tempApp->getGitService()->checkout($branchName);
                     if ($tempApp->hasConfigFile()) {
                         $this->mostRecentConfig = $tempApp->getConfig();

@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppBackupCommand;
 use AlterNET\Cli\Command\App\AppComposerUpdateCommand;
 use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
@@ -113,6 +114,7 @@ class Application extends SymfonyConsoleApplication
             new AppRemoveCommand(),
             new AppSyncCommand(),
             new AppComposerUpdateCommand(),
+            new AppBackupCommand(),
 
             // Satis
             new SatisGenerateCommand()

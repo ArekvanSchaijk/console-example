@@ -177,4 +177,37 @@ class LocalConfig extends AbstractConfig
         $this->config['crowd']['password'] = $password;
     }
 
+    /**
+     * Gets the Backup Path
+     *
+     * @return string|bool
+     */
+    public function getBackupPath()
+    {
+        if ($this->config['backup']['path']) {
+            return $this->config['backup']['path'];
+        }
+        return $this->getDefaultBackupPath();
+    }
+
+    /**
+     * Gets the Default Backup Path
+     *
+     * @return bool
+     */
+    public function getDefaultBackupPath()
+    {
+        return false;
+    }
+
+    /**
+     * Sets the Backup Path
+     *
+     * @param string|bool $path
+     */
+    public function setBackupPath($path)
+    {
+        $this->config['backup']['path'] = $path;
+    }
+
 }

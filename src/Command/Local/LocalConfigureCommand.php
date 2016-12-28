@@ -47,6 +47,10 @@ class LocalConfigureCommand extends CommandBase
                 'method' => 'configureCrowd',
                 'description' => 'Configures Crowd',
             ],
+            'backups' => [
+                'method' => 'configureBackup',
+                'description' => 'Configures backups',
+            ],
             'reset_mysql' => [
                 'method' => 'resetMySql',
                 'description' => 'Resets the MySQL configuration'
@@ -54,6 +58,10 @@ class LocalConfigureCommand extends CommandBase
             'reset_crowd' => [
                 'method' => 'resetCrowd',
                 'description' => 'Resets the Crowd configuration'
+            ],
+            'reset_backups' => [
+                'method' => 'resetBackups',
+                'description' => 'Resets the backups configuration'
             ]
         ];
     }
@@ -180,6 +188,34 @@ class LocalConfigureCommand extends CommandBase
     }
 
     /**
+     * Configure Backup
+     *
+     * @param LocalConfig $config
+     * @return void
+     */
+    protected function configureBackup(LocalConfig $config)
+    {
+        $config->setBackupPath(
+            $this->io->ask(
+                'Backup path',
+                ($config->getBackupPath() ?: CLI_DEFAULT_BACKUP_PATH),
+                function ($value) use ($config) {
+                    if (!$value || $value === 'false' || $value === CLI_DEFAULT_BACKUP_PATH) {
+                        $value = false;
+                    } else {
+                        $value = rtrim($value, '/\\');
+                        if (!file_exists($value)) {
+                            throw new Exception('The directory "' . $value . '" does not exists. Please create it'
+                                . ' before you configure it.');
+                        }
+                    }
+                    return $value;
+                }
+            )
+        );
+    }
+
+    /**
      * Resets MySQL
      *
      * @param LocalConfig $config
@@ -208,6 +244,19 @@ class LocalConfigureCommand extends CommandBase
         );
         $config->setCrowdPassword(
             $config->getDefaultCrowdPassword()
+        );
+    }
+
+    /**
+     * Resets the Backups
+     *
+     * @param LocalConfig $config
+     * @return void
+     */
+    protected function resetBackups(LocalConfig $config)
+    {
+        $config->setBackupPath(
+            $config->getDefaultBackupPath()
         );
     }
 

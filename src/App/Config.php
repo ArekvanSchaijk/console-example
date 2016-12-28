@@ -73,6 +73,19 @@ class Config
     }
 
     /**
+     * Gets the Application Key
+     *
+     * @return bool
+     */
+    public function getApplicationKey()
+    {
+        if (isset($this->config['Application']['key']) && !empty($this->config['Application']['key'])) {
+            return trim(strtoupper($this->config['Application']['key']));
+        }
+        return false;
+    }
+
+    /**
      * Gets the Builds
      *
      * @return array|bool
