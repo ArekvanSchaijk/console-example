@@ -19,7 +19,7 @@ class BitbucketCreateProjectCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:createproject');
         $this->setDescription('Creates a new project');

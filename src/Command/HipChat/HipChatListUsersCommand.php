@@ -21,7 +21,7 @@ class HipChatListUsersCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('hipchat:listusers');
         $this->setDescription('Lists all users');
@@ -35,7 +35,7 @@ class HipChatListUsersCommand extends CommandBase
      * @param OutputInterface $output
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Retrieves the Hipchat authentication token from Cli Config
         $authentication = new OAuth2($this->config->getHipChatToken());

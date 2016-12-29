@@ -22,7 +22,7 @@ class HipChatCreateRoomCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('hipchat:createroom');
         $this->setDescription('Creates a new room');
@@ -37,7 +37,7 @@ class HipChatCreateRoomCommand extends CommandBase
      * @return void
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $roomName = trim($input->getArgument('name'));
         // Validates the name arguments

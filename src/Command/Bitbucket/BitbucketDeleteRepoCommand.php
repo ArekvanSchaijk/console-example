@@ -20,7 +20,7 @@ class BitbucketDeleteRepoCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:deleterepo');
         $this->setDescription('Deletes a repository');

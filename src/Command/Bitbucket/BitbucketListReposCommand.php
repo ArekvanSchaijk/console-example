@@ -20,7 +20,7 @@ class BitbucketListReposCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:listrepos');
         $this->setDescription('Lists all repositories from a project');

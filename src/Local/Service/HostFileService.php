@@ -126,7 +126,7 @@ class HostFileService
      */
     protected function hasMarkers($contents)
     {
-        if (strpos($contents, self::$markerStart) !== FALSE && strpos($contents, self::$markerEnd) !== FALSE) {
+        if (strpos($contents, self::$markerStart) !== false && strpos($contents, self::$markerEnd) !== false) {
             return true;
         }
         return false;

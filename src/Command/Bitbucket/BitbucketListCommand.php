@@ -18,7 +18,7 @@ class BitbucketListCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:list');
         $this->setDescription('Lists all projects');

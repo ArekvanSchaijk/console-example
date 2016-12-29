@@ -18,7 +18,7 @@ class LocalIsConnectionCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('local:isconnection');
         $this->setDescription('Tells if there is an internet connection or not');
@@ -31,7 +31,7 @@ class LocalIsConnectionCommand extends CommandBase
      * @param OutputInterface $output
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (ConsoleUtility::isInternetConnection()) {
             $this->io->success('Successfully connected to www.google.com');

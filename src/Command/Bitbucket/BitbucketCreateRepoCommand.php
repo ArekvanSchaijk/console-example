@@ -44,7 +44,7 @@ class BitbucketCreateRepoCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:createrepo');
         $this->setDescription('Creates a new repository');
@@ -106,11 +106,11 @@ class BitbucketCreateRepoCommand extends CommandBase
 
                     // Extension name validator
                     case self::VALIDATOR_EXTENSION_NAME:
-                        if (strpos($value, '-') !== FALSE) {
+                        if (strpos($value, '-') !== false) {
                             throw new Exception('It is not allowed to use a dash (-) in an extension key. Use'
                                 . ' underscores instead.');
                         }
-                        if (strpos($value, '__') !== FALSE) {
+                        if (strpos($value, '__') !== false) {
                             throw new Exception('It is not allowed to place multiple underscores (_) in a row.');
                         }
                         if (preg_match('/[^a-z_0-9]/', $value)) {
@@ -138,11 +138,11 @@ class BitbucketCreateRepoCommand extends CommandBase
 
                     // Package name validator
                     case self::VALIDATOR_PACKAGE_NAME:
-                        if (strpos($value, '_') !== FALSE) {
+                        if (strpos($value, '_') !== false) {
                             throw new Exception('It is not allowed to use a underscore (_) in a package name. Use'
                                 . ' a dash (-) instead.');
                         }
-                        if (strpos($value, '--') !== FALSE) {
+                        if (strpos($value, '--') !== false) {
                             throw new Exception('It is not allowed to place multiple dashes (-) in a row.');
                         }
                         if (preg_match('/[^a-zA-Z\-0-9]/', $value)) {

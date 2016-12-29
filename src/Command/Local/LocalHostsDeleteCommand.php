@@ -20,7 +20,7 @@ class LocalHostsDeleteCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('local:hostsdelete');
         $this->setDescription('Deletes a domain entry from your host file');
@@ -34,7 +34,7 @@ class LocalHostsDeleteCommand extends CommandBase
      * @param OutputInterface $output
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         // This prevents the command is being used from outside a local environment
         if (!Environment::isLocalEnvironment()) {

@@ -19,7 +19,7 @@ class LocalVariablesCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('local:variables');
         $this->setDescription('Shows all environment variables');
@@ -35,7 +35,7 @@ class LocalVariablesCommand extends CommandBase
      * @param OutputInterface $output
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $variables = $_SERVER;
         unset($variables['argv']);
