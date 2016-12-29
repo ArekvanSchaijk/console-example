@@ -4,6 +4,7 @@ namespace AlterNET\Cli\Command\Local;
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Exception;
+use AlterNET\Package\Environment;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -39,6 +40,10 @@ class LocalConfigureCommand extends CommandBase
     static protected function getCategories()
     {
         return [
+            'options' => [
+                'method' => 'configureOptions',
+                'description' => 'Configures the CLI options',
+            ],
             'mysql' => [
                 'method' => 'configureMySql',
                 'description' => 'Configures MySQL'
@@ -115,6 +120,22 @@ class LocalConfigureCommand extends CommandBase
         // And finally this writes the config
         $config->write();
         $this->io->success('The configuration is successfully written.');
+    }
+
+    /**
+     * Configures the Options
+     *
+     * @param LocalConfig $config
+     * @return void
+     */
+    protected function configureOptions(LocalConfig $config)
+    {
+        if (Environment::isLocalEnvironment()) {
+            $config->setOption(
+                $config::OPTION_HOST_FILE_MANAGEMENT,
+                $this->io->confirm('Enable Host File Management?', $config->isOptionHostFileManagement())
+            );
+        }
     }
 
     /**

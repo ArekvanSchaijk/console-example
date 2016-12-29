@@ -3,6 +3,8 @@ namespace AlterNET\Cli;
 
 use AlterNET\Cli\Command\App\AppBackupCommand;
 use AlterNET\Cli\Command\App\AppComposerUpdateCommand;
+use AlterNET\Cli\Command\App\AppHostsAddCommand;
+use AlterNET\Cli\Command\App\AppHostsDeleteCommand;
 use AlterNET\Cli\Command\App\AppRemoveCommand;
 use AlterNET\Cli\Command\App\AppShareCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
@@ -14,6 +16,8 @@ use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
 use AlterNET\Cli\Command\Local\LocalConfigureCommand;
+use AlterNET\Cli\Command\Local\LocalHostsAddCommand;
+use AlterNET\Cli\Command\Local\LocalHostsDeleteCommand;
 use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
 use AlterNET\Cli\Command\App\AppBuildCommand;
@@ -105,6 +109,10 @@ class Application extends SymfonyConsoleApplication
             new LocalIsConnectionCommand(),
             new LocalConfigureCommand(),
 
+            // Local Host File
+            new LocalHostsAddCommand(),
+            new LocalHostsDeleteCommand(),
+
             // Project
             new AppBuildCommand(),
             new AppEvaluateCommand(),
@@ -115,6 +123,8 @@ class Application extends SymfonyConsoleApplication
             new AppSyncCommand(),
             new AppComposerUpdateCommand(),
             new AppBackupCommand(),
+            new AppHostsAddCommand(),
+            new AppHostsDeleteCommand(),
 
             // Satis
             new SatisGenerateCommand()

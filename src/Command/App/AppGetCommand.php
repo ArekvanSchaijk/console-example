@@ -3,7 +3,9 @@ namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\AppUtility;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\GeneralUtility;
+use AlterNET\Package\Environment;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -124,6 +126,15 @@ class AppGetCommand extends CommandBase
                 }
                 $app->move($newWorkingDirectory);
             }
+        }
+        // This adds the application's domains to the host file
+        if (
+            $this->config->local()->isOptionHostFileManagement()
+            && Environment::isLocalEnvironment()
+            && ConsoleUtility::getHostFileService()->isWritable()
+        ) {
+            $this->io->note('Adding the application server names to your host file.');
+            $app->addDomainsToHostFile();
         }
         // Builds the application
         $this->io->note('Building... This can take some time.');

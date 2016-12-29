@@ -248,6 +248,24 @@ class App
     }
 
     /**
+     * Adds the Domains To the Host File
+     *
+     * @param string $ip
+     */
+    public function addDomainsToHostFile($ip = '127.0.0.1')
+    {
+        $hostFile = ConsoleUtility::getHostFileService();
+        if ($this->hasConfigFile()) {
+            if (($domains = $this->getConfig()->current()->getDomains())) {
+                foreach ($domains as $domain) {
+                    $hostFile->addDomain($domain, $ip);
+                }
+                $hostFile->write();
+            }
+        }
+    }
+
+    /**
      * Gets the Config
      *
      * @return AppConfig

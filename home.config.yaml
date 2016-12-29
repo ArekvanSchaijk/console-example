@@ -8,3 +8,6 @@ mysql:
 crowd:
   username: false
   password: false
+
+options:
+  host_file_management: true

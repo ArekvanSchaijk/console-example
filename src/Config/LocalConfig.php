@@ -13,6 +13,17 @@ use Symfony\Component\Yaml\Yaml;
 class LocalConfig extends AbstractConfig
 {
 
+    const
+
+        OPTION_HOST_FILE_MANAGEMENT = 'host_file_management';
+
+    /**
+     * @var array
+     */
+    static public $options = [
+        self::OPTION_HOST_FILE_MANAGEMENT
+    ];
+
     /**
      * LocalConfig constructor.
      * @throws Exception
@@ -208,6 +219,32 @@ class LocalConfig extends AbstractConfig
     public function setBackupPath($path)
     {
         $this->config['backup']['path'] = $path;
+    }
+
+    /**
+     * Is Option
+     *
+     * @return bool
+     */
+    public function isOptionHostFileManagement()
+    {
+        if (isset($this->config['options'][self::OPTION_HOST_FILE_MANAGEMENT])) {
+            return (bool)$this->config['options'][self::OPTION_HOST_FILE_MANAGEMENT];
+        }
+        // Returns the default value
+        return true;
+    }
+
+    /**
+     * Sets a Option's value
+     *
+     * @param string $name
+     * @param bool $value
+     * @return void
+     */
+    public function setOption($name, $value)
+    {
+        $this->config['options'][$name] = (bool)$value;
     }
 
 }

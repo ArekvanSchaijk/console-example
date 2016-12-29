@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Utility;
 
 use AlterNET\Cli\Config;
+use AlterNET\Cli\Local\Service\HostFileService;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -22,6 +23,17 @@ class ConsoleUtility
     static public function getConfig()
     {
         return Config::create();
+    }
+
+    /**
+     * Gets the Host File Service
+     *
+     * @return HostFileService
+     * @static
+     */
+    static public function getHostFileService()
+    {
+        return HostFileService::create();
     }
 
     /**

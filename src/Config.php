@@ -4,6 +4,7 @@ namespace AlterNET\Cli;
 use AlterNET\Cli\Config\AppConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
 use AlterNET\Cli\Config\ComposerConfig;
+use AlterNET\Cli\Config\HostFileConfig;
 use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
@@ -28,6 +29,11 @@ class Config
      * @var LocalConfig
      */
     protected $local;
+
+    /**
+     * @var HostFileConfig
+     */
+    protected $hostFile;
 
     /**
      * @var AppConfig
@@ -72,6 +78,19 @@ class Config
             $this->composer = new ComposerConfig($this->config['composer']);
         }
         return $this->composer;
+    }
+
+    /**
+     * Host File
+     *
+     * @return HostFileConfig
+     */
+    public function hostFile()
+    {
+        if (!$this->hostFile) {
+            $this->hostFile = new HostFileConfig($this->config['host_file']);
+        }
+        return $this->hostFile;
     }
 
     /**
