@@ -85,7 +85,7 @@ class AppGetCommand extends CommandBase
             $directoryName = $app->getMostRecentConfig()->current()->getServerName();
             // If this server name is unknown (e.g. missing) then we use the temporary name
             if (!$directoryName) {
-                $app->move(getcwd() . $temporaryDirectoryName);
+                $app->move(getcwd() . '/' . $temporaryDirectoryName);
                 // And here we notify about it
                 $this->io->note('Could not resolve the server name for the current environment. The application is '
                     . 'created in the directory named: "' . $temporaryDirectoryName . '".');
@@ -103,11 +103,23 @@ class AppGetCommand extends CommandBase
                         $this->io->note('Command aborted. All build files are removed.');
                         exit;
                     }
-                    // Asks the user if he would like to backup the already existing app
-                    if ($this->io->confirm('Do you want to backup the already existing app?')) {
-                        // Loads the existing application
-                        $existingApp = AppUtility::load($newWorkingDirectory);
-                        $backupWorkingDirectory = $existingApp->backup();
+                    // Loads the existing application
+                    $existingApp = AppUtility::load($newWorkingDirectory);
+                    // Asks the user if he would like to backup (or remove) the already existing app
+                    if ($this->io->confirm('Do you want to backup the existing app and replace it with the new one?')) {
+                        // Creates a backup directory path
+                        $backupDirectory = $existingApp->createBackupDirectory();
+                        // And moves the project inside it
+                        $existingApp->move($backupDirectory);
+                        $this->io->success(
+                            $existingApp->getPreviousBasename() . ' is successfully copied to "' . $backupDirectory . '".'
+                        );
+                    } elseif ($this->io->confirm('Do you want to remove the existing app without backing it up?', false)) {
+                        $existingApp->remove();
+                    } else {
+                        $app->remove();
+                        $this->io->error('Command aborted. All build files are removed.');
+                        exit;
                     }
                 }
                 $app->move($newWorkingDirectory);

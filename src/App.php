@@ -84,6 +84,16 @@ class App
     }
 
     /**
+     * Gets the Previous Basename
+     *
+     * @return string
+     */
+    public function getPreviousBasename()
+    {
+        return basename($this->getPreviousWorkingDirectory());
+    }
+
+    /**
      * Sets the Previous Working Directory
      *
      * @param string $previousWorkingDirectory
@@ -159,11 +169,11 @@ class App
     }
 
     /**
-     * Backup
+     * Creates a Backup Directory
      *
      * @return string
      */
-    public function backup()
+    public function createBackupDirectory()
     {
         $date = date('Y-m-d_H-i-s');
         // Gets the root backup directory
@@ -172,10 +182,21 @@ class App
         }
         // Creates a new backup directory
         $backupDirectory = $rootBackupDirectory . '/' . $date . '_' . $this->getBasename();
-        if ($this->getConfig()->getApplicationKey()) {
+        if ($this->hasConfigFile() && $this->getConfig()->getApplicationKey()) {
             $backupDirectory = $rootBackupDirectory . '/' . $this->getConfig()->getApplicationKey() . '/' . $date;
         }
         ConsoleUtility::fileSystem()->mkdir($backupDirectory);
+        return $backupDirectory;
+    }
+
+    /**
+     * Backup
+     *
+     * @return string
+     */
+    public function backup()
+    {
+        $backupDirectory = $this->createBackupDirectory();
         $this->copy($backupDirectory);
         return $backupDirectory;
     }
@@ -192,15 +213,16 @@ class App
         if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
             $this->getComposerService()->install();
         }
-        // Performs the environment builds
-        if (($builds = $this->getConfig()->current()->getBuilds())) {
-            $this->processBuildCommands($builds);
+        if ($this->hasConfigFile()) {
+            // Performs the environment builds
+            if (($builds = $this->getConfig()->current()->getBuilds())) {
+                $this->processBuildCommands($builds);
+            }
+            // Performs the application builds
+            if (($builds = $this->getConfig()->getBuilds())) {
+                $this->processBuildCommands($builds);
+            }
         }
-        // Performs the application builds
-        if (($builds = $this->getConfig()->getBuilds())) {
-            $this->processBuildCommands($builds);
-        }
-
     }
 
     /**

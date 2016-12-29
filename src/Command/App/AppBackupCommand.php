@@ -40,8 +40,8 @@ class AppBackupCommand extends CommandBase
         if ($this->io->confirm('Are you sure you would like to create a copy of the application "'
             . $app->getBasename() . '"?')
         ) {
-            $backupPath = $app->backup();
-            $this->io->success($app->getBasename() . ' is successfully copied to "' . $backupPath . '".');
+            $backupDirectory = $app->backup();
+            $this->io->success($app->getBasename() . ' is successfully copied to "' . $backupDirectory . '".');
         } else {
             $this->io->note('Command aborted.');
         }
