@@ -74,6 +74,46 @@ class App
     }
 
     /**
+     * Gets the Local Working Directory
+     *
+     * @return string
+     */
+    public function getLocalWorkingDirectory()
+    {
+        return $this->getWorkingDirectory() . '/' . $this->cliConfig->app()->getRelativeLocalWorkingDirectory();
+    }
+
+    /**
+     * Gets the Virtual Host File Path
+     *
+     * @return string
+     */
+    public function getVirtualHostFilePath()
+    {
+        return $this->getLocalWorkingDirectory() . '/vhost.conf';
+    }
+
+    /**
+     * Gets the Error Log File Path
+     *
+     * @return string
+     */
+    public function getErrorLogFilePath()
+    {
+        return $this->getLocalWorkingDirectory() . '/error.log';
+    }
+
+    /**
+     * Gets the Access Log File Path
+     *
+     * @return string
+     */
+    public function getAccessLogFilePath()
+    {
+        return $this->getLocalWorkingDirectory() . '/access.log';
+    }
+
+    /**
      * Gets the Basename
      *
      * @return string
@@ -209,6 +249,8 @@ class App
      */
     public function build()
     {
+        // Builds the virtual host file
+        $this->buildVirtualHostFile();
         // Composer install
         if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
             $this->getComposerService()->install();
@@ -244,7 +286,45 @@ class App
      */
     public function buildDatabase()
     {
+    }
 
+    /**
+     * Builds the Virtual Host File
+     *
+     * @return void
+     */
+    public function buildVirtualHostFile()
+    {
+        if (!file_exists($this->getLocalWorkingDirectory())) {
+            ConsoleUtility::fileSystem()->mkdir($this->getLocalWorkingDirectory());
+        }
+        ConsoleUtility::fileSystem()->touch([
+            $this->getVirtualHostFilePath(),
+            $this->getErrorLogFilePath(),
+            $this->getAccessLogFilePath(),
+
+        ]);
+        if ($this->hasConfigFile() && $this->getConfig()->current()->getDomains()) {
+            $string = '<VirtualHost *:80>' . PHP_EOL;
+            $string .= chr(9) . 'DocumentRoot' . chr(9) . '"' . realpath($this->getWorkingDirectory()) . '"' . PHP_EOL;
+            $i = 0;
+            if (($domains = $this->getConfig()->current()->getDomains())) {
+                foreach ($domains as $domain) {
+                    switch ($i) {
+                        case 0:
+                            $string .= chr(9) . 'ServerName' . chr(9) . $domain . PHP_EOL;
+                            break;
+                        default:
+                            $string .= chr(9) . 'ServerAlias' . chr(9) . $domain . PHP_EOL;
+                    }
+                    $i++;
+                }
+            }
+            $string .= chr(9) . 'ErrorLog' . chr(9) . '"' . realpath($this->getErrorLogFilePath()) . '"' . PHP_EOL;
+            $string .= chr(9) . 'CustomLog' . chr(9) . '"' . realpath($this->getAccessLogFilePath()) . '" common' . PHP_EOL;
+            $string .= '</VirtualHost>';
+            file_put_contents($this->getVirtualHostFilePath(), $string);
+        }
     }
 
     /**

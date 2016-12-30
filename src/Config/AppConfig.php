@@ -26,7 +26,7 @@ class AppConfig extends AbstractConfig
      */
     public function getRelativeConfigFilePath()
     {
-        return (string)$this->config['app_config']['relative_file_path'];
+        return $this->config['app_config']['relative_file_path'];
     }
 
     /**
@@ -37,6 +37,16 @@ class AppConfig extends AbstractConfig
     public function getConfigMaxSearchDepth()
     {
         return (int)$this->config['app_config']['max_search_depth'];
+    }
+
+    /**
+     * Gets the Relative Local Working Directory
+     *
+     * @return string
+     */
+    public function getRelativeLocalWorkingDirectory()
+    {
+        return $this->config['local']['relative_working_directory'];
     }
 
 }

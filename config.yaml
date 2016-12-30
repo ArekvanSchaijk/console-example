@@ -8,6 +8,7 @@ hipchat:
 composer:
   hipchat: 3329930
   satis:
+    remote_url: 'ssh://git@source.alternet.nl:7999/devops/satis-alternetprivaterepository.git'
     defaults:
       name: 'Alternet Private Composer Repository'
       homepage: 'https://composer.alternet.nl'
@@ -60,6 +61,8 @@ bitbucket:
           - 'wizard_create_composer_file'
 
 app:
+  local:
+    relative_working_directory: '.alternet/local'
   app_config:
     relative_file_path: '.alternet/app.config.yaml'
     max_search_depth: 20

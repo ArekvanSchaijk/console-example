@@ -301,7 +301,7 @@ class BitbucketCreateRepoCommand extends CommandBase
                 $masterBranch,
                 'CLI/AddComposerFileWizard'
             );
-            // Checks out the created branch, adds the composer file, commits it and push it ;)
+            // Checks out the created branch, adds the composer file, commits it and push to it ;)
             $process = new Process('git fetch;git checkout -b ' . $branch->getName() . ';git add composer.json;'
                 . ' git commit -m \'[CLI] Added the Composer.json file\';git push -u origin ' . $branch->getName(),
                 $this->workingDirectory);

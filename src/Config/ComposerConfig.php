@@ -39,6 +39,16 @@ class ComposerConfig extends AbstractConfig
     }
 
     /**
+     * Gets the Satis Remote Url
+     *
+     * @return string
+     */
+    public function getSatisRemoteUrl()
+    {
+        return $this->config['satis']['remote_url'];
+    }
+
+    /**
      * Gets the Satis Defaults
      *
      * @return array
