@@ -288,7 +288,8 @@ class BitbucketCreateRepoCommand extends CommandBase
             $composer['license'] = $this->io->choice('Set the license', $this->config->composer()->getAvailableLicenses(),
                 (isset($config['license']) ? $config['license'] : null));
             // Sets the author
-            $composer['authors'] = $config['author'];
+            $composer['authors'] = [];
+            $composer['authors'][] = $config['author'];
             // Creates the composer.json file and puts the contents into it
             $composerFilePath = $this->workingDirectory . '/composer.json';
             ConsoleUtility::fileSystem()->touch($composerFilePath);
