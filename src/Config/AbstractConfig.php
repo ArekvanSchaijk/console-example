@@ -22,4 +22,14 @@ abstract class AbstractConfig
         $this->config = $config;
     }
 
+    /**
+     * Gets the Array
+     *
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->config;
+    }
+
 }

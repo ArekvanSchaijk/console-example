@@ -5,7 +5,6 @@ use AlterNET\Cli\Command\CommandBase;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class LocalIsConnectionCommand
@@ -19,7 +18,7 @@ class LocalIsConnectionCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('local:isconnection');
         $this->setDescription('Tells if there is an internet connection or not');
@@ -32,13 +31,12 @@ class LocalIsConnectionCommand extends CommandBase
      * @param OutputInterface $output
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
         if (ConsoleUtility::isInternetConnection()) {
-            $io->success('Successfully connected to www.google.com');
+            $this->io->success('Successfully connected to www.google.com');
         } else {
-            $io->error('Internet connection could not be established');
+            $this->io->error('Internet connection could not be established');
         }
     }
 

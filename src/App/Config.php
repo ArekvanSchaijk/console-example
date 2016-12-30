@@ -1,16 +1,17 @@
 <?php
-namespace AlterNET\Cli;
+namespace AlterNET\Cli\App;
 
-use AlterNET\Cli\AppConfig\Environment\EnvironmentConfig;
-use AlterNET\Cli\AppConfig\Environment\EnvironmentSelector;
+use AlterNET\Cli\App\Config\Environment\EnvironmentConfig;
+use AlterNET\Cli\App\Config\Environment\EnvironmentSelector;
+use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\GeneralUtility;
 use AlterNET\Cli\Utility\TemplateUtility;
 
 /**
- * Class AppConfig
+ * Class Config
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppConfig
+class Config
 {
 
     /**
@@ -69,6 +70,62 @@ class AppConfig
     public function getApplicationName()
     {
         return strtok($this->getApplicationTemplate(), '_');
+    }
+
+    /**
+     * Gets the Application Key
+     *
+     * @return bool
+     */
+    public function getApplicationKey()
+    {
+        if (isset($this->config['Application']['key']) && !empty($this->config['Application']['key'])) {
+            return trim(strtoupper($this->config['Application']['key']));
+        }
+        return false;
+    }
+
+    /**
+     * Gets the Builds
+     *
+     * @return array|bool
+     */
+    public function getBuilds()
+    {
+        if (isset($this->config['Application']['build']) && is_array($this->config['Application']['build'])) {
+            return $this->config['Application']['build'];
+        }
+        return false;
+    }
+
+    /**
+     * Gets the Post Builds
+     *
+     * @return bool
+     */
+    public function getPostBuilds()
+    {
+
+    }
+
+    public function getDatabaseBuilds()
+    {
+
+    }
+
+    public function getPostDatabaseBuilds()
+    {
+
+    }
+
+    /**
+     * Gets the HipChat Room Id
+     *
+     * @return int|bool
+     */
+    public function getHipChatRoomId()
+    {
+        return (isset($this->config['Application']['hipchat']) ? (int)$this->config['Application']['hipchat'] : false);
     }
 
     /**

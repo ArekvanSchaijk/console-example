@@ -2,11 +2,9 @@
 namespace AlterNET\Cli\Command\Bitbucket;
 
 use AlterNET\Cli\Command\CommandBase;
-use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class BitbucketListCommand
@@ -20,10 +18,10 @@ class BitbucketListCommand extends CommandBase
      *
      * @return void
      */
-    public function configure()
+    protected function configure()
     {
         $this->setName('bitbucket:list');
-        $this->setDescription('Lists all projects on Bitbucket');
+        $this->setDescription('Lists all projects');
         $this->addFilterOption();
     }
 
@@ -36,27 +34,16 @@ class BitbucketListCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-        // Retrieves the Crowd Credentials
-        $credentials = $this->processCollectCrowdCredentials($io);
-        // Creates a new Bitbucket API
-        $bitbucket = new Api();
-        // Sets the Bitbucket endpoint from the Cli Config
-        $bitbucket->setEndpoint(self::$config->bitbucket()->getEndpoint());
-        // Logs into Bitbcuket with the given Crowd Credentials
-        $bitbucket->login($credentials->username, $credentials->password);
+        // Gets the bitbucket api
+        $bitbucket = $this->bitbucketDriver()->getApi();
         $rows = [];
         /* @var Project $project */
         foreach ($bitbucket->getProjects() as $project) {
-            if ($this->passItemsThroughFilter($input, [
-                $project->getKey(),
-                $project->getName()
-            ])
-            ) {
+            if ($this->passItemsThroughFilter([$project->getKey(), $project->getName()])) {
                 $rows[] = [
                     $project->getId(),
-                    $this->highlightFilteredWords($input, $project->getKey()),
-                    $this->highlightFilteredWords($input, $project->getName()),
+                    $this->highlightFilteredWords($project->getKey()),
+                    $this->highlightFilteredWords($project->getName()),
                     $project->getType(),
                     ($project->getIsPublic() ? '1' : ''),
                     $project->getLink()
@@ -64,12 +51,14 @@ class BitbucketListCommand extends CommandBase
             }
         }
         $count = count($rows);
-        $this->renderFilter($input, $output, $count);
+        $this->renderFilter($count);
         if ($count) {
             $headers = [
                 '#', 'Key', 'Name', 'Type', 'Public', 'Link'
             ];
-            $io->table($headers, $rows);
+            $this->io->table($headers, $rows);
+        } else {
+            $this->io->error('There are no projects to show.');
         }
     }
 

@@ -1,26 +1,39 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Command\App\AppBackupCommand;
+use AlterNET\Cli\Command\App\AppComposerUpdateCommand;
+use AlterNET\Cli\Command\App\AppHostsAddCommand;
+use AlterNET\Cli\Command\App\AppHostsDeleteCommand;
+use AlterNET\Cli\Command\App\AppRemoveCommand;
+use AlterNET\Cli\Command\App\AppShareCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketCreateRepoCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketDeleteRepoCommand;
 use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
-use AlterNET\Cli\Command\Crowd\CrowdAuthenticateCommand;
+use AlterNET\Cli\Command\Bitbucket\BitbucketListReposCommand;
 use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListCommand;
 use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
+use AlterNET\Cli\Command\Local\LocalConfigureCommand;
+use AlterNET\Cli\Command\Local\LocalHostsAddCommand;
+use AlterNET\Cli\Command\Local\LocalHostsDeleteCommand;
 use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
 use AlterNET\Cli\Command\Local\LocalVariablesCommand;
 use AlterNET\Cli\Command\App\AppBuildCommand;
 use AlterNET\Cli\Command\App\AppEvaluateCommand;
 use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
 use AlterNET\Cli\Command\App\AppGetCommand;
-use AlterNET\Cli\Command\App\AppListCommand;
 use AlterNET\Cli\Command\App\AppSyncCommand;
+use AlterNET\Cli\Command\Satis\SatisGenerateCommand;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 /**
- * Class AlternetConsole
+ * Class Application
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AlternetConsole extends SymfonyConsoleApplication
+class Application extends SymfonyConsoleApplication
 {
 
     protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
@@ -51,6 +64,23 @@ class AlternetConsole extends SymfonyConsoleApplication
         $this->addCommands(
             $this->getCommands()
         );
+        $this->prepare();
+    }
+
+    /**
+     * Prepare
+     * Prepares the console application
+     *
+     * @return void
+     */
+    protected function prepare()
+    {
+        if (!file_exists(CLI_HOME)) {
+            ConsoleUtility::fileSystem()->mkdir(CLI_HOME);
+        }
+        if (!file_exists(CLI_HOME_BUILDS)) {
+            ConsoleUtility::fileSystem()->mkdir(CLI_HOME_BUILDS);
+        }
     }
 
     /**
@@ -58,15 +88,16 @@ class AlternetConsole extends SymfonyConsoleApplication
      *
      * @return array
      */
-    public function getCommands()
+    protected function getCommands()
     {
         return [
 
-            // Crowd
-            new CrowdAuthenticateCommand(),
-
             // Bitbucket
             new BitbucketListCommand(),
+            new BitbucketListReposCommand(),
+            new BitbucketCreateProjectCommand(),
+            new BitbucketCreateRepoCommand(),
+            new BitbucketDeleteRepoCommand(),
 
             // HipChat
             new HipChatListCommand(),
@@ -76,14 +107,27 @@ class AlternetConsole extends SymfonyConsoleApplication
             // Local
             new LocalVariablesCommand(),
             new LocalIsConnectionCommand(),
+            new LocalConfigureCommand(),
+
+            // Local Host File
+            new LocalHostsAddCommand(),
+            new LocalHostsDeleteCommand(),
 
             // Project
-            new AppListCommand(),
             new AppBuildCommand(),
             new AppEvaluateCommand(),
+            new AppShareCommand(),
             new AppGenerateVhostCommand(),
             new AppGetCommand(),
-            new AppSyncCommand()
+            new AppRemoveCommand(),
+            new AppSyncCommand(),
+            new AppComposerUpdateCommand(),
+            new AppBackupCommand(),
+            new AppHostsAddCommand(),
+            new AppHostsDeleteCommand(),
+
+            // Satis
+            new SatisGenerateCommand()
         ];
     }
 

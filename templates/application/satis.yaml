@@ -1,0 +1,3 @@
+Application:
+  build:
+    - './satis.phar build satis.json .'

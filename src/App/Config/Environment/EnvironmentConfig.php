@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\AppConfig\Environment;
+namespace AlterNET\Cli\App\Config\Environment;
 
 use AlterNET\Cli\Config\AbstractConfig;
 use AlterNET\Cli\Utility\TemplateUtility;
@@ -89,5 +89,31 @@ class EnvironmentConfig extends AbstractConfig
         }
         return false;
     }
-    
+
+    /**
+     * Gets the Git Branch
+     *
+     * @return string|bool
+     */
+    public function getGitBranch()
+    {
+        if (isset($this->config['git_branch'])) {
+            return $this->config['git_branch'];
+        }
+        return false;
+    }
+
+    /**
+     * Gets the Builds
+     *
+     * @return array|bool
+     */
+    public function getBuilds()
+    {
+        if (isset($this->config['build']) && is_array($this->config['build'])) {
+            return $this->config['build'];
+        }
+        return false;
+    }
+
 }

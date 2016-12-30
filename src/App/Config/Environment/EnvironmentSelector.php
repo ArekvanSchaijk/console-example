@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\AppConfig\Environment;
+namespace AlterNET\Cli\App\Config\Environment;
 
 use AlterNET\Cli\Config\AbstractConfig;
 use AlterNET\Cli\Exception;
@@ -60,6 +60,16 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * Is Local
+     *
+     * @return bool
+     */
+    public function isLocal()
+    {
+        return isset($this->config['Local']);
+    }
+
+    /**
      * Local
      *
      * @return EnvironmentConfig
@@ -68,7 +78,7 @@ class EnvironmentSelector extends AbstractConfig
     public function local()
     {
         if (is_null($this->local)) {
-            if (!isset($this->config['Local'])) {
+            if (!$this->isLocal()) {
                 throw new Exception('No local environment configuration found.');
             }
             $this->local = new EnvironmentConfig(
@@ -80,6 +90,16 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * Is Development
+     *
+     * @return bool
+     */
+    public function isDevelopment()
+    {
+        return isset($this->config['Development']);
+    }
+
+    /**
      * Development
      *
      * @return EnvironmentConfig
@@ -88,7 +108,7 @@ class EnvironmentSelector extends AbstractConfig
     public function development()
     {
         if (is_null($this->development)) {
-            if (!isset($this->config['Development'])) {
+            if (!$this->isDevelopment()) {
                 throw new Exception('No development environment configuration found.');
             }
             $this->development = new EnvironmentConfig(
@@ -100,6 +120,15 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * Is Testing
+     *
+     * @return bool
+     */
+    public function isTesting() {
+        return isset($this->config['Testing']);
+    }
+
+    /**
      * Testing
      *
      * @return EnvironmentConfig
@@ -108,7 +137,7 @@ class EnvironmentSelector extends AbstractConfig
     public function testing()
     {
         if (is_null($this->testing)) {
-            if (!isset($this->config['Testing'])) {
+            if (!$this->isTesting()) {
                 throw new Exception('No testing environment configuration found.');
             }
             $this->testing = new EnvironmentConfig(
@@ -120,6 +149,16 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * Is Acceptance
+     *
+     * @return bool
+     */
+    public function isAcceptance()
+    {
+        return isset($this->config['Acceptance']);
+    }
+
+    /**
      * Acceptance
      *
      * @return EnvironmentConfig
@@ -128,7 +167,7 @@ class EnvironmentSelector extends AbstractConfig
     public function acceptance()
     {
         if (is_null($this->acceptance)) {
-            if (!isset($this->config['Acceptance'])) {
+            if (!$this->isAcceptance()) {
                 throw new Exception('No testing environment configuration found.');
             }
             $this->acceptance = new EnvironmentConfig(
@@ -140,6 +179,16 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * Is Production
+     *
+     * @return bool
+     */
+    public function isProduction()
+    {
+        return isset($this->config['Production']);
+    }
+
+    /**
      * Production
      *
      * @return EnvironmentConfig
@@ -148,7 +197,7 @@ class EnvironmentSelector extends AbstractConfig
     public function production()
     {
         if (is_null($this->production)) {
-            if (!isset($this->config['Production'])) {
+            if (!$this->isProduction()) {
                 throw new Exception('No testing environment configuration found.');
             }
             $this->production = new EnvironmentConfig(

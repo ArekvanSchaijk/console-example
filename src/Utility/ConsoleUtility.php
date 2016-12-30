@@ -1,6 +1,9 @@
 <?php
 namespace AlterNET\Cli\Utility;
 
+use AlterNET\Cli\Config;
+use AlterNET\Cli\Local\Service\HostFileService;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -12,56 +15,41 @@ class ConsoleUtility
 {
 
     /**
-     * Git Clone
+     * Gets the Config
      *
-     * @param string $url
-     * @param string $destination
+     * @return Config
      * @static
      */
-    static public function gitClone($url, $destination)
+    static public function getConfig()
     {
-        $process = new Process('rm -rf ' . $destination . ';git clone ' . $url . ' ' . $destination);
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
+        return Config::create();
     }
 
     /**
-     * Git Checkout
+     * Gets the Host File Service
      *
-     * @param string $branch
-     * @param string|null $directory
+     * @return HostFileService
      * @static
      */
-    static public function gitCheckout($branch, $directory = null)
+    static public function getHostFileService()
     {
-        $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'git checkout ' . $branch);
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
-    }
-
-    /**
-     * Composer Install
-     *
-     * @param string|null $directory
-     * @return void
-     * @static
-     */
-    static public function composerInstall($directory = null)
-    {
-        $process = new Process(($directory ? 'cd ' . $directory . ';' : null) . 'composer install');
-        $process->run();
-        self::unSuccessfulProcessExceptionHandler($process);
+        return HostFileService::create();
     }
 
     /**
      * Un Successful Process Exception Handler
      *
      * @param Process $process
+     * @param callable|null $function
+     * @return void
      * @static
      */
-    static public function unSuccessfulProcessExceptionHandler(Process $process)
+    static public function unSuccessfulProcessExceptionHandler(Process $process, callable $function = null)
     {
         if (!$process->isSuccessful()) {
+            if ($function) {
+                $function();
+            }
             throw new ProcessFailedException($process);
         }
     }
@@ -76,6 +64,34 @@ class ConsoleUtility
     static public function isInternetConnection()
     {
         return (bool)@fsockopen('www.google.com', 80, $num, $error, 5);
+    }
+
+    /**
+     * File System
+     *
+     * @return Filesystem
+     * @static
+     */
+    static public function fileSystem()
+    {
+        if (!isset($GLOBALS['ALTERNET_CLI_FILESYSTEM']) || !$GLOBALS['ALTERNET_CLI_FILESYSTEM'] instanceof Filesystem) {
+            $GLOBALS['ALTERNET_CLI_FILESYSTEM'] = new Filesystem();
+        }
+        return $GLOBALS['ALTERNET_CLI_FILESYSTEM'];
+    }
+
+    /**
+     * Creates a Build Working Directory
+     *
+     * @param string $prefix
+     * @return string
+     * @static
+     */
+    static public function createBuildWorkingDirectory($prefix)
+    {
+        $workingDirectory = CLI_HOME_BUILDS . '/' . $prefix . GeneralUtility::generateRandomString(40 - strlen($prefix));
+        self::fileSystem()->mkdir($workingDirectory);
+        return $workingDirectory;
     }
 
 }

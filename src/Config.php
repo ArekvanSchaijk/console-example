@@ -1,8 +1,11 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\Config\AppConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
-use AlterNET\Cli\Config\ProjectsConfig;
+use AlterNET\Cli\Config\ComposerConfig;
+use AlterNET\Cli\Config\HostFileConfig;
+use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
@@ -18,9 +21,24 @@ class Config
     protected $config;
 
     /**
-     * @var ProjectsConfig
+     * @var ComposerConfig
      */
-    protected $projects;
+    protected $composer;
+
+    /**
+     * @var LocalConfig
+     */
+    protected $local;
+
+    /**
+     * @var HostFileConfig
+     */
+    protected $hostFile;
+
+    /**
+     * @var AppConfig
+     */
+    protected $app;
 
     /**
      * @var BitbucketConfig
@@ -28,29 +46,11 @@ class Config
     protected $bitbucket;
 
     /**
-     * Projects
-     *
-     * @return ProjectsConfig
+     * Config constructor.
      */
-    public function projects()
+    public function __construct()
     {
-        if (is_null($this->projects)) {
-            $this->projects = new ProjectsConfig($this->config['projects']);
-        }
-        return $this->projects;
-    }
-
-    /**
-     * Bitbucket
-     *
-     * @return BitbucketConfig
-     */
-    public function bitbucket()
-    {
-        if (is_null($this->bitbucket)) {
-            $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
-        }
-        return $this->bitbucket;
+        $this->config = GeneralUtility::parseYamlFile(CLI_ROOT . '/config.yaml');
     }
 
     /**
@@ -68,11 +68,68 @@ class Config
     }
 
     /**
-     * Config constructor.
+     * Composer
+     *
+     * @return ComposerConfig
      */
-    public function __construct()
+    public function composer()
     {
-        $this->config = GeneralUtility::parseYamlFile(CLI_ROOT . '/config.yaml');
+        if (!$this->composer) {
+            $this->composer = new ComposerConfig($this->config['composer']);
+        }
+        return $this->composer;
+    }
+
+    /**
+     * Host File
+     *
+     * @return HostFileConfig
+     */
+    public function hostFile()
+    {
+        if (!$this->hostFile) {
+            $this->hostFile = new HostFileConfig($this->config['host_file']);
+        }
+        return $this->hostFile;
+    }
+
+    /**
+     * Local
+     *
+     * @return LocalConfig
+     */
+    public function local()
+    {
+        if (!$this->local) {
+            $this->local = new LocalConfig();
+        }
+        return $this->local;
+    }
+
+    /**
+     * App
+     *
+     * @return AppConfig
+     */
+    public function app()
+    {
+        if (is_null($this->app)) {
+            $this->app = new AppConfig($this->config['app']);
+        }
+        return $this->app;
+    }
+
+    /**
+     * Bitbucket
+     *
+     * @return BitbucketConfig
+     */
+    public function bitbucket()
+    {
+        if (is_null($this->bitbucket)) {
+            $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
+        }
+        return $this->bitbucket;
     }
 
     /**
@@ -103,6 +160,16 @@ class Config
     public function getHipChatToken()
     {
         return $this->config['hipchat']['token'];
+    }
+
+    /**
+     * Gets the Array
+     *
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->config;
     }
 
 }

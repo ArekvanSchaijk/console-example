@@ -1,5 +1,6 @@
 <?php
 namespace AlterNET\Cli\Config;
+use AlterNET\Cli\Utility\ConsoleUtility;
 
 /**
  * Class BitbucketConfig
@@ -56,6 +57,80 @@ class BitbucketConfig extends AbstractConfig
     public function getDefaultDevelopmentBranch()
     {
         return (string)$this->config['default_development_branch'];
+    }
+
+    /**
+     * Gets the Project Options
+     *
+     * @param string $projectKey
+     * @return array
+     */
+    public function getProjectCreateRepoOptions($projectKey)
+    {
+        $all = [];
+        if (isset($this->config['projects']['all']['options']['create_repo'])
+            && is_array($this->config['projects']['all']['options']['create_repo'])
+        ) {
+            $all = $this->config['projects']['all']['options']['create_repo'];
+        }
+        $projectOptions = [];
+        if (isset($this->config['projects'][$projectKey]['options']['create_repo'])
+            && is_array($this->config['projects'][$projectKey]['options']['create_repo'])
+        ) {
+            $projectOptions = $this->config['projects'][$projectKey]['options']['create_repo'];
+        }
+        return array_merge($all, $projectOptions);
+    }
+
+    /**
+     * Gets the Project HipChat RoomId
+     *
+     * @param string $projectKey
+     * @return bool|int
+     */
+    public function getProjectHipChatRoomId($projectKey)
+    {
+        $roomId = false;
+        if (isset($this->config['projects'][$projectKey]['hipchat'])) {
+            $roomId = (int)$this->config['projects'][$projectKey]['hipchat'];
+            if (!$roomId) {
+                $roomId = false;
+            }
+        }
+        return $roomId;
+    }
+
+    /**
+     * Gets the Project Composer Config
+     *
+     * @param $projectKey
+     * @return array
+     */
+    public function getProjectComposerConfig($projectKey)
+    {
+        $composerConfig = ConsoleUtility::getConfig()->composer()->getArray();
+        if (isset($this->config['projects'][$projectKey]['composer'])
+            && is_array($this->config['projects'][$projectKey]['composer'])
+        ) {
+            return array_merge($composerConfig, $this->config['projects'][$projectKey]['composer']);
+        }
+        return $composerConfig;
+    }
+
+    /**
+     * Gets the Satis Projects
+     *
+     * @return array
+     */
+    public function getSatisProjects()
+    {
+        $projects = [];
+        foreach ($this->config['projects'] as $key => $project) {
+            if ($key != 'all' && isset($project['satis']) && (bool)$project['satis']) {
+                $projects[] = $key;
+            }
+        }
+        return $projects;
     }
 
 }

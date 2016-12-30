@@ -1,0 +1,13 @@
+backup:
+  path: false
+
+mysql:
+  username: 'root'
+  password: ''
+
+crowd:
+  username: false
+  password: false
+
+options:
+  host_file_management: true

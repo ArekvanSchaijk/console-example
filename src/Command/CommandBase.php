@@ -1,10 +1,15 @@
 <?php
 namespace AlterNET\Cli\Command;
 
-use AlterNET\Cli\App\AppConfig;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
+use AlterNET\Cli\Driver\BitbucketDriver;
+use AlterNET\Cli\Driver\HipChatDriver;
+use AlterNET\Cli\Utility\AppUtility;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,14 +23,29 @@ abstract class CommandBase extends Command
 {
 
     /**
-     * @var Config
+     * @var SymfonyStyle
      */
-    static protected $config;
+    protected $io;
 
     /**
-     * @var AppConfig
+     * @var InputInterface
      */
-    static protected $appConfig;
+    protected $input;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var ProgressBar
+     */
+    protected $progress;
 
     /**
      * @var CrowdContainer
@@ -33,13 +53,38 @@ abstract class CommandBase extends Command
     protected $crowdContainer;
 
     /**
+     * @var BitbucketDriver
+     */
+    protected $bitbucketDriver;
+
+    /**
+     * @var HipChatDriver
+     */
+    protected $hipChatDriver;
+
+    /**
      * CommandBase constructor.
      * @param string|null $name
      */
     public function __construct($name = null)
     {
-        self::$config = Config::create();
         parent::__construct($name);
+        $this->config = ConsoleUtility::getConfig();
+    }
+
+    /**
+     * Initialize
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return void
+     */
+    public function initialize(InputInterface $input, OutputInterface $output)
+    {
+        parent::initialize($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
+        $this->input = $input;
+        $this->output = $output;
     }
 
     /**
@@ -65,29 +110,87 @@ abstract class CommandBase extends Command
     {
         $description = ($description ?: 'Filters the result by a given value');
         $this->addOption('filter', 'f', InputOption::VALUE_REQUIRED, $description);
+        $this->addOption('filter-no-count', null, InputOption::VALUE_NONE,
+            'Prevents the filter from outputting the count.');
+    }
+
+    /**
+     * Creates a new Progress Bar
+     *
+     * @param int $max
+     * @return ProgressBar
+     */
+    protected function createProgressBar($max = 100)
+    {
+        $this->progress = $this->io->createProgressBar($max);
+        $this->progress->setMessage('Preparing...');
+        $this->progress->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+    }
+
+    /**
+     * Prevents Being Within App
+     * This prevents the command to run if it is inside an app
+     *
+     * @return void
+     */
+    protected function preventBeingWithinAnApp()
+    {
+        if (AppUtility::isCwdInApp()) {
+            $this->io->error('It\'s not possible to get an app inside the directory of an existing app. '
+                . 'Please browse to your web root directory and try again.');
+            exit;
+        }
+    }
+
+    /**
+     * Prevent Not Being In An App
+     * This prevents the command to run if it is not inside an app
+     *
+     * @return void
+     */
+    protected function preventNotBeingInAnApp()
+    {
+        if (!AppUtility::isCwdInApp()) {
+            $this->io->error('This command can only be used within the directory of an application.');
+            exit;
+        }
     }
 
     /**
      * Process Collects the Crowd Credentials
      *
-     * @param SymfonyStyle $io
      * @return CrowdContainer
      */
-    protected function processCollectCrowdCredentials(SymfonyStyle $io)
+    protected function processCollectCrowdCredentials()
     {
         if (!$this->crowdContainer) {
             $openingsMessage = 'Please login with your Crowd credentials';
-            if (!isset($_SERVER['ALTERNET_CLI_USERNAME']) || empty(trim($_SERVER['ALTERNET_CLI_USERNAME']))) {
-                $io->note($openingsMessage);
-                $username = $this->askCrowdUsername($io);
-                $password = $this->askCrowdPassword($io);
-            } elseif (!isset($_SERVER['ALTERNET_CLI_PASSWORD']) || empty(trim($_SERVER['ALTERNET_CLI_PASSWORD']))) {
-                $io->note($openingsMessage);
-                $username = $this->askCrowdUsername($io, trim($_SERVER['ALTERNET_CLI_USERNAME']));
-                $password = $this->askCrowdPassword($io);
-            } else {
-                $username = trim($_SERVER['ALTERNET_CLI_USERNAME']);
-                $password = trim($_SERVER['ALTERNET_CLI_PASSWORD']);
+            $remember = false;
+            // Retrieving the credentials from the local configuration file
+            $username = $this->config->local()->getCrowdUsername();
+            $password = $this->config->local()->getCrowdPassword();
+            if (!$username) {
+                $remember = true;
+                $this->io->note($openingsMessage);
+                // This asks the user for the crowd username
+                $username = $this->askCrowdUsername();
+                // This asks the user for the crowd password
+                $password = $this->askCrowdPassword();
+            } elseif (!$password) {
+                $remember = true;
+                $this->io->note($openingsMessage);
+                // This asks the user for the crowd username
+                $username = $this->askCrowdUsername($username);
+                // This asks the user for the crowd password
+                $password = $this->askCrowdPassword();
+            }
+            // Asks the user if the CLI should remember the credentials
+            if ($remember) {
+                if ($this->io->confirm('Would you like the CLI to remember your credentials?', false)) {
+                    $this->config->local()->setCrowdUsername($username);
+                    $this->config->local()->setCrowdPassword($password);
+                    $this->config->local()->write();
+                }
             }
             // Creates a new CrowdContainer and stores here the credentials
             $this->crowdContainer = new CrowdContainer();
@@ -95,6 +198,39 @@ abstract class CommandBase extends Command
             $this->crowdContainer->password = $password;
         }
         return $this->crowdContainer;
+    }
+
+    /**
+     * Asks the Crowd Username
+     *
+     * @param string|null $default
+     * @return string
+     */
+    protected function askCrowdUsername($default = null)
+    {
+        return $this->io->ask('Username', $default, function ($value) {
+            $value = trim($value);
+            if (empty($value)) {
+                throw new \Exception('The given username can\'t be empty');
+            }
+            return $value;
+        });
+    }
+
+    /**
+     * Asks the Crowd Password
+     *
+     * @return string
+     */
+    protected function askCrowdPassword()
+    {
+        return $this->io->askHidden('Password', function ($value) {
+            $value = trim($value);
+            if (empty($value)) {
+                throw new \Exception('The given password can\'t be empty');
+            }
+            return $value;
+        });
     }
 
     /**
@@ -110,95 +246,99 @@ abstract class CommandBase extends Command
     }
 
     /**
-     * Asks the Crowd Username
-     *
-     * @param SymfonyStyle $io
-     * @param string|null $default
-     * @return string
-     */
-    protected function askCrowdUsername(SymfonyStyle $io, $default = null)
-    {
-        return $io->ask('Username', $default, function ($value) {
-            $value = trim($value);
-            if (empty($value)) {
-                throw new \Exception('The given username can\'t be empty');
-            }
-            return $value;
-        });
-    }
-
-    /**
-     * Asks the Crowd Password
-     *
-     * @param SymfonyStyle $io
-     * @return string
-     */
-    protected function askCrowdPassword(SymfonyStyle $io)
-    {
-        return $io->askHidden('Password', function ($value) {
-            $value = trim($value);
-            if (empty($value)) {
-                throw new \Exception('The given password can\'t be empty');
-            }
-            return $value;
-        });
-    }
-
-    /**
      * Passes the Value Through the Filter
      *
-     * @param InputInterface $input
      * @param array $values
      * @return bool
      */
-    protected function passItemsThroughFilter(InputInterface $input, array $values)
+    protected function passItemsThroughFilter(array $values)
     {
-        if ((bool)$input->getOption('filter')) {
+        if ((bool)$this->input->getOption('filter')) {
             foreach ($values as $value) {
-                if (stripos($value, $input->getOption('filter')) !== false) {
-                    return TRUE;
+                if (stripos($value, $this->input->getOption('filter')) !== false) {
+                    return true;
                 }
             }
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     /**
      * Highlight
      *
-     * @param InputInterface $input
      * @param string $value
      * @return string
      */
-    protected function highlightFilteredWords(InputInterface $input, $value)
+    protected function highlightFilteredWords($value)
     {
-        if (!(bool)$input->getOption('filter')) {
+        if (!(bool)$this->input->getOption('filter')) {
             return $value;
         }
-        return preg_replace('/(\S*' . $input->getOption('filter') . '\S*)/i', '<comment>$1</comment>', $value);
+        return preg_replace('/(\S*' . $this->input->getOption('filter') . '\S*)/i', '<comment>$1</comment>', $value);
     }
 
     /**
      * Renders the Filter
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param int|null $results
      * @param bool $addQuery
      * @return void
      */
-    protected function renderFilter(InputInterface $input, OutputInterface $output, $results = null, $addQuery = true)
+    protected function renderFilter($results = null, $addQuery = true)
     {
-        $io = new SymfonyStyle($input, $output);
-        if ((bool)$input->getOption('filter')) {
-            if ($results === null || $results > 0) {
-                $io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
-                    ($addQuery ? ' for "' . $input->getOption('filter') . '"' : null) . ':');
-            } else {
-                $io->note('There are no filtered results found. You may want to remove or change the filters value.');
+        if (!$this->input->getOption('filter-no-count')) {
+            if ((bool)$this->input->getOption('filter')) {
+                if ($results === null || $results > 0) {
+                    $this->io->block(($results ? $results . ' ' : null) . 'Filtered result(s)' .
+                        ($addQuery ? ' for "' . $this->input->getOption('filter') . '"' : null) . ':');
+                } else {
+                    $this->io->note('There are no filtered results found. You may want to remove or change the filters'
+                        . ' value.');
+                }
             }
         }
+    }
+
+    /**
+     * Bitbucket Driver
+     *
+     * @return BitbucketDriver
+     */
+    protected function bitbucketDriver()
+    {
+        if (!$this->bitbucketDriver) {
+            $this->bitbucketDriver = new BitbucketDriver(
+                $this->processCollectCrowdCredentials()
+            );
+        }
+        return $this->bitbucketDriver;
+    }
+
+    /**
+     * HipChat Driver
+     *
+     * @return HipChatDriver
+     */
+    protected function hipChatDriver()
+    {
+        if (!$this->hipChatDriver) {
+            $this->hipChatDriver = new HipChatDriver();
+        }
+        return $this->hipChatDriver;
+    }
+
+    /**
+     * Runs a Command
+     *
+     * @param string $command
+     * @param array $arguments
+     * @return void
+     */
+    protected function runCommand($command, array $arguments)
+    {
+        $command = $this->getApplication()->find($command);
+        $command->run(new ArrayInput(array_merge(['command' => $command], $arguments)), $this->output);
     }
 
 }
