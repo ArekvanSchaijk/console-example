@@ -61,6 +61,9 @@ class App
     {
         $this->cliConfig = ConsoleUtility::getConfig();
         $this->setWorkingDirectory($workingDirectory);
+        if (method_exists($this, 'initialize')) {
+            $this->initialize();
+        }
     }
 
     /**

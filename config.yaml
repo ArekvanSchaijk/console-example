@@ -1,10 +1,11 @@
 application:
   name: 'Alternet B.V.'
-  version: '0.3.0'
+  version: 'dev-master'
 
 self:
   remote_url: 'ssh://git@source.alternet.nl:7999/devops/cli-alternet.git'
   manifest_url: 'http://cli.alternet.nl/manifest.json'
+  download_url: 'http://cli.alternet.nl/download/'
 
 hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
