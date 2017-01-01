@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Command\Bamboo;
 
 use AlterNET\Cli\Command\CommandBase;
+use ArekvanSchaijk\BambooServerClient\Api\Entity\Plan;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,6 +35,7 @@ class BambooListCommand extends CommandBase
     {
         $bamboo = $this->bambooDriver()->getApi();
 
+        /* @var Plan $plan */
         foreach ($bamboo->getPlans() as $plan)
         {
             if ($plan->getKey() === 'GEMZST-DEV') {

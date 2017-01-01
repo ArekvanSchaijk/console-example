@@ -86,6 +86,19 @@ class Config
     }
 
     /**
+     * Gets the Web Directory
+     *
+     * @return bool
+     */
+    public function getWebDirectory()
+    {
+        if (isset($this->config['application']['web_directory'])) {
+            return $this->config['application']['web_directory'];
+        }
+        return false;
+    }
+
+    /**
      * Gets the Builds
      *
      * @return array|bool

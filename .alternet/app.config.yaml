@@ -3,13 +3,21 @@ application:
   key: 'devops'
   name: 'Alternet CLI'
   hipchat: 3373199
+  build:
+    - 'box build'
 
 local:
   domains:
     - 'cli.local.alternet.nl'
 
 development:
-  git_branch: 'master'
   template: 'default'
+  git_branch: 'master'
+  post_build:
+    - 'sudo rm /usr/local/bin/alternet.phar'
+    - 'sudo cp alternet.phar /usr/local/bin'
+    - 'sudo chown -R root.root /usr/local/bin/alternet.phar'
+    - 'sudo chmod 0755 /usr/local/bin/alternet.phar'
+
   domains:
     - 'cli.alternet.nl'
