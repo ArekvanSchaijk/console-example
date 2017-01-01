@@ -86,4 +86,24 @@ class GitService implements AppServiceInterface
         $this->app->process('git checkout ' . ($origin ? 'origin/' : null) . $branchName);
     }
 
+    /**
+     * Gets the Highest Tag
+     *
+     * @return string
+     */
+    public function getHighestTag()
+    {
+        return trim($this->app->process('git describe --abbrev=0 --tags'));
+    }
+
+    /**
+     * Gets the Highest Tag
+     *
+     * @return string
+     */
+    public function getHighestTagRevision()
+    {
+        return trim($this->app->process('git rev-list --abbrev=0 --tags --max-count=1'));
+    }
+
 }
