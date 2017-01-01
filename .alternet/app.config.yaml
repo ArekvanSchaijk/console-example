@@ -1,0 +1,15 @@
+application:
+  template: 'cli_alternet'
+  key: 'devops'
+  name: 'Alternet CLI'
+  hipchat: 3373199
+
+local:
+  domains:
+    - 'cli.local.alternet.nl'
+
+development:
+  git_branch: 'master'
+  template: 'default'
+  domains:
+    - 'cli.alternet.nl'

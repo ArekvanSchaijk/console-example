@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c11b259eb7992a7fd5a13d2886a0f098",
-    "content-hash": "1634ff398f73b47e3b7d0dbe012b5785",
+    "hash": "997a984039e39b8ed5d579b9a8cfc9a9",
+    "content-hash": "850a136b01630ac93ef241189634fdbc",
     "packages": [
         {
             "name": "alternet/configuration-api",
@@ -49,11 +49,11 @@
         },
         {
             "name": "alternet/environment",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "ssh://git@source.alternet.nl:7999/t3pack/environment.git",
-                "reference": "c4c8f0146920354bb60572ecfb667342db5ccd93"
+                "reference": "6e246b33701d245f5f8305c34ba22d0def8203f9"
             },
             "require": {
                 "alternet/configuration-api": "^1",
@@ -66,7 +66,34 @@
                 }
             },
             "description": "OTAP Environment Helper package",
-            "time": "2016-12-07 18:11:00"
+            "time": "2016-12-28 17:44:22"
+        },
+        {
+            "name": "arekvanschaijk/bamboo-server-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ArekvanSchaijk/bamboo-server-client.git",
+                "reference": "6466fd297347eea5e24cc448fecce76f018c83c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bamboo-server-client/zipball/6466fd297347eea5e24cc448fecce76f018c83c2",
+                "reference": "6466fd297347eea5e24cc448fecce76f018c83c2",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ArekvanSchaijk\\BambooServerClient\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Bamboo Server Client for PHP",
+            "time": "2017-01-01 12:15:11"
         },
         {
             "name": "arekvanschaijk/bitbucket-server-client",
@@ -74,17 +101,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArekvanSchaijk/bitbucket-server-client.git",
-                "reference": "fa3b111e96d0c39622b2bc02a3e613ae676b6e9d"
+                "reference": "42872dcb4a9adbd63031c00f35177348874a3bdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/fa3b111e96d0c39622b2bc02a3e613ae676b6e9d",
-                "reference": "fa3b111e96d0c39622b2bc02a3e613ae676b6e9d",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/42872dcb4a9adbd63031c00f35177348874a3bdb",
+                "reference": "42872dcb4a9adbd63031c00f35177348874a3bdb",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^6",
-                "sebastian/git": "^2"
+                "guzzlehttp/guzzle": "^6"
             },
             "type": "library",
             "autoload": {
@@ -94,7 +120,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Bitbucket Server Client for PHP",
-            "time": "2016-12-23 18:11:20"
+            "time": "2016-12-23 18:14:42"
         },
         {
             "name": "gorkalaucirica/hipchat-v2-api-client",
@@ -464,51 +490,6 @@
             "time": "2016-10-10 12:19:37"
         },
         {
-            "name": "sebastian/git",
-            "version": "2.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/git.git",
-                "reference": "5100bc50cd9e70f424c643618e142214225024f3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/git/zipball/5100bc50cd9e70f424c643618e142214225024f3",
-                "reference": "5100bc50cd9e70f424c643618e142214225024f3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de"
-                }
-            ],
-            "description": "Simple wrapper for Git",
-            "homepage": "http://www.github.com/sebastianbergmann/git",
-            "keywords": [
-                "git"
-            ],
-            "time": "2016-06-15 09:30:19"
-        },
-        {
             "name": "symfony/console",
             "version": "v3.2.1",
             "source": {
@@ -845,7 +826,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "arekvanschaijk/bitbucket-server-client": 20
+        "arekvanschaijk/bitbucket-server-client": 20,
+        "arekvanschaijk/bamboo-server-client": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

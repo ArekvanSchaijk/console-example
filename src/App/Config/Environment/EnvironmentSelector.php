@@ -56,7 +56,7 @@ class EnvironmentSelector extends AbstractConfig
         } elseif (Environment::isLocalEnvironment()) {
             return $this->local();
         }
-        throw new Exception('No current environment found.');
+        throw new Exception('Current environment is not configured.');
     }
 
     /**
@@ -66,7 +66,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isLocal()
     {
-        return isset($this->config['Local']);
+        return isset($this->config['local']);
     }
 
     /**
@@ -83,7 +83,7 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->local = new EnvironmentConfig(
                 'Local',
-                $this->config['Local']
+                $this->config['local']
             );
         }
         return $this->local;
@@ -96,7 +96,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isDevelopment()
     {
-        return isset($this->config['Development']);
+        return isset($this->config['development']);
     }
 
     /**
@@ -113,7 +113,7 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->development = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_DEVELOPMENT,
-                $this->config['Development']
+                $this->config['development']
             );
         }
         return $this->development;
@@ -125,7 +125,7 @@ class EnvironmentSelector extends AbstractConfig
      * @return bool
      */
     public function isTesting() {
-        return isset($this->config['Testing']);
+        return isset($this->config['testing']);
     }
 
     /**
@@ -142,7 +142,7 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->testing = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_TESTING,
-                $this->config['Testing']
+                $this->config['testing']
             );
         }
         return $this->testing;
@@ -155,7 +155,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isAcceptance()
     {
-        return isset($this->config['Acceptance']);
+        return isset($this->config['acceptance']);
     }
 
     /**
@@ -172,7 +172,7 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->acceptance = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_ACCEPTANCE,
-                $this->config['Acceptance']
+                $this->config['acceptance']
             );
         }
         return $this->acceptance;
@@ -185,7 +185,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isProduction()
     {
-        return isset($this->config['Production']);
+        return isset($this->config['production']);
     }
 
     /**
@@ -202,7 +202,7 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->production = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_PRODUCTION,
-                $this->config['Production']
+                $this->config['production']
             );
         }
         return $this->production;

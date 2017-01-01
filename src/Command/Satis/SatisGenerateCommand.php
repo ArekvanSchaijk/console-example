@@ -109,6 +109,7 @@ class SatisGenerateCommand extends CommandBase
             // If the file is not changed then we show some kind of success ;)
             if (md5(file_get_contents($satisInternalFilePath)) === $contentsHash) {
                 $this->io->success('Satis internal.json is already up to date.');
+                $tempApp->remove();
                 exit;
             }
         }

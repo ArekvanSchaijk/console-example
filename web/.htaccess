@@ -1,0 +1,4 @@
+<FilesMatch "^installer">
+  ForceType application/octet-stream
+  Header set Content-Disposition: "attachment; filename=alternet.phar"
+</FilesMatch>
