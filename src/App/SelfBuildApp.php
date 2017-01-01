@@ -91,7 +91,7 @@ class SelfBuildApp extends App
     public function getManifestArray()
     {
         $manifest = [];
-        foreach (scandir($this->getDownloadWorkingDirectory()) as $fileName) {
+        foreach (scandir($this->getDownloadWorkingDirectory(), SCANDIR_SORT_DESCENDING) as $fileName) {
             if (strpos($fileName, '.phar') !== false && strpos($fileName, '.pubkey') === false) {
                 $manifest[] = [
                     'name' => 'alternet.phar',
