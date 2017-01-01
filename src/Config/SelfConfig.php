@@ -28,4 +28,14 @@ class SelfConfig extends AbstractConfig
         return $this->config['manifest_url'];
     }
 
+    /**
+     * Gets the Download Url
+     *
+     * @return string
+     */
+    public function getDownloadUrl()
+    {
+        return $this->config['download_url'];
+    }
+
 }

@@ -1,8 +1,9 @@
 <?php
 namespace AlterNET\Cli\Command\Self;
 
+use AlterNET\Cli\App\SelfBuildApp;
 use AlterNET\Cli\Command\CommandBase;
-use AlterNET\Cli\Utility\AppUtility;
+use AlterNET\Cli\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,28 +31,25 @@ class SelfBuildCommand extends CommandBase
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return void
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Creates a new application
-        $tempApp = AppUtility::createNewApp($this->config->self()->getRemoteUrl());
-        // Gets the highest tag from the repository
-        $tag = $tempApp->getGitService()->getHighestTag();
-        // Gets the tag related revision
-        $tagRevision = $tempApp->getGitService()->getHighestTagRevision();
-        // File path
-        $filePath = $tempApp->getWebWorkingDirectory() . '/downloads/alternet-' . $tag . '.phar';
-        // If the file already exists then we just do nothing ;)
-        if (file_exists($filePath)) {
-            $this->io->success('Everything is already up to date.');
+        // THis gets the bitbucket api
+        $bitbucket = $this->bitbucketDriver()->getApi();
+        // Gets the 'self', 'build application'
+        $app = new SelfBuildApp();
+        // If the latest version already exists as download file we just do nothing ;-)
+        if (file_exists($app->getNewVersionFilePath())) {
+            $app->remove();
+            $this->io->success('The latest version (' . $app->getVersion() . ') is already build.');
             exit;
         }
-        // Checksout the tags revision
-        $tempApp->getGitService()->checkout($tagRevision, false);
-        // Builds the revision
-        $tempApp->build();
-
-        $this->io->success($filePath);
+        $this->io->note('Building version ' . $app->getVersion() . '. This can take some time.');
+        // Builds the new version
+        $app->build();
+        // And this releases the new version
+        $app->release($this->bitbucketDriver());
 
     }
 
