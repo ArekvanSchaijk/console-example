@@ -1,5 +1,6 @@
 <?php
 namespace AlterNET\Cli\Config;
+
 use AlterNET\Cli\Utility\ConsoleUtility;
 
 /**

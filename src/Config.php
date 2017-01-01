@@ -2,6 +2,7 @@
 namespace AlterNET\Cli;
 
 use AlterNET\Cli\Config\AppConfig;
+use AlterNET\Cli\Config\BambooConfig;
 use AlterNET\Cli\Config\BitbucketConfig;
 use AlterNET\Cli\Config\ComposerConfig;
 use AlterNET\Cli\Config\HostFileConfig;
@@ -44,6 +45,11 @@ class Config
      * @var BitbucketConfig
      */
     protected $bitbucket;
+
+    /**
+     * @var BambooConfig
+     */
+    protected $bamboo;
 
     /**
      * Config constructor.
@@ -130,6 +136,19 @@ class Config
             $this->bitbucket = new BitbucketConfig($this->config['bitbucket']);
         }
         return $this->bitbucket;
+    }
+
+    /**
+     * Bamboo
+     *
+     * @return BambooConfig
+     */
+    public function bamboo()
+    {
+        if (is_null($this->bamboo)) {
+            $this->bamboo = new BambooConfig($this->config['bamboo']);
+        }
+        return $this->bamboo;
     }
 
     /**

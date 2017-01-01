@@ -60,6 +60,9 @@ bitbucket:
           - 'validator_package_name'
           - 'wizard_create_composer_file'
 
+bamboo:
+  endpoint: 'https://cd.alternet.nl'
+
 app:
   local:
     relative_working_directory: '.alternet/local'
@@ -69,3 +72,4 @@ app:
   bitbucket_repository_selectors:
     - 'TYPO3'
     - 'SATIS'
+    - 'CLI'

@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli\App\Config\Environment;
 
+use AlterNET\Cli\App\Config\Environment\Server\ServerConfig;
 use AlterNET\Cli\Config\AbstractConfig;
 use AlterNET\Cli\Utility\TemplateUtility;
 
@@ -15,6 +16,11 @@ class EnvironmentConfig extends AbstractConfig
      * @var string
      */
     protected $name;
+
+    /**
+     * @var ServerConfig|bool
+     */
+    protected $server;
 
     /**
      * EnvironmentConfig constructor.
@@ -71,8 +77,8 @@ class EnvironmentConfig extends AbstractConfig
      */
     public function getDomains()
     {
-        if (isset($this->config['Domains']) && count($this->config['Domains'])) {
-            return $this->config['Domains'];
+        if (isset($this->config['domains']) && count($this->config['domains'])) {
+            return $this->config['domains'];
         }
         return false;
     }
@@ -114,6 +120,32 @@ class EnvironmentConfig extends AbstractConfig
             return $this->config['build'];
         }
         return false;
+    }
+
+    /**
+     * Is Server
+     *
+     * @return bool
+     */
+    public function isServer()
+    {
+        return isset($this->config['server']);
+    }
+
+    /**
+     * Server
+     *
+     * @return ServerConfig|bool
+     */
+    public function server()
+    {
+        if (is_null($this->server)) {
+            $this->server = false;
+            if ($this->isServer()) {
+                $this->server = new ServerConfig($this->config['server']);
+            }
+        }
+        return $this->server;
     }
 
 }

@@ -84,6 +84,16 @@ class App
     }
 
     /**
+     * Gets the Local Logs Working Directory
+     *
+     * @return string
+     */
+    public function getLocalLogsWorkingDirectory()
+    {
+        return $this->getLocalWorkingDirectory() . '/logs';
+    }
+
+    /**
      * Gets the Virtual Host File Path
      *
      * @return string
@@ -100,7 +110,7 @@ class App
      */
     public function getErrorLogFilePath()
     {
-        return $this->getLocalWorkingDirectory() . '/error.log';
+        return $this->getLocalLogsWorkingDirectory() . '/error.log';
     }
 
     /**
@@ -110,7 +120,7 @@ class App
      */
     public function getAccessLogFilePath()
     {
-        return $this->getLocalWorkingDirectory() . '/access.log';
+        return $this->getLocalLogsWorkingDirectory() . '/access.log';
     }
 
     /**
@@ -297,6 +307,9 @@ class App
     {
         if (!file_exists($this->getLocalWorkingDirectory())) {
             ConsoleUtility::fileSystem()->mkdir($this->getLocalWorkingDirectory());
+        }
+        if (!file_exists($this->getLocalLogsWorkingDirectory())) {
+            ConsoleUtility::fileSystem()->mkdir($this->getLocalLogsWorkingDirectory());
         }
         ConsoleUtility::fileSystem()->touch([
             $this->getVirtualHostFilePath(),

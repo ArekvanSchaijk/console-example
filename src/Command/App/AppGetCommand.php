@@ -20,6 +20,7 @@ class AppGetCommand extends CommandBase
     /**
      * Configure
      *
+     * @return void
      */
     protected function configure()
     {

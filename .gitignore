@@ -1,5 +1,4 @@
 .idea*
+.alternet/local
 /vendor
-/*.phar
-/.alternet
-/_.alternet
+/alternet.phar

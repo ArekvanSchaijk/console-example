@@ -3,6 +3,7 @@ namespace AlterNET\Cli\Command;
 
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\CrowdContainer;
+use AlterNET\Cli\Driver\BambooDriver;
 use AlterNET\Cli\Driver\BitbucketDriver;
 use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Utility\AppUtility;
@@ -56,6 +57,11 @@ abstract class CommandBase extends Command
      * @var BitbucketDriver
      */
     protected $bitbucketDriver;
+
+    /**
+     * @var BambooDriver
+     */
+    protected $bambooDriver;
 
     /**
      * @var HipChatDriver
@@ -313,6 +319,21 @@ abstract class CommandBase extends Command
             );
         }
         return $this->bitbucketDriver;
+    }
+
+    /**
+     * Bamboo Driver
+     *
+     * @return BambooDriver
+     */
+    protected function bambooDriver()
+    {
+        if (!$this->bambooDriver) {
+            $this->bambooDriver = new BambooDriver(
+                $this->processCollectCrowdCredentials()
+            );
+        }
+        return $this->bambooDriver;
     }
 
     /**

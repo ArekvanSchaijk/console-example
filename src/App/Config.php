@@ -49,7 +49,7 @@ class Config
      */
     public function isApplicationTemplate()
     {
-        return isset($this->config['Application']['template']);
+        return isset($this->config['application']['template']);
     }
 
     /**
@@ -59,7 +59,7 @@ class Config
      */
     public function getApplicationTemplate()
     {
-        return strtolower($this->config['Application']['template']);
+        return strtolower($this->config['application']['template']);
     }
 
     /**
@@ -79,8 +79,8 @@ class Config
      */
     public function getApplicationKey()
     {
-        if (isset($this->config['Application']['key']) && !empty($this->config['Application']['key'])) {
-            return trim(strtoupper($this->config['Application']['key']));
+        if (isset($this->config['application']['key']) && !empty($this->config['application']['key'])) {
+            return trim(strtoupper($this->config['application']['key']));
         }
         return false;
     }
@@ -92,8 +92,8 @@ class Config
      */
     public function getBuilds()
     {
-        if (isset($this->config['Application']['build']) && is_array($this->config['Application']['build'])) {
-            return $this->config['Application']['build'];
+        if (isset($this->config['application']['build']) && is_array($this->config['application']['build'])) {
+            return $this->config['application']['build'];
         }
         return false;
     }
@@ -125,7 +125,7 @@ class Config
      */
     public function getHipChatRoomId()
     {
-        return (isset($this->config['Application']['hipchat']) ? (int)$this->config['Application']['hipchat'] : false);
+        return (isset($this->config['application']['hipchat']) ? (int)$this->config['application']['hipchat'] : false);
     }
 
     /**
