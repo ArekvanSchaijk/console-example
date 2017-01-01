@@ -74,6 +74,21 @@ class App
     }
 
     /**
+     * Gets the Web Working Directory
+     *
+     * @return string
+     */
+    public function getWebWorkingDirectory()
+    {
+        if ($this->hasConfigFile()) {
+            if (($webDirectory = $this->getConfig()->getWebDirectory())) {
+                return $this->getWorkingDirectory() . $webDirectory;
+            }
+        }
+        return $this->getWorkingDirectory();
+    }
+
+    /**
      * Gets the Local Working Directory
      *
      * @return string
@@ -319,7 +334,7 @@ class App
         ]);
         if ($this->hasConfigFile() && $this->getConfig()->current()->getDomains()) {
             $string = '<VirtualHost *:80>' . PHP_EOL;
-            $string .= chr(9) . 'DocumentRoot' . chr(9) . '"' . realpath($this->getWorkingDirectory()) . '"' . PHP_EOL;
+            $string .= chr(9) . 'DocumentRoot' . chr(9) . '"' . realpath($this->getWebWorkingDirectory()) . '"' . PHP_EOL;
             $i = 0;
             if (($domains = $this->getConfig()->current()->getDomains())) {
                 foreach ($domains as $domain) {
