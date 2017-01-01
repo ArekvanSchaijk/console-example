@@ -3,7 +3,9 @@ namespace AlterNET\Cli\Command\Self;
 
 use AlterNET\Cli\App\SelfBuildApp;
 use AlterNET\Cli\Command\CommandBase;
+use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Exception;
+use GorkaLaucirica\HipchatAPIv2Client\Model\Message;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -50,7 +52,21 @@ class SelfBuildCommand extends CommandBase
         $app->build();
         // And this releases the new version
         $app->release($this->bitbucketDriver());
-
+        // This shows some success
+        $this->io->success('CLI version "' . $app->getVersion() . '" is successfully released.');
+        // Notify about this on HipChat
+        $this->io->note('Please wait 10 seconds while we update about it on HipChat....');
+        sleep(10);
+        $message = HipChatDriver::createMessage()
+            ->setMessage('Version ' . $app->getVersion() . ' of the Alternet CLI is just released. Please perform an'
+                . ' "alternet self:update" command on your local machine.')
+            ->setColor(Message::COLOR_PURPLE)
+            ->setNotify(true);
+        $this->hipChatDriver()->sendMessage(
+            $message,
+            $app->getConfig()->getHipChatRoomId()
+        );
+        $this->io->success('All things done. Have a nice day ;-)');
     }
 
 }
