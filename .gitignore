@@ -2,3 +2,4 @@
 .alternet/local
 /vendor
 /alternet.phar
+/alternet.phar.pubkey

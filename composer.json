@@ -16,6 +16,7 @@
     "gorkalaucirica/hipchat-v2-api-client": "^1.5",
     "arekvanschaijk/bitbucket-server-client": "dev-master",
     "arekvanschaijk/bamboo-server-client": "dev-master",
+    "herrera-io/phar-update": "^2",
     "alternet/environment": "^1",
     "alternet/configuration-helper": "^1"
   },

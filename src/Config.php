@@ -7,6 +7,7 @@ use AlterNET\Cli\Config\BitbucketConfig;
 use AlterNET\Cli\Config\ComposerConfig;
 use AlterNET\Cli\Config\HostFileConfig;
 use AlterNET\Cli\Config\LocalConfig;
+use AlterNET\Cli\Config\SelfConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
@@ -20,6 +21,11 @@ class Config
      * @var array
      */
     protected $config;
+
+    /**
+     * @var SelfConfig
+     */
+    protected $self;
 
     /**
      * @var ComposerConfig
@@ -71,6 +77,19 @@ class Config
             $GLOBALS['ALTERNET_CLI_CONF_VARS'] = new Config();
         }
         return $GLOBALS['ALTERNET_CLI_CONF_VARS'];
+    }
+
+    /**
+     * Self
+     *
+     * @return SelfConfig
+     */
+    public function self()
+    {
+        if (!$this->self) {
+            $this->self = new SelfConfig($this->config['self']);
+        }
+        return $this->self;
     }
 
     /**

@@ -26,5 +26,6 @@
   ],
   "main": "bin/alternet.php",
   "output": "alternet.phar",
-  "stub": true
+  "stub": true,
+  "key": "private.key"
 }
