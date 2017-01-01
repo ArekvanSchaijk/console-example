@@ -8,10 +8,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SelfBuildCommand
+ * Class SelfUpdateCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class SelfBuildCommand extends CommandBase
+class SelfUpdateCommand extends CommandBase
 {
 
     /**

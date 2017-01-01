@@ -23,8 +23,8 @@ class SelfBuildCommand extends CommandBase
      */
     protected function configure()
     {
-        $this->setName('self:build');
-        $this->setDescription('Builds the CLI');
+        $this->setName('self:release');
+        $this->setDescription('Releases the latest version of the CLI');
     }
 
     /**
