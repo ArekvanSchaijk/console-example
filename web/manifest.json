@@ -1,6 +1,18 @@
 [
     {
         "name": "alternet.phar",
+        "sha1": "1b378693f5fbe15f1ee56fc7ece783faa1b30c7d",
+        "url": "http://cli.alternet.nl/download/alternet-1.3.5.phar",
+        "version": "1.3.5"
+    },
+    {
+        "name": "alternet.phar",
+        "sha1": "6220300d2c0cb1e9ff0fb4680a33e5a917d953aa",
+        "url": "http://cli.alternet.nl/download/alternet-1.3.4.phar",
+        "version": "1.3.4"
+    },
+    {
+        "name": "alternet.phar",
         "sha1": "0225358bd5db8aaeb97f0c70f6e9d5c50ac1f389",
         "url": "http://cli.alternet.nl/download/alternet-1.3.3.phar",
         "version": "1.3.3"
