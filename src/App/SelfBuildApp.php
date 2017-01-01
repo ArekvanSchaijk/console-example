@@ -2,7 +2,6 @@
 namespace AlterNET\Cli\App;
 
 use AlterNET\Cli\App;
-use AlterNET\Cli\Driver\Bitbucket\BitbucketApi;
 use AlterNET\Cli\Driver\BitbucketDriver;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\GeneralUtility;
@@ -96,9 +95,9 @@ class SelfBuildApp extends App
             if (strpos($fileName, '.phar') !== false && strpos($fileName, '.pubkey') === false) {
                 $manifest[] = [
                     'name' => 'alternet.phar',
-                    'sha1' => sha1_file($this->getNewVersionFilePath()),
+                    'sha1' => sha1_file($this->getDownloadWorkingDirectory() . '/' . $fileName),
                     'url' => $this->cliConfig->self()->getDownloadUrl() . $fileName,
-                    'version' => $this->getVersion()
+                    'version' => rtrim(ltrim($fileName, 'alternet-'), '.phar')
                 ];
             }
         }
@@ -156,7 +155,7 @@ class SelfBuildApp extends App
         $this->writeVersionIntoConfigFile();
         $this->getComposerService()->install();
         $this->process('box build');
-
+        $this->getGitService()->checkout('master');
         ConsoleUtility::fileSystem()->copy(
             $this->getWorkingDirectory() . '/alternet.phar',
             $this->getNewVersionFilePath()
@@ -185,9 +184,9 @@ class SelfBuildApp extends App
         $repository = $bitbucketDriver->getRepositoryByRemoteUrl($this->getRemoteUrl());
         // Gets the master branch
         $master = $repository->getBranchByName('master');
-        // Creates a new branch name
-        $branchName = 'CLI/ReleaseVersion-'. $this->getVersion();
-        $this->process('git checkout -b ' . $branchName);
+        // Creates a new branch name on the server
+        $branch = $repository->createBranch($master, 'CLI/ReleaseVersion-' . $this->getVersion());
+        $this->process('git fetch;git checkout -b ' . $branch->getName());
         // Stages files
         $filesToStage = [
             $this->getNewVersionFilePath(),
@@ -199,16 +198,18 @@ class SelfBuildApp extends App
         }
         // Commits and pushes it
         $this->process('git commit -m \'[CLI] Release of version ' . $this->getVersion() . '\';git push -u origin '
-            . $branchName);
+            . $branch->getName());
         // Creates a pull request
         $pullRequest = $repository->createPullRequest(
             '[CLI] Release of version ' . $this->getVersion(),
             'Containing a new .phar file and update of the manifest.json file.',
-            $repository->getBranchByName($branchName, true),
-            $repository->getBranchByName('master')
+            $branch,
+            $master
         );
         // And finally merges it
         $pullRequest->merge();
+        // And lets remove the remote branch now
+        $this->process('git push origin --delete ' . $branch->getName());
     }
 
     /**
