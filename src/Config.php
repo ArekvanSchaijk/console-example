@@ -181,6 +181,16 @@ class Config
     }
 
     /**
+     * Gets the Application Server Admin
+     *
+     * @return string
+     */
+    public function getApplicationServerAdmin()
+    {
+        return $this->config['application']['server_admin'];
+    }
+
+    /**
      * Gets the Application Version
      *
      * @return string
