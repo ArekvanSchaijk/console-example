@@ -10,4 +10,12 @@ use ArekvanSchaijk\BitbucketServerClient\Api;
 class BitbucketApi extends Api
 {
 
+    /**
+     * BitbucketApi constructor.
+     */
+    public function __construct()
+    {
+        self::$options['verify'] = false;
+    }
+
 }

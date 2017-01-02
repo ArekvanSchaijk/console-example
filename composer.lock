@@ -74,12 +74,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArekvanSchaijk/bamboo-server-client.git",
-                "reference": "6466fd297347eea5e24cc448fecce76f018c83c2"
+                "reference": "bef57501eff9b7c1e74e9b1fbbaf26b79b671372"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArekvanSchaijk/bamboo-server-client/zipball/6466fd297347eea5e24cc448fecce76f018c83c2",
-                "reference": "6466fd297347eea5e24cc448fecce76f018c83c2",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bamboo-server-client/zipball/bef57501eff9b7c1e74e9b1fbbaf26b79b671372",
+                "reference": "bef57501eff9b7c1e74e9b1fbbaf26b79b671372",
                 "shasum": ""
             },
             "require": {
@@ -93,7 +93,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Bamboo Server Client for PHP",
-            "time": "2017-01-01 12:15:11"
+            "time": "2017-01-01 14:14:00"
         },
         {
             "name": "arekvanschaijk/bitbucket-server-client",

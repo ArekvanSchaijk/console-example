@@ -10,4 +10,12 @@ use ArekvanSchaijk\BambooServerClient\Api;
 class BambooApi extends Api
 {
 
+    /**
+     * BitbucketApi constructor.
+     */
+    public function __construct()
+    {
+        self::$options['verify'] = false;
+    }
+
 }
