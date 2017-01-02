@@ -1,7 +1,6 @@
 <?php
 namespace AlterNET\Cli\App;
 
-use AlterNET\Cli\App;
 use AlterNET\Cli\Driver\BitbucketDriver;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\GeneralUtility;
@@ -11,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
  * Class SelfBuildApp
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class SelfBuildApp extends App
+class SelfBuildApp extends TemporaryApp
 {
 
     /**
@@ -210,14 +209,6 @@ class SelfBuildApp extends App
         $pullRequest->merge();
         // And lets remove the remote branch now
         $this->process('git push origin --delete ' . $branch->getName());
-    }
-
-    /**
-     * SelfApp destructor.
-     */
-    public function __destruct()
-    {
-        $this->remove();
     }
 
 }

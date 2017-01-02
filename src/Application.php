@@ -28,7 +28,7 @@ use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
 use AlterNET\Cli\Command\App\AppGetCommand;
 use AlterNET\Cli\Command\App\AppSyncCommand;
 use AlterNET\Cli\Command\Satis\SatisGenerateCommand;
-use AlterNET\Cli\Command\Self\SelfBuildCommand;
+use AlterNET\Cli\Command\Self\SelfReleaseCommand;
 use AlterNET\Cli\Command\Self\SelfUpdateCommand;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
@@ -98,7 +98,7 @@ class Application extends SymfonyConsoleApplication
 
             // Self
 
-            new SelfBuildCommand(),
+            new SelfReleaseCommand(),
             new SelfUpdateCommand(),
 
             // Bitbucket
