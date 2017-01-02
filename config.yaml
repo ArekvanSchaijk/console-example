@@ -1,5 +1,6 @@
 application:
   name: 'Alternet B.V.'
+  # The version will be automatically updated by a git tag in the SelfReleaseCommand!
   version: 'dev-master'
 
 self:
