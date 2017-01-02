@@ -1,4 +1,4 @@
 application:
   web_directory: '/web'
   build:
-    - './satis.phar build satis.json .'
+    - './satis.phar build satis.json web'

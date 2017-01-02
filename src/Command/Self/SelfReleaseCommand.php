@@ -10,10 +10,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SelfBuildCommand
+ * Class SelfReleaseCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class SelfBuildCommand extends CommandBase
+class SelfReleaseCommand extends CommandBase
 {
 
     /**
@@ -43,13 +43,13 @@ class SelfBuildCommand extends CommandBase
         $app = new SelfBuildApp();
         // If the latest version already exists as download file we just do nothing ;-)
         if (file_exists($app->getNewVersionFilePath())) {
-            $app->remove();
             $this->io->success('The latest version (' . $app->getVersion() . ') is already build.');
             exit;
         }
         $this->io->note('Building version ' . $app->getVersion() . '. This can take some time.');
         // Builds the new version
         $app->build();
+        $this->io->note('Releasing...');
         // And this releases the new version
         $app->release($this->bitbucketDriver());
         // This shows some success
@@ -66,7 +66,7 @@ class SelfBuildCommand extends CommandBase
             $message,
             $app->getConfig()->getHipChatRoomId()
         );
-        $this->io->success('All things done. Have a nice day ;-)');
+        $this->io->success('Message sent. Task finished.');
     }
 
 }
