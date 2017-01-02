@@ -31,7 +31,7 @@ class ComposerService implements AppServiceInterface
      */
     public function install()
     {
-        $this->app->process('composer install');
+        $this->app->process('composer install', null, null, null, 300);
     }
 
     /**
@@ -41,7 +41,7 @@ class ComposerService implements AppServiceInterface
      */
     public function update()
     {
-        $this->app->process('composer update');
+        $this->app->process('composer update', null, null, null, 300);
     }
 
 }

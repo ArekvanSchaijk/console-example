@@ -17,7 +17,7 @@
     },
     {
       "in": "vendor",
-      "name": "*.php"
+      "name": "*"
     },
     {
       "in": "templates",
