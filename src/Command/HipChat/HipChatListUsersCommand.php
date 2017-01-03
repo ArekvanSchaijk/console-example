@@ -52,16 +52,16 @@ class HipChatListUsersCommand extends CommandBase
                 $user->getName(),
                 $user->getMentionName()
             ];
-            if ($this->passItemsThroughFilter($input, $values)) {
+            if ($this->passItemsThroughFilter($values)) {
                 $users[] = [
                     $user->getId(),
-                    $this->highlightFilteredWords($input, $user->getName()),
-                    '@' . $this->highlightFilteredWords($input, $user->getMentionName())
+                    $this->highlightFilteredWords($user->getName()),
+                    '@' . $this->highlightFilteredWords($user->getMentionName())
                 ];
             }
         }
         $count = count($users);
-        $this->renderFilter($input, $output, $count);
+        $this->renderFilter($count);
         if ($count) {
             $headers = ['#', 'Name', 'Mention Name'];
             $this->io->table($headers, $users);

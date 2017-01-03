@@ -50,7 +50,7 @@ class AppRemoveCommand extends CommandBase
             . $app->getBasename() . '"?', false)
         ) {
             $app->remove();
-            $this->io->success($app->getBasename() . ' is successfully removed.');
+            $this->io->success('"' . $app->getBasename() . '" is successfully removed.');
         } else {
             $this->io->note('Command aborted. Keep calm and carry on.');
         }

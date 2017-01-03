@@ -25,14 +25,68 @@ class GitService implements AppServiceInterface
     }
 
     /**
-     * Clone Url
+     * Fetch
      *
-     * @param $url
+     * @return void
+     */
+    public function fetch()
+    {
+        $this->app->process('git fetch');
+    }
+
+    /**
+     * Add
+     *
+     * @param string|null $file
+     * @return void
+     */
+    public function add($file = null)
+    {
+        $this->app->process('git add ' . ($file ?: '.'));
+    }
+
+    /**
+     * Commit
+     *
+     * @param string $message
+     * @return void
+     */
+    public function commit($message)
+    {
+        $this->app->process('git commit -m \'' . $message . '\'');
+    }
+
+    /**
+     * Push
+     *
+     * @param string|null $branch
+     * @return void
+     */
+    public function push($branch = null)
+    {
+        $this->app->process('git push -u origin ' . ($branch ? : 'HEAD'));
+    }
+
+    /**
+     * Clones an Url
+     *
+     * @param string $url
      * @return void
      */
     public function cloneUrl($url)
     {
         $this->app->process('git clone ' . $url . ' .');
+    }
+
+    /**
+     * Deletes a Remote Branch
+     *
+     * @param string $branch
+     * @return void
+     */
+    public function deleteRemoteBranch($branch)
+    {
+        $this->app->process('git push origin --delete ' . $branch);
     }
 
     /**

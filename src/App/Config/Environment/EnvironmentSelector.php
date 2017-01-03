@@ -60,6 +60,32 @@ class EnvironmentSelector extends AbstractConfig
     }
 
     /**
+     * All
+     *
+     * @return EnvironmentConfig[]
+     */
+    public function all()
+    {
+        $environments = [];
+        if ($this->isLocal()) {
+            $environments[] = $this->local();
+        }
+        if ($this->isDevelopment()) {
+            $environments[] = $this->development();
+        }
+        if ($this->isTesting()) {
+            $environments[] = $this->testing();
+        }
+        if ($this->isAcceptance()) {
+            $environments[] = $this->acceptance();
+        }
+        if ($this->isProduction()) {
+            $environments[] = $this->production();
+        }
+        return $environments;
+    }
+
+    /**
      * Is Local
      *
      * @return bool
@@ -83,7 +109,8 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->local = new EnvironmentConfig(
                 'Local',
-                $this->config['local']
+                $this->config['local'],
+                $this->getDefaultOptions()
             );
         }
         return $this->local;
@@ -113,7 +140,8 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->development = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_DEVELOPMENT,
-                $this->config['development']
+                $this->config['development'],
+                $this->getDefaultOptions()
             );
         }
         return $this->development;
@@ -124,7 +152,8 @@ class EnvironmentSelector extends AbstractConfig
      *
      * @return bool
      */
-    public function isTesting() {
+    public function isTesting()
+    {
         return isset($this->config['testing']);
     }
 
@@ -142,7 +171,8 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->testing = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_TESTING,
-                $this->config['testing']
+                $this->config['testing'],
+                $this->getDefaultOptions()
             );
         }
         return $this->testing;
@@ -172,7 +202,8 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->acceptance = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_ACCEPTANCE,
-                $this->config['acceptance']
+                $this->config['acceptance'],
+                $this->getDefaultOptions()
             );
         }
         return $this->acceptance;
@@ -202,10 +233,27 @@ class EnvironmentSelector extends AbstractConfig
             }
             $this->production = new EnvironmentConfig(
                 Environment::ENVIRONMENT_NAME_PRODUCTION,
-                $this->config['production']
+                $this->config['production'],
+                $this->getDefaultOptions()
             );
         }
         return $this->production;
+    }
+
+    /**
+     * Gets the Default Options
+     *
+     * @return array
+     */
+    protected function getDefaultOptions()
+    {
+        if (
+            isset($this->config['application']['environment']['options'])
+            && is_array($this->config['application']['environment']['options'])
+        ) {
+            return $this->config['application']['environment']['options'];
+        }
+        return [];
     }
 
 }

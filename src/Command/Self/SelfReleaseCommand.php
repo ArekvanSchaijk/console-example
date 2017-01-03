@@ -1,8 +1,8 @@
 <?php
 namespace AlterNET\Cli\Command\Self;
 
-use AlterNET\Cli\App\SelfBuildApp;
 use AlterNET\Cli\Command\CommandBase;
+use AlterNET\Cli\Command\Self\App\ReleaseApp;
 use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Exception;
 use GorkaLaucirica\HipchatAPIv2Client\Model\Message;
@@ -40,7 +40,7 @@ class SelfReleaseCommand extends CommandBase
         // THis gets the bitbucket api
         $bitbucket = $this->bitbucketDriver()->getApi();
         // Gets the 'self', 'build application'
-        $app = new SelfBuildApp();
+        $app = new ReleaseApp();
         // If the latest version already exists as download file we just do nothing ;-)
         if (file_exists($app->getNewVersionFilePath())) {
             $this->io->success('The latest version (' . $app->getVersion() . ') is already build.');

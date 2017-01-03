@@ -93,7 +93,7 @@ class AppUtility
     {
         $newApp = new App(ConsoleUtility::createBuildWorkingDirectory('app_'));
         if ($gitCloneUrl) {
-            $newApp->getGitService()->cloneUrl($gitCloneUrl);
+            $newApp->clone($gitCloneUrl);
         }
         return $newApp;
     }

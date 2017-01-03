@@ -6,8 +6,10 @@ use AlterNET\Cli\App\Config as AppConfig;
 use AlterNET\Cli\App\Exception;
 use AlterNET\Cli\App\Service\ComposerService;
 use AlterNET\Cli\App\Service\GitService;
+use AlterNET\Cli\Utility\ApacheUtility;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
+use AlterNET\Cli\Utility\StringUtility;
 use AlterNET\Package\Environment;
 use Symfony\Component\Process\Process;
 
@@ -46,12 +48,12 @@ class App
     /**
      * @var GitService
      */
-    protected $gitService;
+    protected $git;
 
     /**
      * @var ComposerService
      */
-    protected $composerService;
+    protected $composer;
 
     /**
      * App constructor.
@@ -142,6 +144,20 @@ class App
     }
 
     /**
+     * Gets the Absolute File Path
+     *
+     * @param string $filePath
+     * @return string
+     */
+    public function getAbsoluteFilePath($filePath)
+    {
+        if (StringUtility::getFirstCharacter($filePath) !== '/') {
+            return $this->getWorkingDirectory() . '/' . $filePath;
+        }
+        return $filePath;
+    }
+
+    /**
      * Gets the Basename
      *
      * @return string
@@ -196,6 +212,30 @@ class App
                 . $workingDirectory . '" to it does not exists.');
         }
         $this->workingDirectory = $workingDirectory;
+    }
+
+    /**
+     * Touch
+     *
+     * @param string $file
+     * @return string
+     */
+    public function touch($file)
+    {
+        ConsoleUtility::fileSystem()->touch($this->getAbsoluteFilePath($file));
+        return $file;
+    }
+
+    /**
+     * File Put Contents
+     *
+     * @param string $file
+     * @param string $content
+     * @return int
+     */
+    public function filePutContents($file, $content)
+    {
+        return file_put_contents($this->getAbsoluteFilePath($file), $content);
     }
 
     /**
@@ -277,11 +317,13 @@ class App
      */
     public function build()
     {
+        // Builds all directories and files
+        $this->buildDirectoriesAndFiles();
         // Builds the virtual host file
         $this->buildVirtualHostFile();
         // Composer install
         if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
-            $this->getComposerService()->install();
+            $this->composer()->install();
         }
         if ($this->hasConfigFile()) {
             // Performs the environment builds
@@ -291,6 +333,38 @@ class App
             // Performs the application builds
             if (($builds = $this->getConfig()->getBuilds())) {
                 $this->processBuildCommands($builds);
+            }
+        }
+    }
+
+    /**
+     * Builds all Directories And Files
+     *
+     * @return void
+     */
+    protected function buildDirectoriesAndFiles()
+    {
+        // This creates the /local section of the .alternet directory (if present)
+        if (file_exists($this->getWorkingDirectory() . '/.alternet')) {
+            // .alternet/local
+            if (!file_exists($this->getLocalWorkingDirectory())) {
+                ConsoleUtility::fileSystem()->mkdir($this->getLocalWorkingDirectory());
+            }
+            // .alternet/local/logs
+            if (!file_exists($this->getLocalLogsWorkingDirectory())) {
+                ConsoleUtility::fileSystem()->mkdir($this->getLocalLogsWorkingDirectory());
+            }
+            // .alternet/local/vhost.conf
+            if (!file_exists($this->getVirtualHostFilePath())) {
+                ConsoleUtility::fileSystem()->touch($this->getVirtualHostFilePath());
+            }
+            // .alternet/local/logs/error.log
+            if (!file_exists($this->getErrorLogFilePath())) {
+                ConsoleUtility::fileSystem()->touch($this->getErrorLogFilePath());
+            }
+            // .alternet/local/access.log
+            if (!file_exists($this->getAccessLogFilePath())) {
+                ConsoleUtility::fileSystem()->touch($this->getAccessLogFilePath());
             }
         }
     }
@@ -323,19 +397,23 @@ class App
      */
     public function buildVirtualHostFile()
     {
-        if (!file_exists($this->getLocalWorkingDirectory())) {
-            ConsoleUtility::fileSystem()->mkdir($this->getLocalWorkingDirectory());
+        if ($this->hasConfigFile()) {
+            ApacheUtility::generateVirtualHostString(
+                80,
+                $this->getWebWorkingDirectory(),
+                $this->getConfig()->current()->getDomains(),
+                $this->getErrorLogFilePath(),
+                $this->getAccessLogFilePath(),
+                $this->cliConfig->getApplicationServerAdmin()
+            );
         }
-        if (!file_exists($this->getLocalLogsWorkingDirectory())) {
-            ConsoleUtility::fileSystem()->mkdir($this->getLocalLogsWorkingDirectory());
-        }
-        ConsoleUtility::fileSystem()->touch([
-            $this->getVirtualHostFilePath(),
-            $this->getErrorLogFilePath(),
-            $this->getAccessLogFilePath(),
 
-        ]);
+
         if ($this->hasConfigFile() && $this->getConfig()->current()->getDomains()) {
+            // This makes sure the web directory exists before setting the DocumentRoot path with realpath()
+            if (!file_exists($this->getWebWorkingDirectory())) {
+                ConsoleUtility::fileSystem()->mkdir($this->getWebWorkingDirectory());
+            }
             $string = '<VirtualHost *:80>' . PHP_EOL;
             $string .= chr(9) . 'DocumentRoot' . chr(9) . '"' . realpath($this->getWebWorkingDirectory()) . '"' . PHP_EOL;
             $i = 0;
@@ -412,12 +490,12 @@ class App
     {
         if (is_null($this->mostRecentConfig)) {
             $this->mostRecentConfig = false;
-            $remoteBranches = $this->getGitService()->getRemoteBranches();
+            $remoteBranches = $this->git()->getRemoteBranches();
             $remoteUrl = $this->getRemoteUrl();
             foreach (AppUtility::getDefaultEnvironmentBranchNames() as $branchName) {
                 if (in_array($branchName, $remoteBranches)) {
                     $tempApp = AppUtility::createNewApp($remoteUrl);
-                    $tempApp->getGitService()->checkout($branchName);
+                    $tempApp->git()->checkout($branchName);
                     if ($tempApp->hasConfigFile()) {
                         $this->mostRecentConfig = $tempApp->getConfig();
                         $tempApp->remove();
@@ -451,16 +529,16 @@ class App
     }
 
     /**
-     * Gets the Git Service
+     * Git
      *
      * @return GitService
      */
-    public function getGitService()
+    public function git()
     {
-        if (!$this->gitService) {
-            $this->gitService = new GitService($this);
+        if (!$this->git) {
+            $this->git = new GitService($this);
         }
-        return $this->gitService;
+        return $this->git;
     }
 
     /**
@@ -468,12 +546,12 @@ class App
      *
      * @return ComposerService
      */
-    public function getComposerService()
+    public function composer()
     {
-        if (!$this->composerService) {
-            $this->composerService = new ComposerService($this);
+        if (!$this->composer) {
+            $this->composer = new ComposerService($this);
         }
-        return $this->composerService;
+        return $this->composer;
     }
 
     /**
@@ -487,7 +565,7 @@ class App
      * @param array $options An array of options for proc_open
      * @return string
      */
-    public function process($commandLine, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = [])
+    public function process($commandLine, $cwd = null, array $env = null, $input = null, $timeout = 120, array $options = [])
     {
         $cwd = (is_null($cwd) ? $this->getWorkingDirectory() : $cwd);
         $process = new Process($commandLine, $cwd, $env, $input, $timeout, $options);
@@ -505,7 +583,7 @@ class App
     {
         $environmentBranches = [];
         $defaultEnvironmentBranches = AppUtility::getDefaultEnvironmentBranchNames();
-        foreach ($this->getGitService()->getRemoteBranches() as $remoteBranch) {
+        foreach ($this->git()->getRemoteBranches() as $remoteBranch) {
             if (in_array($remoteBranch, $defaultEnvironmentBranches)) {
                 $environmentBranches[] = $remoteBranch;
             }
@@ -556,7 +634,7 @@ class App
             throw new Exception('Could not check out current environment since the branch '
                 . $currentEnvironmentBranch . ' does not exists on the server.');
         }
-        $this->getGitService()->checkout($currentEnvironmentBranch);
+        $this->git()->checkout($currentEnvironmentBranch);
     }
 
     /**
@@ -566,7 +644,31 @@ class App
      */
     public function getRemoteUrl()
     {
-        return $this->getGitService()->getRemoteUrl();
+        return $this->git()->getRemoteUrl();
+    }
+
+    /**
+     * Parses the Error Log
+     *
+     * @return array|bool
+     */
+    public function parseErrorLog()
+    {
+        if (file_exists($this->getErrorLogFilePath())) {
+            $rows = [];
+            $contents = file_get_contents($this->getErrorLogFilePath());
+            if (!empty(trim($contents))) {
+                $regex = '/^\[([^\]]+)\] \[([^\]]+)\] (?:\[client ([^\]]+)\])?\s*(.*)$/i';
+                preg_match($regex, $contents, $matches);
+                print_r($matches);
+            }
+        }
+        return false;
+    }
+
+    public function clearErrorLog()
+    {
+        // TODO
     }
 
 }

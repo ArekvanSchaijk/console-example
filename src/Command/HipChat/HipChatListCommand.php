@@ -50,15 +50,15 @@ class HipChatListCommand extends CommandBase
             $values = [
                 $room->getName()
             ];
-            if ($this->passItemsThroughFilter($input, $values)) {
+            if ($this->passItemsThroughFilter($values)) {
                 $rooms[] = [
                     $room->getId(),
-                    $this->highlightFilteredWords($input, $room->getName())
+                    $this->highlightFilteredWords($room->getName())
                 ];
             }
         }
         $count = count($rooms);
-        $this->renderFilter($input, $output, $count);
+        $this->renderFilter($count);
         if ($count) {
             $headers = ['#', 'Name'];
             $this->io->table($headers, $rooms);

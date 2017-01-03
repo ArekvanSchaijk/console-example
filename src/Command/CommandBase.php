@@ -9,7 +9,6 @@ use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,11 +41,6 @@ abstract class CommandBase extends Command
      * @var Config
      */
     protected $config;
-
-    /**
-     * @var ProgressBar
-     */
-    protected $progress;
 
     /**
      * @var CrowdContainer
@@ -118,19 +112,6 @@ abstract class CommandBase extends Command
         $this->addOption('filter', 'f', InputOption::VALUE_REQUIRED, $description);
         $this->addOption('filter-no-count', null, InputOption::VALUE_NONE,
             'Prevents the filter from outputting the count.');
-    }
-
-    /**
-     * Creates a new Progress Bar
-     *
-     * @param int $max
-     * @return ProgressBar
-     */
-    protected function createProgressBar($max = 100)
-    {
-        $this->progress = $this->io->createProgressBar($max);
-        $this->progress->setMessage('Preparing...');
-        $this->progress->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
     }
 
     /**

@@ -41,7 +41,7 @@ class AppBackupCommand extends CommandBase
             . $app->getBasename() . '"?')
         ) {
             $backupDirectory = $app->backup();
-            $this->io->success($app->getBasename() . ' is successfully copied to "' . $backupDirectory . '".');
+            $this->io->success('"' . $app->getBasename() . '" is successfully copied to "' . $backupDirectory . '".');
         } else {
             $this->io->note('Command aborted.');
         }

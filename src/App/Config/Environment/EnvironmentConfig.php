@@ -26,8 +26,9 @@ class EnvironmentConfig extends AbstractConfig
      * EnvironmentConfig constructor.
      * @param string $name
      * @param array $config
+     * @param array $defaultOptions
      */
-    public function __construct($name, array $config)
+    public function __construct($name, array $config, array $defaultOptions = null)
     {
         $this->name = $name;
         parent::__construct($config);
@@ -37,6 +38,14 @@ class EnvironmentConfig extends AbstractConfig
                     TemplateUtility::TYPE_ENVIRONMENT),
                 $this->config
             );
+        }
+        // Creates an empty options array if options are not present
+        if (!isset($this->config['options'])) {
+            $this->config['options'] = [];
+        }
+        // And merges the default options with the environment's options
+        if ($defaultOptions) {
+            $this->config['options'] = array_merge($defaultOptions, $this->config['options']);
         }
     }
 
@@ -146,6 +155,16 @@ class EnvironmentConfig extends AbstractConfig
             }
         }
         return $this->server;
+    }
+
+    public function isOption($optionName)
+    {
+
+    }
+
+    public function getOptions($optionName)
+    {
+
     }
 
 }

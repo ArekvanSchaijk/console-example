@@ -1,0 +1,41 @@
+application:
+
+  web_directory: '/web'
+
+  key: 'devops'
+  name: 'Alternet CLI'
+  hipchat: 3373199
+  build:
+    - 'box build'
+
+  environment:
+    options:
+      ssl_port: 443
+
+local:
+  domains:
+    - 'cli.local.alternet.nl'
+
+development:
+
+  options:
+    ssl_port: 443
+    redirect_to_https: true
+
+  server:
+    host: 'connect.development.alternet.nl'
+    port: 22
+    username: 'alternetcli'
+    document_root: '/home/{application.key}/{environment.domain}'
+    build:
+      - 'sudo chown -R {application.key}.webusers {server.document_root}'
+
+  git_branch: 'master'
+  post_build:
+    - 'sudo rm /usr/local/bin/alternet.phar'
+    - 'sudo cp alternet.phar /usr/local/bin'
+    - 'sudo chown -R root.root /usr/local/bin/alternet.phar'
+    - 'sudo chmod 0755 /usr/local/bin/alternet.phar'
+
+  domains:
+    - 'cli.alternet.nl'

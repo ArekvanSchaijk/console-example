@@ -21,7 +21,7 @@ class AppDomainsCommand extends CommandBase
     protected function configure()
     {
         $this->setName('app:domains');
-        $this->setDescription('Shows the applications domains');
+        $this->setDescription('Shows the application domains');
     }
 
     /**
@@ -37,6 +37,20 @@ class AppDomainsCommand extends CommandBase
         $this->preventNotBeingInAnApp();
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
+        if ($app->hasConfigFile()) {
+            if (($environments = $app->getConfig()->environment()->all())) {
+                foreach ($environments as $environmentConfig) {
+                    $this->io->section($environmentConfig->getName());
+                    if (($domains = $environmentConfig->getDomains())) {
+                        $this->io->listing($domains);
+                    } else {
+                        $this->io->note('No domains configured for this environment.');
+                    }
+                }
+            } else {
+                $this->io->warning('This application has no environments set.');
+            }
+        }
     }
 
 }

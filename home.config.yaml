@@ -9,5 +9,8 @@ crowd:
   username: false
   password: false
 
+apache:
+  listen: 80
+
 options:
   host_file_management: true
