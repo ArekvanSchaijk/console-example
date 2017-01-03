@@ -101,12 +101,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArekvanSchaijk/bitbucket-server-client.git",
-                "reference": "e2fcede20a8ebb15f27554229e0e172376974054"
+                "reference": "da1a0649eeda926ff7cffebc7858bfb5a24c4915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/e2fcede20a8ebb15f27554229e0e172376974054",
-                "reference": "e2fcede20a8ebb15f27554229e0e172376974054",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bitbucket-server-client/zipball/da1a0649eeda926ff7cffebc7858bfb5a24c4915",
+                "reference": "da1a0649eeda926ff7cffebc7858bfb5a24c4915",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Bitbucket Server Client for PHP",
-            "time": "2017-01-01 22:31:03"
+            "time": "2017-01-03 14:35:03"
         },
         {
             "name": "gorkalaucirica/hipchat-v2-api-client",
