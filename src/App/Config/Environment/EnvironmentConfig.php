@@ -43,6 +43,21 @@ class EnvironmentConfig
     protected $environment;
 
     /**
+     * @var array
+     */
+    protected $build = [];
+
+    /**
+     * @var array
+     */
+    protected $postBuild = [];
+
+    /**
+     * @var array
+     */
+    protected $buildDatabase = [];
+
+    /**
      * EnvironmentConfig constructor.
      * @param Config $appConfig
      * @param string $name
@@ -53,17 +68,36 @@ class EnvironmentConfig
     {
         $this->name = $name;
         $this->appConfig = $appConfig;
-        $this->environment = $environment;
-        if ($this->isTemplate()) {
-            $this->environment = array_replace_recursive(
-                TemplateUtility::get($this->getTemplate() . '.' . strtolower($this->name),
-                    TemplateUtility::TYPE_ENVIRONMENT),
-                $this->environment
-            );
+        $templates = [
+            (isset($environment['template']) ? TemplateUtility::get(strtolower($environment['template']) . '.'
+                . strtolower($this->name), TemplateUtility::TYPE_ENVIRONMENT) : []),
+            ($defaultEnvironmentConfig ?: []),
+            $environment
+        ];
+        foreach ($templates as $template) {
+            foreach (self::getSubjectsToMerge() as $subject => $property) {
+                if (isset($template[$subject]) && is_array($template[$subject])) {
+                    $this->$property = array_merge($this->$property, $template[$subject]);
+                }
+                unset($template['subject']);
+            }
         }
-        if ($defaultEnvironmentConfig) {
-            $this->environment = array_replace_recursive($defaultEnvironmentConfig, $this->environment);
-        }
+        $this->environment = array_replace_recursive($templates[0], $templates[1], $templates[2]);
+    }
+
+    /**
+     * Gets the Application Subjects To Merge array
+     *
+     * @return array
+     * @static
+     */
+    static protected function getSubjectsToMerge()
+    {
+        return [
+            'build' => 'build',
+            'post_build' => 'postBuild',
+            'build_database' => 'buildDatabase'
+        ];
     }
 
     /**
@@ -77,6 +111,16 @@ class EnvironmentConfig
     }
 
     /**
+     * Gets the Application Config
+     *
+     * @return Config
+     */
+    public function getApplicationConfig()
+    {
+        return $this->appConfig;
+    }
+
+    /**
      * Gets the Name
      *
      * @return string
@@ -84,26 +128,6 @@ class EnvironmentConfig
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Is Template
-     *
-     * @return bool
-     */
-    public function isTemplate()
-    {
-        return isset($this->environment['template']);
-    }
-
-    /**
-     * Gets the Template
-     *
-     * @return string
-     */
-    public function getTemplate()
-    {
-        return strtolower($this->environment['template']);
     }
 
     /**
@@ -148,14 +172,31 @@ class EnvironmentConfig
     /**
      * Gets the Builds
      *
-     * @return array|bool
+     * @return array
      */
     public function getBuilds()
     {
-        if (isset($this->environment['build']) && is_array($this->environment['build'])) {
-            return $this->environment['build'];
-        }
-        return false;
+        return $this->build;
+    }
+
+    /**
+     * Gets the Post Builds
+     *
+     * @return array
+     */
+    public function getPostBuilds()
+    {
+        return $this->postBuild;
+    }
+
+    /**
+     * Gets the Database Builds
+     *
+     * @return array
+     */
+    public function getDatabaseBuilds()
+    {
+        return $this->buildDatabase;
     }
 
     /**
@@ -165,7 +206,7 @@ class EnvironmentConfig
      */
     public function isServer()
     {
-        return isset($this->environment['server']);
+        return (bool)$this->server();
     }
 
     /**
@@ -177,8 +218,8 @@ class EnvironmentConfig
     {
         if (is_null($this->server)) {
             $this->server = false;
-            if ($this->isServer()) {
-                $this->server = new ServerConfig($this->environment['server']);
+            if (isset($this->environment['server'])) {
+                $this->server = new ServerConfig($this);
             }
         }
         return $this->server;
@@ -217,11 +258,6 @@ class EnvironmentConfig
     public function getOption($name)
     {
         return (isset($this->getOptions()[$name]) ? $this->getOptions()[$name] : false);
-    }
-
-    public function getListenPort()
-    {
-
     }
 
     /**

@@ -104,6 +104,20 @@ class App
     }
 
     /**
+     * Has File
+     *
+     * @param string $filePath
+     * @return bool
+     */
+    public function hasFile($filePath)
+    {
+        if (StringUtility::isAbsolutePath($filePath)) {
+            return file_exists($filePath);
+        }
+        return file_exists($this->getWorkingDirectory() . '/' . $filePath);
+    }
+
+    /**
      * Is Application Directory
      *
      * @return bool
@@ -184,7 +198,7 @@ class App
      */
     public function getAbsoluteFilePath($filePath)
     {
-        if (StringUtility::getFirstCharacter($filePath) !== '/') {
+        if (!StringUtility::isAbsolutePath($filePath)) {
             return $this->getWorkingDirectory() . '/' . $filePath;
         }
         return $filePath;
@@ -239,7 +253,7 @@ class App
      */
     public function setWorkingDirectory($workingDirectory)
     {
-        $workingDirectory = rtrim($workingDirectory, '/');
+        $workingDirectory = rtrim(rtrim($workingDirectory, '/'), '\\');
         if (!file_exists($workingDirectory)) {
             throw new Exception('Could not set the working directory since the path "'
                 . $workingDirectory . '" to it does not exists.');
@@ -351,20 +365,24 @@ class App
     public function build()
     {
         $this->buildLocal();
-        // Composer install
-        if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
-            $this->composer()->install();
-        }
-        if ($this->hasConfigFile()) {
-            // Performs the environment builds
-            if (($builds = $this->getConfig()->current()->getBuilds())) {
-                $this->processBuildCommands($builds);
-            }
-            // Performs the application builds
-            if (($builds = $this->getConfig()->getBuilds())) {
-                $this->processBuildCommands($builds);
-            }
-        }
+        $this->buildServer();
+        $this->buildEnvironment();
+        $this->buildApplication();
+        $this->buildDatabase();
+
+        $this->postBuild();
+    }
+
+    /**
+     * Post Build
+     *
+     * @return void
+     */
+    public function postBuild()
+    {
+        $this->postBuildServer();
+        $this->postBuildEnvironment();
+        $this->postBuildApplication();
     }
 
     /**
@@ -376,6 +394,105 @@ class App
     {
         $this->createDirectoriesAndFiles();
         $this->buildVirtualHostFile();
+    }
+
+    /**
+     * Builds the Server
+     *
+     * @return void
+     */
+    public function buildServer()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Checks if the current environment exists
+            if ($this->getConfig()->isCurrent()) {
+                // This checks if the current environment has a ServerConfig
+                if ($this->getConfig()->current()->isServer()) {
+                    $this->multiProcess($this->getConfig()->current()->server()->getBuilds());
+                }
+            }
+        }
+    }
+
+    public function postBuildServer()
+    {
+
+    }
+
+    /**
+     * Builds the Environment
+     *
+     * @return void
+     */
+    public function buildEnvironment()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Checks if the current environment exists
+            if ($this->getConfig()->isCurrent()) {
+                $this->multiProcess($this->getConfig()->current()->getBuilds());
+            }
+        }
+    }
+
+    /**
+     * Post Build Environment
+     *
+     * @return void
+     */
+    public function postBuildEnvironment()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Checks if the current environment exists
+            if ($this->getConfig()->isCurrent()) {
+                $this->multiProcess($this->getConfig()->current()->getPostBuilds());
+            }
+        }
+    }
+
+    /**
+     * Builds the Application
+     *
+     * @return void
+     */
+    public function buildApplication()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            $this->multiProcess($this->getConfig()->getBuilds());
+        }
+    }
+
+    /**
+     * Post Builds the Application
+     *
+     */
+    public function postBuildApplication()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            $this->multiProcess($this->getConfig()->getPostBuilds());
+        }
+    }
+
+    /**
+     * Builds the Database
+     *
+     * @return void
+     */
+    public function buildDatabase()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Environment
+            if ($this->getConfig()->isCurrent()) {
+                $this->multiProcess($this->getConfig()->current()->getDatabaseBuilds());
+            }
+            // Application
+            $this->multiProcess($this->getConfig()->getDatabaseBuilds());
+        }
     }
 
     /**
@@ -406,27 +523,6 @@ class App
                 }
             }
         }
-    }
-
-    /**
-     * Process Build Commands
-     *
-     * @param array $commands
-     * @return void
-     */
-    protected function processBuildCommands(array $commands)
-    {
-        foreach ($commands as $command) {
-            $this->process($command);
-        }
-    }
-
-    /**
-     * Builds the application Database
-     *
-     */
-    public function buildDatabase()
-    {
     }
 
     /**
@@ -597,13 +693,45 @@ class App
      * @param array $options An array of options for proc_open
      * @return string
      */
-    public function process($commandLine, $cwd = null, array $env = null, $input = null, $timeout = 120, array $options = [])
+    public function process(
+        $commandLine,
+        $cwd = null,
+        array $env = null,
+        $input = null,
+        $timeout = 120,
+        array $options = [])
     {
         $cwd = (is_null($cwd) ? $this->getWorkingDirectory() : $cwd);
         $process = new Process($commandLine, $cwd, $env, $input, $timeout, $options);
         $process->run();
         ConsoleUtility::unSuccessfulProcessExceptionHandler($process);
         return $process->getOutput();
+    }
+
+    /**
+     * Executes Multiple processes
+     *
+     * @param array $commandLines
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     * @param array|null $env The environment variables or null to use the same environment as the current PHP process
+     * @param mixed|null $input The input as stream resource, scalar or \Traversable, or null for no input
+     * @param int|float|null $timeout The timeout in seconds or null to disable
+     * @param array $options An array of options for proc_open
+     * @return array
+     */
+    public function multiProcess(
+        array $commandLines,
+        $cwd = null,
+        array $env = null,
+        $input = null,
+        $timeout = 120,
+        array $options = [])
+    {
+        $outputs = [];
+        foreach ($commandLines as $commandLine) {
+            $outputs[] = $this->process($commandLine, $cwd, $env, $input, $timeout, $options);
+        }
+        return $outputs;
     }
 
     /**
@@ -687,7 +815,6 @@ class App
     public function parseErrorLog()
     {
         if (file_exists($this->getErrorLogFilePath())) {
-            $rows = [];
             $contents = file_get_contents($this->getErrorLogFilePath());
             if (!empty(trim($contents))) {
                 $regex = '/^\[([^\]]+)\] \[([^\]]+)\] (?:\[client ([^\]]+)\])?\s*(.*)$/i';
@@ -696,11 +823,6 @@ class App
             }
         }
         return false;
-    }
-
-    public function clearErrorLog()
-    {
-        // TODO
     }
 
 }

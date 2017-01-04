@@ -37,7 +37,7 @@ class GeneralUtility
             $yaml = Yaml::parse($contents);
             return (is_array($yaml) ? $yaml : []);
         } catch (\Exception $exception) {
-            throw new Exception('Could not parse Yaml file "' . $filePath . '" because:' . PHP_EOL
+            throw new Exception('Could not parse Yaml file because of an Exception:' . PHP_EOL
                 . $exception->getMessage());
         }
     }

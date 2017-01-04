@@ -26,6 +26,21 @@ class Config
     protected $environment;
 
     /**
+     * @var array
+     */
+    protected $build = [];
+
+    /**
+     * @var array
+     */
+    protected $postBuild = [];
+
+    /**
+     * @var array
+     */
+    protected $buildDatabase = [];
+
+    /**
      * AppConfig constructor.
      * @param string $configFilePath
      * @throws Exception
@@ -36,13 +51,45 @@ class Config
         if (!$this->isApplicationTemplate()) {
             throw new Exception('The app.conf.yaml does not contain a application template.');
         }
-        $this->config = array_replace_recursive(
-            TemplateUtility::get($this->getApplicationName(),
-                TemplateUtility::TYPE_APPLICATION),
-            TemplateUtility::get($this->getApplicationTemplate(),
-                TemplateUtility::TYPE_APPLICATION),
+        $this->parseConfig();
+    }
+
+    /**
+     * Gets the Application Subjects To Merge array
+     *
+     * @return array
+     * @static
+     */
+    static protected function getApplicationSubjectsToMerge()
+    {
+        return [
+            'build' => 'build',
+            'post_build' => 'postBuild',
+            'build_database' => 'buildDatabase'
+        ];
+    }
+
+    /**
+     * Parses the Templates
+     *
+     * @return void
+     */
+    protected function parseConfig()
+    {
+        $templates = [
+            TemplateUtility::get($this->getApplicationName(), TemplateUtility::TYPE_APPLICATION),
+            TemplateUtility::get($this->getApplicationTemplate(), TemplateUtility::TYPE_APPLICATION),
             $this->config
-        );
+        ];
+        foreach ($templates as $template) {
+            foreach (self::getApplicationSubjectsToMerge() as $subject => $property) {
+                if (isset($template['application'][$subject]) && is_array($template['application'][$subject])) {
+                    $this->$property = array_merge($this->$property, $template['application'][$subject]);
+                }
+                unset($template['application'][$subject]);
+            }
+        }
+        $this->config = array_replace_recursive($templates[0], $templates[1], $templates[2]);
     }
 
     /**
@@ -99,6 +146,46 @@ class Config
     }
 
     /**
+     * Gets the Lower Application Key
+     *
+     * @return string
+     */
+    public function getLowerApplicationKey()
+    {
+        return strtolower($this->getApplicationKey());
+    }
+
+    /**
+     * Gets the Builds
+     *
+     * @return array
+     */
+    public function getBuilds()
+    {
+        return $this->build;
+    }
+
+    /**
+     * Gets the Post Builds
+     *
+     * @return array
+     */
+    public function getPostBuilds()
+    {
+        return $this->postBuild;
+    }
+
+    /**
+     * Gets the Database Builds
+     *
+     * @return array
+     */
+    public function getDatabaseBuilds()
+    {
+        return $this->buildDatabase;
+    }
+
+    /**
      * Gets the Web Directory
      *
      * @return bool
@@ -109,39 +196,6 @@ class Config
             return $this->config['application']['web_directory'];
         }
         return false;
-    }
-
-    /**
-     * Gets the Builds
-     *
-     * @return array|bool
-     */
-    public function getBuilds()
-    {
-        if (isset($this->config['application']['build']) && is_array($this->config['application']['build'])) {
-            return $this->config['application']['build'];
-        }
-        return false;
-    }
-
-    /**
-     * Gets the Post Builds
-     *
-     * @return bool
-     */
-    public function getPostBuilds()
-    {
-
-    }
-
-    public function getDatabaseBuilds()
-    {
-
-    }
-
-    public function getPostDatabaseBuilds()
-    {
-
     }
 
     /**
