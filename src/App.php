@@ -427,6 +427,10 @@ class App
      */
     public function buildEnvironment()
     {
+        // Composer install
+        if ($this->hasFile('composer.lock')) {
+            $this->composer()->install();
+        }
         // This checks if the application has a configuration
         if ($this->hasConfigFile()) {
             // Checks if the current environment exists
