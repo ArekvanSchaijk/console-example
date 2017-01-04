@@ -350,10 +350,7 @@ class App
      */
     public function build()
     {
-        // Builds all directories and files
-        $this->createDirectoriesAndFiles();
-        // Builds the virtual host file
-        $this->buildVirtualHostFile();
+        $this->buildLocal();
         // Composer install
         if (file_exists($this->getWorkingDirectory() . '/composer.lock')) {
             $this->composer()->install();
@@ -368,6 +365,17 @@ class App
                 $this->processBuildCommands($builds);
             }
         }
+    }
+
+    /**
+     * Build Local
+     *
+     * @return void
+     */
+    public function buildLocal()
+    {
+        $this->createDirectoriesAndFiles();
+        $this->buildVirtualHostFile();
     }
 
     /**
