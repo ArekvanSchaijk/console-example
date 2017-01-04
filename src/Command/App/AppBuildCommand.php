@@ -32,9 +32,16 @@ class AppBuildCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // This prevents that the command is being executed outside an app
+        $this->preventNotBeingInAnApp();
+        // This loads the app where we are in (working directory)
         $app = AppUtility::load();
-        $app->createDirectoriesAndFiles();
-        $app->buildVirtualHostFile();
+        if ($app->isApplicationDirectory()) {
+            $app->build();
+            $this->io->success('The application is successfully build.');
+        } else {
+            $this->io->warning('This application has no environments set.');
+        }
     }
 
 }

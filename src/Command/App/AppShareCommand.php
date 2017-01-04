@@ -116,7 +116,7 @@ class AppShareCommand extends CommandBase
         } else {
             $filePath = getcwd() . '/' . $subject;
             // Absolute file path from app's working directory
-            if (StringUtility::getFirstCharacter($subject) === '/') {
+            if (StringUtility::isAbsolutePath($subject)) {
                 $filePath = $app->getWorkingDirectory() . $subject;
             }
             $this->hipChatFileContent($filePath, $app->getConfig()->getHipChatRoomId());

@@ -37,8 +37,7 @@ class AppBuildLocalCommand extends CommandBase
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
         if ($app->isApplicationDirectory()) {
-            $app->createDirectoriesAndFiles();
-            $app->buildVirtualHostFile();
+            $app->buildLocal();
             $this->io->success('The local directory is successfully build.');
         } else {
             $this->io->warning('This application has no environments set.');

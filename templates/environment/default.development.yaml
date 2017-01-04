@@ -6,6 +6,6 @@ server:
   host: 'connect.development.alternet.nl'
   port: 22
   username: 'alternetcli'
-  document_root: '/home/{application.key}/{environment.domain}'
+  document_root: '/home/{application.key}/{environment.server_name}'
   build:
     - 'sudo chown -R {application.key}.webusers {server.document_root}'

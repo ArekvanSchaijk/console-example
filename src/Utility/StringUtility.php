@@ -28,6 +28,21 @@ class StringUtility
     }
 
     /**
+     * Is Absolute Path
+     *
+     * @param string $path
+     * @return bool
+     * @static
+     */
+    static public function isAbsolutePath($path)
+    {
+        if (StringUtility::getFirstCharacter($path) === '/' || StringUtility::getFirstCharacter($path) === '\\') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Gets the First Character
      *
      * @param string $string
