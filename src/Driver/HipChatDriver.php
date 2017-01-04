@@ -3,6 +3,8 @@ namespace AlterNET\Cli\Driver;
 
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Utility\ConsoleUtility;
+use Buzz\Browser;
+use Buzz\Client\Curl;
 use GorkaLaucirica\HipchatAPIv2Client\API\RoomAPI;
 use GorkaLaucirica\HipchatAPIv2Client\API\UserAPI;
 use GorkaLaucirica\HipchatAPIv2Client\Auth\OAuth2;
@@ -52,8 +54,12 @@ class HipChatDriver
      */
     protected function initialize()
     {
+        $client = new Curl();
+        $client->setVerifyPeer(false);
+        $browser = new Browser($client);
         $this->client = new Client(
-            new OAuth2($this->config->getHipChatToken())
+            new OAuth2($this->config->getHipChatToken()),
+            $browser
         );
     }
 
