@@ -42,7 +42,7 @@ class GitService implements AppServiceInterface
      */
     public function add($file = null)
     {
-        $this->app->process('git add ' . ($file ?: '.'));
+        $this->app->process('git add ' . ($file ?: '-A'));
     }
 
     /**
@@ -53,7 +53,7 @@ class GitService implements AppServiceInterface
      */
     public function commit($message)
     {
-        $this->app->process('git commit -m \'' . $message . '\'');
+        $this->app->process('git commit -m "' . $message . '""');
     }
 
     /**
