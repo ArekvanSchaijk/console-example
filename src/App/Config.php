@@ -6,6 +6,7 @@ use AlterNET\Cli\App\Config\Environment\EnvironmentSelector;
 use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\GeneralUtility;
 use AlterNET\Cli\Utility\TemplateUtility;
+use AlterNET\Package\Environment;
 
 /**
  * Class Config
@@ -17,7 +18,7 @@ class Config
     /**
      * @var array
      */
-    protected $config = [];
+    protected $config;
 
     /**
      * @var EnvironmentSelector
@@ -36,10 +37,22 @@ class Config
             throw new Exception('The app.conf.yaml does not contain a application template.');
         }
         $this->config = array_replace_recursive(
-            TemplateUtility::get($this->getApplicationName(), TemplateUtility::TYPE_APPLICATION),
-            TemplateUtility::get($this->getApplicationTemplate(), TemplateUtility::TYPE_APPLICATION),
+            TemplateUtility::get($this->getApplicationName(),
+                TemplateUtility::TYPE_APPLICATION),
+            TemplateUtility::get($this->getApplicationTemplate(),
+                TemplateUtility::TYPE_APPLICATION),
             $this->config
         );
+    }
+
+    /**
+     * Gets the Array
+     *
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->config;
     }
 
     /**
@@ -149,9 +162,30 @@ class Config
     public function environment()
     {
         if (is_null($this->environment)) {
-            $this->environment = new EnvironmentSelector($this->config);
+            $this->environment = new EnvironmentSelector($this);
         }
         return $this->environment;
+    }
+
+    /**
+     * Is Current
+     *
+     * @return bool
+     */
+    public function isCurrent()
+    {
+        if (Environment::isProductionEnvironment()) {
+            return $this->environment()->isProduction();
+        } elseif (Environment::isAcceptanceEnvironment()) {
+            return $this->environment()->isAcceptance();
+        } elseif (Environment::isTestingEnvironment()) {
+            return $this->environment()->isTesting();
+        } elseif (Environment::isRemoteDevelopmentEnvironment()) {
+            return $this->environment()->isDevelopment();
+        } elseif (Environment::isLocalEnvironment()) {
+            return $this->environment()->isLocal();
+        }
+        return false;
     }
 
     /**

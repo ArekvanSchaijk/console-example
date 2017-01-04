@@ -1,6 +1,6 @@
 options:
   ssl_port: 443
-  redirect_to_https: true
+  force_https: true
 
 server:
   host: 'connect.development.alternet.nl'

@@ -104,6 +104,8 @@ class Application extends SymfonyConsoleApplication
             new Command\App\AppHostsDeleteCommand(),
             new Command\App\AppDomainsCommand(),
             new Command\App\AppLogCommand(),
+            new Command\App\AppBuildCommand(),
+            new Command\App\AppClearLogsCommand(),
 
             new Command\Satis\SatisGenerateCommand()
         ];

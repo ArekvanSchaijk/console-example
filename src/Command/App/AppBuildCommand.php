@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Command\App;
 
 use AlterNET\Cli\Command\CommandBase;
+use AlterNET\Cli\Utility\AppUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,7 +32,9 @@ class AppBuildCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
+        $app = AppUtility::load();
+        $app->createDirectoriesAndFiles();
+        $app->buildVirtualHostFile();
     }
 
 }

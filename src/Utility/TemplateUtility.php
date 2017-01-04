@@ -20,15 +20,22 @@ class TemplateUtility
      *
      * @param string $name
      * @param string $type
+     * @param bool $parseVariables
+     * @param array $inputArray
      * @return array
      * @throws Exception
      * @static
      */
-    static public function get($name, $type)
+    static public function get($name, $type, $parseVariables = false, array $inputArray = null)
     {
         $path = CLI_ROOT . '/templates/' . $type . '/' . $name . '.yaml';
         if (!file_exists($path)) {
             throw new Exception(ucfirst($type) . ' template with name "' . $name . '" does not exists.');
+        }
+        if ($parseVariables && $inputArray) {
+            $contents = file_get_contents($path);
+            $contents = StringUtility::parseConfigVariables($contents, $inputArray);
+            return GeneralUtility::parseYaml($contents);
         }
         return (GeneralUtility::parseYamlFile($path) ?: []);
     }

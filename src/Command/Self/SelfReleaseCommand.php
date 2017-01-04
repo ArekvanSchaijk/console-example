@@ -37,8 +37,8 @@ class SelfReleaseCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // THis gets the bitbucket api
-        $bitbucket = $this->bitbucketDriver()->getApi();
+        // This makes sure the CrowdContainer is present
+        $this->bitbucketDriver();
         // Gets the 'self', 'build application'
         $app = new ReleaseApp();
         // If the latest version already exists as download file we just do nothing ;-)

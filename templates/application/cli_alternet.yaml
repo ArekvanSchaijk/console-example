@@ -1,0 +1,4 @@
+local:
+  domains:
+    - 'cli.local.alternet.nl'
+    - '{config.applicationName}'

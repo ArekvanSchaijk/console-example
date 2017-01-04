@@ -1,7 +1,7 @@
 <?php
 namespace AlterNET\Cli\App\Config\Environment;
 
-use AlterNET\Cli\Config\AbstractConfig;
+use AlterNET\Cli\App\Config;
 use AlterNET\Cli\Exception;
 use AlterNET\Package\Environment;
 
@@ -9,7 +9,7 @@ use AlterNET\Package\Environment;
  * Class EnvironmentSelector
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class EnvironmentSelector extends AbstractConfig
+class EnvironmentSelector
 {
 
     /**
@@ -36,6 +36,20 @@ class EnvironmentSelector extends AbstractConfig
      * @var EnvironmentConfig
      */
     protected $production;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * EnvironmentSelector constructor.
+     * @param Config $config
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
 
     /**
      * Current
@@ -92,7 +106,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isLocal()
     {
-        return isset($this->config['local']);
+        return isset($this->config->getArray()['local']);
     }
 
     /**
@@ -108,9 +122,10 @@ class EnvironmentSelector extends AbstractConfig
                 throw new Exception('No local environment configuration found.');
             }
             $this->local = new EnvironmentConfig(
+                $this->config,
                 'Local',
-                $this->config['local'],
-                $this->getDefaultOptions()
+                $this->config->getArray()['local'],
+                $this->getDefaultEnvironmentConfig()
             );
         }
         return $this->local;
@@ -123,7 +138,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isDevelopment()
     {
-        return isset($this->config['development']);
+        return isset($this->config->getArray()['development']);
     }
 
     /**
@@ -139,9 +154,10 @@ class EnvironmentSelector extends AbstractConfig
                 throw new Exception('No development environment configuration found.');
             }
             $this->development = new EnvironmentConfig(
+                $this->config,
                 Environment::ENVIRONMENT_NAME_DEVELOPMENT,
-                $this->config['development'],
-                $this->getDefaultOptions()
+                $this->config->getArray()['development'],
+                $this->getDefaultEnvironmentConfig()
             );
         }
         return $this->development;
@@ -154,7 +170,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isTesting()
     {
-        return isset($this->config['testing']);
+        return isset($this->config->getArray()['testing']);
     }
 
     /**
@@ -170,9 +186,10 @@ class EnvironmentSelector extends AbstractConfig
                 throw new Exception('No testing environment configuration found.');
             }
             $this->testing = new EnvironmentConfig(
+                $this->config,
                 Environment::ENVIRONMENT_NAME_TESTING,
-                $this->config['testing'],
-                $this->getDefaultOptions()
+                $this->config->getArray()['testing'],
+                $this->getDefaultEnvironmentConfig()
             );
         }
         return $this->testing;
@@ -185,7 +202,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isAcceptance()
     {
-        return isset($this->config['acceptance']);
+        return isset($this->config->getArray()['acceptance']);
     }
 
     /**
@@ -201,9 +218,10 @@ class EnvironmentSelector extends AbstractConfig
                 throw new Exception('No testing environment configuration found.');
             }
             $this->acceptance = new EnvironmentConfig(
+                $this->config,
                 Environment::ENVIRONMENT_NAME_ACCEPTANCE,
-                $this->config['acceptance'],
-                $this->getDefaultOptions()
+                $this->config->getArray()['acceptance'],
+                $this->getDefaultEnvironmentConfig()
             );
         }
         return $this->acceptance;
@@ -216,7 +234,7 @@ class EnvironmentSelector extends AbstractConfig
      */
     public function isProduction()
     {
-        return isset($this->config['production']);
+        return isset($this->config->getArray()['production']);
     }
 
     /**
@@ -232,26 +250,24 @@ class EnvironmentSelector extends AbstractConfig
                 throw new Exception('No testing environment configuration found.');
             }
             $this->production = new EnvironmentConfig(
+                $this->config,
                 Environment::ENVIRONMENT_NAME_PRODUCTION,
-                $this->config['production'],
-                $this->getDefaultOptions()
+                $this->config->getArray()['production'],
+                $this->getDefaultEnvironmentConfig()
             );
         }
         return $this->production;
     }
 
     /**
-     * Gets the Default Options
+     * Gets the Default Environment Config Options
      *
      * @return array
      */
-    protected function getDefaultOptions()
+    protected function getDefaultEnvironmentConfig()
     {
-        if (
-            isset($this->config['application']['environment']['options'])
-            && is_array($this->config['application']['environment']['options'])
-        ) {
-            return $this->config['application']['environment']['options'];
+        if (isset($this->config->getArray()['application']['environment'])) {
+            return $this->config->getArray()['application']['environment'];
         }
         return [];
     }

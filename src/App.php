@@ -94,6 +94,26 @@ class App
     }
 
     /**
+     * Gets the Application Working Directory
+     *
+     * @return string
+     */
+    public function getApplicationWorkingDirectory()
+    {
+        return $this->getWorkingDirectory() . '/' . $this->cliConfig->app()->getRelativeWorkingDirectory();
+    }
+
+    /**
+     * Is Application Directory
+     *
+     * @return bool
+     */
+    public function isApplicationDirectory()
+    {
+        return file_exists($this->getApplicationWorkingDirectory());
+    }
+
+    /**
      * Gets the Local Working Directory
      *
      * @return string
@@ -141,6 +161,19 @@ class App
     public function getAccessLogFilePath()
     {
         return $this->getLocalLogsWorkingDirectory() . '/access.log';
+    }
+
+    /**
+     * Gets the Logs
+     *
+     * @return array
+     */
+    public function getLogs()
+    {
+        return [
+            $this->getErrorLogFilePath(),
+            $this->getAccessLogFilePath()
+        ];
     }
 
     /**
@@ -318,7 +351,7 @@ class App
     public function build()
     {
         // Builds all directories and files
-        $this->buildDirectoriesAndFiles();
+        $this->createDirectoriesAndFiles();
         // Builds the virtual host file
         $this->buildVirtualHostFile();
         // Composer install
@@ -342,29 +375,27 @@ class App
      *
      * @return void
      */
-    protected function buildDirectoriesAndFiles()
+    public function createDirectoriesAndFiles()
     {
-        // This creates the /local section of the .alternet directory (if present)
-        if (file_exists($this->getWorkingDirectory() . '/.alternet')) {
-            // .alternet/local
-            if (!file_exists($this->getLocalWorkingDirectory())) {
-                ConsoleUtility::fileSystem()->mkdir($this->getLocalWorkingDirectory());
-            }
-            // .alternet/local/logs
-            if (!file_exists($this->getLocalLogsWorkingDirectory())) {
-                ConsoleUtility::fileSystem()->mkdir($this->getLocalLogsWorkingDirectory());
-            }
-            // .alternet/local/vhost.conf
-            if (!file_exists($this->getVirtualHostFilePath())) {
-                ConsoleUtility::fileSystem()->touch($this->getVirtualHostFilePath());
-            }
-            // .alternet/local/logs/error.log
-            if (!file_exists($this->getErrorLogFilePath())) {
-                ConsoleUtility::fileSystem()->touch($this->getErrorLogFilePath());
-            }
-            // .alternet/local/access.log
-            if (!file_exists($this->getAccessLogFilePath())) {
-                ConsoleUtility::fileSystem()->touch($this->getAccessLogFilePath());
+        if ($this->isApplicationDirectory()) {
+            $filesOrDirectory = [
+                $this->getWebWorkingDirectory() => 'dir',
+                $this->getLocalWorkingDirectory() => 'dir',
+                $this->getLocalLogsWorkingDirectory() => 'dir',
+                $this->getVirtualHostFilePath() => 'file',
+                $this->getErrorLogFilePath() => 'file',
+                $this->getAccessLogFilePath() => 'file'
+            ];
+            foreach ($filesOrDirectory as $path => $type) {
+                if (!file_exists($path)) {
+                    switch ($type) {
+                        case 'file':
+                            ConsoleUtility::fileSystem()->touch($path);
+                            break;
+                        default:
+                            ConsoleUtility::fileSystem()->mkdir($path);
+                    }
+                }
             }
         }
     }
@@ -397,42 +428,35 @@ class App
      */
     public function buildVirtualHostFile()
     {
-        if ($this->hasConfigFile()) {
-            ApacheUtility::generateVirtualHostString(
-                80,
-                $this->getWebWorkingDirectory(),
-                $this->getConfig()->current()->getDomains(),
-                $this->getErrorLogFilePath(),
-                $this->getAccessLogFilePath(),
-                $this->cliConfig->getApplicationServerAdmin()
-            );
-        }
-
-
-        if ($this->hasConfigFile() && $this->getConfig()->current()->getDomains()) {
-            // This makes sure the web directory exists before setting the DocumentRoot path with realpath()
-            if (!file_exists($this->getWebWorkingDirectory())) {
-                ConsoleUtility::fileSystem()->mkdir($this->getWebWorkingDirectory());
-            }
-            $string = '<VirtualHost *:80>' . PHP_EOL;
-            $string .= chr(9) . 'DocumentRoot' . chr(9) . '"' . realpath($this->getWebWorkingDirectory()) . '"' . PHP_EOL;
-            $i = 0;
-            if (($domains = $this->getConfig()->current()->getDomains())) {
-                foreach ($domains as $domain) {
-                    switch ($i) {
-                        case 0:
-                            $string .= chr(9) . 'ServerName' . chr(9) . $domain . PHP_EOL;
-                            break;
-                        default:
-                            $string .= chr(9) . 'ServerAlias' . chr(9) . $domain . PHP_EOL;
-                    }
-                    $i++;
+        if ($this->isApplicationDirectory() && $this->hasConfigFile()) {
+            $environmentConfig = $this->getConfig()->current();
+            if (($domains = $environmentConfig->getDomains())) {
+                $contents = '';
+                $default = function ($port) use ($environmentConfig, $domains) {
+                    return ApacheUtility::generateVirtualHostString(
+                        $port,
+                        $this->getWebWorkingDirectory(),
+                        $domains,
+                        $this->getErrorLogFilePath(),
+                        $this->getAccessLogFilePath(),
+                        $this->cliConfig->getApplicationServerAdmin()
+                    ) . PHP_EOL . PHP_EOL;
+                };
+                if ($environmentConfig->isSsl() && $environmentConfig->isForceHttps()) {
+                    $contents .= ApacheUtility::generateVirtualHostString(
+                            $environmentConfig->getHttpPort(), null, $domains, null, null, null, true
+                        ) . PHP_EOL . PHP_EOL;
+                } else {
+                    $contents .= $default($environmentConfig->getHttpPort());
                 }
+                if ($environmentConfig->isSsl()) {
+                    $contents .= $default(($environmentConfig->isSsl() ?
+                        $environmentConfig->getSslPort() : $environmentConfig->getHttpPort()));
+                }
+                file_put_contents($this->getVirtualHostFilePath(), trim($contents));
             }
-            $string .= chr(9) . 'ErrorLog' . chr(9) . '"' . realpath($this->getErrorLogFilePath()) . '"' . PHP_EOL;
-            $string .= chr(9) . 'CustomLog' . chr(9) . '"' . realpath($this->getAccessLogFilePath()) . '" common' . PHP_EOL;
-            $string .= '</VirtualHost>';
-            file_put_contents($this->getVirtualHostFilePath(), $string);
+        } elseif ($this->hasConfigFile()) {
+            file_put_contents($this->getVirtualHostFilePath(), '');
         }
     }
 

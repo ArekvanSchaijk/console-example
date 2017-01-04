@@ -31,7 +31,7 @@ class ReleaseApp extends TemporaryApp
     protected function initialize()
     {
         // This gets the repository url from the config and clones it
-        $this->clone($this->cliConfig->self()->getRemoteUrl());
+        $this->git()->cloneUrl($this->cliConfig->self()->getRemoteUrl());
         // Sets the version by getting the highest git tag
         $this->setVersion($this->git()->getHighestTag());
         // Sets the revision by getting the highest tag revision
