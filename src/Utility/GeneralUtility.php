@@ -16,16 +16,29 @@ class GeneralUtility
      *
      * @param string $filePath
      * @return array
-     * @throws Exception
      * @static
      */
     static public function parseYamlFile($filePath)
     {
+        return self::parseYaml(file_get_contents($filePath));
+    }
+
+    /**
+     * Parse Yaml
+     *
+     * @param $contents
+     * @return array
+     * @throws Exception
+     * @static
+     */
+    static public function parseYaml($contents)
+    {
         try {
-            $yaml = Yaml::parse(file_get_contents($filePath));
+            $yaml = Yaml::parse($contents);
             return (is_array($yaml) ? $yaml : []);
         } catch (\Exception $exception) {
-            throw new Exception('Could not parse Yaml file "' . $filePath . '" because:' . PHP_EOL . $exception->getMessage());
+            throw new Exception('Could not parse Yaml file "' . $filePath . '" because:' . PHP_EOL
+                . $exception->getMessage());
         }
     }
 

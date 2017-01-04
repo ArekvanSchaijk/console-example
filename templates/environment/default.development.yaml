@@ -1,3 +1,7 @@
+options:
+  ssl_port: 443
+  force_https: true
+
 server:
   host: 'connect.development.alternet.nl'
   port: 22

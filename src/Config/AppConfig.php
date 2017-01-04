@@ -40,6 +40,16 @@ class AppConfig extends AbstractConfig
     }
 
     /**
+     * Gets the Relative Working Directory
+     *
+     * @return string
+     */
+    public function getRelativeWorkingDirectory()
+    {
+        return $this->config['relative_working_directory'];
+    }
+
+    /**
      * Gets the Relative Local Working Directory
      *
      * @return string

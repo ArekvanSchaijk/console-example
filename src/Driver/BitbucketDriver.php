@@ -7,7 +7,6 @@ use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Driver\Bitbucket\BitbucketApi as Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
-use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
 
 /**
  * Class BitbucketDriver

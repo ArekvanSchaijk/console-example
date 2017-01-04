@@ -1,42 +1,33 @@
 <?php
 namespace AlterNET\Cli\Command\App;
 
-use AlterNET\Cli\App;
 use AlterNET\Cli\Command\CommandBase;
-use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\AppUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AppRemoveCommand
+ * Class AppBuildLocalCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppRemoveCommand extends CommandBase
+class AppBuildLocalCommand extends CommandBase
 {
-
-    /**
-     * @var App
-     */
-    protected $app;
 
     /**
      * Configure
      *
-     * @return void
      */
     protected function configure()
     {
-        $this->setName('app:remove');
-        $this->setDescription('Removes the application');
+        $this->setName('app:buildlocal');
+        $this->setDescription('Builds the .alternet/local directory');
     }
 
     /**
-     * Execute
+     * Executes the command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws Exception
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -45,14 +36,12 @@ class AppRemoveCommand extends CommandBase
         $this->preventNotBeingInAnApp();
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
-        // This asks the user for confirmation
-        if ($this->io->confirm('Are you sure you would like to remove the application "'
-            . $app->getBasename() . '"?', false)
-        ) {
-            $app->remove();
-            $this->io->success('"' . $app->getBasename() . '" is successfully removed.');
+        if ($app->isApplicationDirectory()) {
+            $app->createDirectoriesAndFiles();
+            $app->buildVirtualHostFile();
+            $this->io->success('The local directory is successfully build.');
         } else {
-            $this->io->note('Command aborted. Keep calm and carry on.');
+            $this->io->warning('This application has no environments set.');
         }
     }
 

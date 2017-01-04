@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\App;
 
 use AlterNET\Cli\App;
+use AlterNET\Cli\Utility\ConsoleUtility;
 
 /**
  * Class TemporaryApp
@@ -11,11 +12,21 @@ class TemporaryApp extends App
 {
 
     /**
+     * TemporaryApp constructor.
+     */
+    public function __construct()
+    {
+        $reflect = new \ReflectionClass($this);
+        parent::__construct(
+            ConsoleUtility::createBuildWorkingDirectory(strtolower($reflect->getShortName()) . '_')
+        );
+    }
+
+    /**
      * SelfApp destructor.
      */
     public function __destruct()
     {
-        // Yeah. It destroys itself ;)
         $this->remove();
     }
 

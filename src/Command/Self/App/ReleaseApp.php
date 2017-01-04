@@ -1,37 +1,27 @@
 <?php
-namespace AlterNET\Cli\App;
+namespace AlterNET\Cli\Command\Self\App;
 
+use AlterNET\Cli\App\TemporaryApp;
+use AlterNET\Cli\App\Traits;
 use AlterNET\Cli\Driver\BitbucketDriver;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\GeneralUtility;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class SelfBuildApp
+ * Class ReleaseApp
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class SelfBuildApp extends TemporaryApp
+class ReleaseApp extends TemporaryApp
 {
 
-    /**
-     * @var string
-     */
-    protected $version;
+    use Traits\General\VersionTrait;
+    use Traits\General\RevisionTrait;
 
     /**
      * @var string
      */
     protected $revision;
-
-    /**
-     * SelfApp constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct(
-            ConsoleUtility::createBuildWorkingDirectory('selfapp_')
-        );
-    }
 
     /**
      * Initialize
@@ -40,33 +30,12 @@ class SelfBuildApp extends TemporaryApp
      */
     protected function initialize()
     {
-        $this->getGitService()->cloneUrl(
-            $this->cliConfig->self()->getRemoteUrl()
-        );
-        // Sets the version
-        $this->version = $this->getGitService()->getHighestTag();
-        // Sets the revision
-        $this->revision = $this->getGitService()->getHighestTagRevision();
-    }
-
-    /**
-     * Gets the Version
-     *
-     * @return string
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * Gets the Revision
-     *
-     * @return string
-     */
-    public function getRevision()
-    {
-        return $this->revision;
+        // This gets the repository url from the config and clones it
+        $this->git()->cloneUrl($this->cliConfig->self()->getRemoteUrl());
+        // Sets the version by getting the highest git tag
+        $this->setVersion($this->git()->getHighestTag());
+        // Sets the revision by getting the highest tag revision
+        $this->setRevision($this->git()->getHighestTagRevision());
     }
 
     /**
@@ -150,11 +119,11 @@ class SelfBuildApp extends TemporaryApp
      */
     public function build()
     {
-        $this->getGitService()->checkout($this->getRevision(), false);
+        $this->git()->checkout($this->getRevision(), false);
         $this->writeVersionIntoConfigFile();
-        $this->getComposerService()->install();
+        $this->composer()->install();
         $this->process('box build');
-        $this->getGitService()->checkout('master');
+        $this->git()->checkout('master');
         ConsoleUtility::fileSystem()->copy(
             $this->getWorkingDirectory() . '/alternet.phar',
             $this->getNewVersionFilePath()

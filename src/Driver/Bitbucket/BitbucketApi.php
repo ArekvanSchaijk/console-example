@@ -16,7 +16,6 @@ class BitbucketApi extends Api
     public function __construct()
     {
         self::$options['verify'] = false;
-        // Hello Mr. Falko. I wish you a pretty new year!
     }
 
 }

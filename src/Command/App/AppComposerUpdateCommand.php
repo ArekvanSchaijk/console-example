@@ -68,7 +68,7 @@ class AppComposerUpdateCommand extends CommandBase
         if (!$workingBranch) {
             $workingBranch = $repository->createBranch($branch, $workingBranchName);
         }
-        $tempApp->getGitService()->checkout($workingBranch->getName());
+        $tempApp->git()->checkout($workingBranch->getName());
         // Copy's the composer.json file from the $app
         if (!file_exists($app->getWorkingDirectory() . '/composer.json')) {
             $tempApp->remove();
@@ -88,7 +88,7 @@ class AppComposerUpdateCommand extends CommandBase
             });
         }
         // Performs a composer install
-        $tempApp->getComposerService()->update();
+        $tempApp->composer()->update();
     }
 
 }

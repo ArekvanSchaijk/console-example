@@ -1,35 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
-use AlterNET\Cli\Command\App\AppBackupCommand;
-use AlterNET\Cli\Command\App\AppComposerUpdateCommand;
-use AlterNET\Cli\Command\App\AppDomainsCommand;
-use AlterNET\Cli\Command\App\AppHostsAddCommand;
-use AlterNET\Cli\Command\App\AppHostsDeleteCommand;
-use AlterNET\Cli\Command\App\AppRemoveCommand;
-use AlterNET\Cli\Command\App\AppShareCommand;
-use AlterNET\Cli\Command\Bamboo\BambooListCommand;
-use AlterNET\Cli\Command\Bitbucket\BitbucketCreateProjectCommand;
-use AlterNET\Cli\Command\Bitbucket\BitbucketCreateRepoCommand;
-use AlterNET\Cli\Command\Bitbucket\BitbucketDeleteRepoCommand;
-use AlterNET\Cli\Command\Bitbucket\BitbucketListCommand;
-use AlterNET\Cli\Command\Bitbucket\BitbucketListReposCommand;
-use AlterNET\Cli\Command\HipChat\HipChatCreateRoomCommand;
-use AlterNET\Cli\Command\HipChat\HipChatListCommand;
-use AlterNET\Cli\Command\HipChat\HipChatListUsersCommand;
-use AlterNET\Cli\Command\Local\LocalConfigureCommand;
-use AlterNET\Cli\Command\Local\LocalHostsAddCommand;
-use AlterNET\Cli\Command\Local\LocalHostsDeleteCommand;
-use AlterNET\Cli\Command\Local\LocalIsConnectionCommand;
-use AlterNET\Cli\Command\Local\LocalVariablesCommand;
-use AlterNET\Cli\Command\App\AppBuildCommand;
-use AlterNET\Cli\Command\App\AppEvaluateCommand;
-use AlterNET\Cli\Command\App\AppGenerateVhostCommand;
-use AlterNET\Cli\Command\App\AppGetCommand;
-use AlterNET\Cli\Command\App\AppSyncCommand;
-use AlterNET\Cli\Command\Satis\SatisGenerateCommand;
-use AlterNET\Cli\Command\Self\SelfReleaseCommand;
-use AlterNET\Cli\Command\Self\SelfUpdateCommand;
+use AlterNET\Cli\Command;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
@@ -40,6 +12,9 @@ use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 class Application extends SymfonyConsoleApplication
 {
 
+    /**
+     * @var string
+     */
     protected static $logo = '  __  _ _____ ___ ___ __  _ ___ _____   __  _   _ 
  /  \| |_   _| __| _ \  \| | __|_   _| |  \| \ / |
 | /\ | |_| | | _|| v / | \' | _|  | |   | -<`\ V /\'
@@ -96,51 +71,44 @@ class Application extends SymfonyConsoleApplication
     {
         return [
 
-            // Self
+            new Command\Self\SelfReleaseCommand(),
+            new Command\Self\SelfUpdateCommand(),
 
-            new SelfReleaseCommand(),
-            new SelfUpdateCommand(),
+            new Command\Bitbucket\BitbucketListCommand(),
+            new Command\Bitbucket\BitbucketListReposCommand(),
+            new Command\Bitbucket\BitbucketCreateProjectCommand(),
+            new Command\Bitbucket\BitbucketCreateRepoCommand(),
+            new Command\Bitbucket\BitbucketDeleteRepoCommand(),
 
-            // Bitbucket
-            new BitbucketListCommand(),
-            new BitbucketListReposCommand(),
-            new BitbucketCreateProjectCommand(),
-            new BitbucketCreateRepoCommand(),
-            new BitbucketDeleteRepoCommand(),
+            new Command\Bamboo\BambooListCommand(),
 
-            // Bamboo
-            new BambooListCommand(),
+            new Command\HipChat\HipChatListCommand(),
+            new Command\HipChat\HipChatListUsersCommand(),
+            new Command\HipChat\HipChatCreateRoomCommand(),
 
-            // HipChat
-            new HipChatListCommand(),
-            new HipChatListUsersCommand(),
-            new HipChatCreateRoomCommand(),
+            new Command\Local\LocalVariablesCommand(),
+            new Command\Local\LocalIsConnectionCommand(),
+            new Command\Local\LocalConfigureCommand(),
+            new Command\Local\LocalHostsAddCommand(),
+            new Command\Local\LocalHostsDeleteCommand(),
 
-            // Local
-            new LocalVariablesCommand(),
-            new LocalIsConnectionCommand(),
-            new LocalConfigureCommand(),
+            new Command\App\AppBackupCommand(),
+            new Command\App\AppEvaluateCommand(),
+            new Command\App\AppShareCommand(),
+            new Command\App\AppGetCommand(),
+            new Command\App\AppRemoveCommand(),
+            new Command\App\AppSyncCommand(),
+            new Command\App\AppComposerUpdateCommand(),
+            new Command\App\AppBackupCommand(),
+            new Command\App\AppHostsAddCommand(),
+            new Command\App\AppHostsDeleteCommand(),
+            new Command\App\AppDomainsCommand(),
+            new Command\App\AppLogCommand(),
+            new Command\App\AppBuildCommand(),
+            new Command\App\AppBuildLocalCommand(),
+            new Command\App\AppClearLogsCommand(),
 
-            // Local Host File
-            new LocalHostsAddCommand(),
-            new LocalHostsDeleteCommand(),
-
-            // Project
-            new AppBuildCommand(),
-            new AppEvaluateCommand(),
-            new AppShareCommand(),
-            new AppGenerateVhostCommand(),
-            new AppGetCommand(),
-            new AppRemoveCommand(),
-            new AppSyncCommand(),
-            new AppComposerUpdateCommand(),
-            new AppBackupCommand(),
-            new AppHostsAddCommand(),
-            new AppHostsDeleteCommand(),
-            new AppDomainsCommand(),
-
-            // Satis
-            new SatisGenerateCommand()
+            new Command\Satis\SatisGenerateCommand()
         ];
     }
 

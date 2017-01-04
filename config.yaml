@@ -71,6 +71,7 @@ bamboo:
   endpoint: 'https://cd.alternet.nl'
 
 app:
+  relative_working_directory: '.alternet'
   local:
     relative_working_directory: '.alternet/local'
   app_config:

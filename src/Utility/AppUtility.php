@@ -78,7 +78,7 @@ class AppUtility
      */
     static public function load($workingDirectory = null)
     {
-        $workingDirectory = ($workingDirectory ? : AppUtility::getAppWorkingDirectory());
+        $workingDirectory = ($workingDirectory ?: AppUtility::getAppWorkingDirectory());
         return new App($workingDirectory);
     }
 
@@ -93,7 +93,7 @@ class AppUtility
     {
         $newApp = new App(ConsoleUtility::createBuildWorkingDirectory('app_'));
         if ($gitCloneUrl) {
-            $newApp->getGitService()->cloneUrl($gitCloneUrl);
+            $newApp->git()->cloneUrl($gitCloneUrl);
         }
         return $newApp;
     }

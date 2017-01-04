@@ -7,24 +7,25 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AppBuildCommand
+ * Class AppLogCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppBuildCommand extends CommandBase
+class AppLogCommand extends CommandBase
 {
 
     /**
      * Configure
      *
+     * @return void
      */
     protected function configure()
     {
-        $this->setName('app:build');
-        $this->setDescription('Builds the application');
+        $this->setName('app:log');
+        $this->setDescription('View log files of the app');
     }
 
     /**
-     * Executes the command
+     * Execute
      *
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -33,8 +34,8 @@ class AppBuildCommand extends CommandBase
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $app = AppUtility::load();
-        $app->createDirectoriesAndFiles();
-        $app->buildVirtualHostFile();
+
+        $app->parseErrorLog();
     }
 
 }
