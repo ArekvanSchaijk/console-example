@@ -92,9 +92,18 @@ class EditorService implements AppServiceInterface
         ];
         // Windows
         if (Environment::isWindowsOs()) {
-            $executables = [
-                'C:\\Program Files (x86)\\JetBrains\\PhpStorm 2016.1\\bin\\PhpStorm.exe'
-            ];
+            $executables = [];
+            $jetBrainsWorkingDirectory = 'C:\\Program Files (x86)\\JetBrains';
+            if (file_exists($jetBrainsWorkingDirectory)) {
+                foreach (scandir($jetBrainsWorkingDirectory, SCANDIR_SORT_DESCENDING) as $directory) {
+                    if (strpos($directory, 'PhpStorm 201') !== false) {
+                        $executable = $jetBrainsWorkingDirectory . '\\' . $directory . '\\bin\\PhpStorm.bat';
+                        if (file_exists($executable)) {
+                            $executables[] = $executable;
+                        }
+                    }
+                }
+            }
         }
         foreach ($executables as $executable) {
             if (file_exists($executable)) {
