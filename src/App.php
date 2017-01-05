@@ -2,7 +2,9 @@
 namespace AlterNET\Cli;
 
 use AlterNET\Cli\App\Service\ApacheService;
+use AlterNET\Cli\App\Service\EditorService;
 use AlterNET\Cli\Config as CliConfig;
+use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\App\Config as AppConfig;
 use AlterNET\Cli\App\Exception;
 use AlterNET\Cli\App\Service\ComposerService;
@@ -62,6 +64,13 @@ class App
     protected $apache;
 
     /**
+     * @var EditorService
+     */
+    protected $editor;
+
+    protected $db = false;
+
+    /**
      * App constructor.
      * @param string $workingDirectory
      */
@@ -106,7 +115,7 @@ class App
      */
     public function getApplicationWorkingDirectory()
     {
-        return $this->getWorkingDirectory() . '/' . $this->cliConfig->app()->getRelativeWorkingDirectory();
+        return $this->getWorkingDirectory() . '/' . $this->getCliConfig()->app()->getRelativeWorkingDirectory();
     }
 
     /**
@@ -140,7 +149,7 @@ class App
      */
     public function getLocalWorkingDirectory()
     {
-        return $this->getWorkingDirectory() . '/' . $this->cliConfig->app()->getRelativeLocalWorkingDirectory();
+        return $this->getWorkingDirectory() . '/' . $this->getCliConfig()->app()->getRelativeLocalWorkingDirectory();
     }
 
     /**
@@ -338,7 +347,7 @@ class App
     {
         $date = date('Y-m-d_H-i-s');
         // Gets the root backup directory
-        if (!($rootBackupDirectory = $this->cliConfig->local()->getBackupPath())) {
+        if (!($rootBackupDirectory = $this->getCliConfig()->local()->getBackupPath())) {
             $rootBackupDirectory = CLI_DEFAULT_BACKUP_PATH;
         }
         // Creates a new backup directory
@@ -434,7 +443,7 @@ class App
             if ($this->getConfig()->isCurrent()) {
                 // This checks if the current environment has a ServerConfig
                 if ($this->getConfig()->current()->isServer()) {
-                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuilds();
+                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuilds());
                 }
             }
         }
@@ -509,7 +518,7 @@ class App
     public function buildDatabase()
     {
         // This checks if the application has a configuration
-        if ($this->hasConfigFile()) {
+        if ($this->db && $this->hasConfigFile()) {
             // Environment
             if ($this->getConfig()->isCurrent()) {
                 $this->multiProcess($this->getConfig()->current()->getDatabaseBuilds());
@@ -578,7 +587,7 @@ class App
                         $domains,
                         $this->getErrorLogFilePath(),
                         $this->getAccessLogFilePath(),
-                        $this->cliConfig->getApplicationServerAdmin()
+                        $this->getCliConfig()->getApplicationServerAdmin()
                     ) . PHP_EOL . PHP_EOL;
                 };
                 if ($environmentConfig->isSsl() && $environmentConfig->isForceHttps()) {
@@ -631,6 +640,26 @@ class App
     }
 
     /**
+     * Gets the Cli Config
+     *
+     * @return Config
+     */
+    public function getCliConfig()
+    {
+        return $this->cliConfig;
+    }
+
+    /**
+     * Gets the Local Config
+     *
+     * @return LocalConfig
+     */
+    public function getLocalConfig()
+    {
+        return $this->getCliConfig()->local();
+    }
+
+    /**
      * Initializes the Config
      *
      * @throws Exception
@@ -639,7 +668,7 @@ class App
     {
         if (!$this->hasConfigFile()) {
             throw new Exception('Could not initialize the config for this app since the file '
-                . $this->cliConfig->app()->getRelativeConfigFilePath() . ' does not exists.');
+                . $this->getCliConfig()->app()->getRelativeConfigFilePath() . ' does not exists.');
         }
         $this->config = new AppConfig($this->getConfigFilePath());
     }
@@ -678,7 +707,7 @@ class App
      */
     public function getConfigFilePath()
     {
-        return $this->getWorkingDirectory() . '/' . $this->cliConfig->app()->getRelativeConfigFilePath();
+        return $this->getWorkingDirectory() . '/' . $this->getCliConfig()->app()->getRelativeConfigFilePath();
     }
 
     /**
@@ -728,6 +757,19 @@ class App
             $this->apache = new ApacheService($this);
         }
         return $this->apache;
+    }
+
+    /**
+     * Editor
+     *
+     * @return EditorService
+     */
+    public function editor()
+    {
+        if (!$this->editor) {
+            $this->editor = new EditorService($this);
+        }
+        return $this->editor;
     }
 
     /**

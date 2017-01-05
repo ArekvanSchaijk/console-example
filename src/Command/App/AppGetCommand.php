@@ -137,9 +137,20 @@ class AppGetCommand extends CommandBase
             $this->io->note('Adding the application server names to your host file.');
             $app->addDomainsToHostFile();
         }
+        // Launch editor
+        if (
+            $this->config->local()->isOptionEditorManagement()
+            && Environment::isLocalEnvironment()
+        ) {
+            if ($app->editor()->open()) {
+                $this->io->note('Launching editor...');
+            }
+        }
         // Builds the application
         $this->io->note('Building... This can take some time.');
+        // Builds the application
         $app->build();
+        $this->io->success('The application is successfully created in "' . $app->getWorkingDirectory() . '"');
     }
 
 }

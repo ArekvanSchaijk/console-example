@@ -135,6 +135,10 @@ class LocalConfigureCommand extends CommandBase
                 $config::OPTION_HOST_FILE_MANAGEMENT,
                 $this->io->confirm('Enable Host File Management?', $config->isOptionHostFileManagement())
             );
+            $config->setOption(
+                $config::OPTION_EDITOR_MANAGEMENT,
+                $this->io->confirm('Enable Editor Management?', $config->isOptionEditorManagement())
+            );
         }
     }
 
