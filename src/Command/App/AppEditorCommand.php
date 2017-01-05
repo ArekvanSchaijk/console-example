@@ -45,19 +45,12 @@ class AppEditorCommand extends CommandBase
         if (!Environment::isLocalEnvironment()) {
             $this->io->error('This command can only be used on a local machine.');
         } else {
-            $commands = [
-                '/usr/local/bin/pstorm' => $this->getFile($app),
-                '/usr/bin/pstorm' => $this->getFile($app),
-                'C:\\Program Files (x86)\\JetBrains\\PhpStorm 2016.1\\bin\\PhpStorm.exe' => $this->getFile($app)
-            ];
-            foreach ($commands as $executable => $command) {
-                if (file_exists($executable)) {
-                    $app->process($executable . ' ' . $command);
-                    $this->io->success('The editor should be launch soon.');
-                    exit;
-                }
+            // And finally opens the editor
+            if ($app->editor()->open(($this->input->getArgument('file') ?: null))) {
+                $this->io->success('The editor should be launch soon.');
+            } else {
+                $this->io->warning('This feature is not supported (yet) on your environment.');
             }
-            $this->io->warning('This feature is not supported (yet) on your environment.');
         }
     }
 

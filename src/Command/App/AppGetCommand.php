@@ -139,7 +139,9 @@ class AppGetCommand extends CommandBase
         }
         // Builds the application
         $this->io->note('Building... This can take some time.');
+        // Builds the application
         $app->build();
+        
     }
 
 }

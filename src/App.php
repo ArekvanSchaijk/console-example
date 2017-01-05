@@ -2,6 +2,7 @@
 namespace AlterNET\Cli;
 
 use AlterNET\Cli\App\Service\ApacheService;
+use AlterNET\Cli\App\Service\EditorService;
 use AlterNET\Cli\Config as CliConfig;
 use AlterNET\Cli\App\Config as AppConfig;
 use AlterNET\Cli\App\Exception;
@@ -60,6 +61,11 @@ class App
      * @var ApacheService
      */
     protected $apache;
+
+    /**
+     * @var EditorService
+     */
+    protected $editor;
 
     /**
      * App constructor.
@@ -728,6 +734,19 @@ class App
             $this->apache = new ApacheService($this);
         }
         return $this->apache;
+    }
+
+    /**
+     * Editor
+     *
+     * @return EditorService
+     */
+    public function editor()
+    {
+        if (!$this->editor) {
+            $this->editor = new EditorService($this);
+        }
+        return $this->editor;
     }
 
     /**
