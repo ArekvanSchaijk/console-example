@@ -434,7 +434,7 @@ class App
             if ($this->getConfig()->isCurrent()) {
                 // This checks if the current environment has a ServerConfig
                 if ($this->getConfig()->current()->isServer()) {
-                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuilds();
+                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuilds());
                 }
             }
         }
