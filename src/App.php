@@ -386,9 +386,9 @@ class App
      */
     public function postBuild()
     {
-        $this->postBuildServer();
-        $this->postBuildEnvironment();
         $this->postBuildApplication();
+        $this->postBuildEnvironment();
+        $this->postBuildServer();
     }
 
     /**
@@ -421,9 +421,23 @@ class App
         }
     }
 
+    /**
+     * Post Build Server
+     *
+     * @return void
+     */
     public function postBuildServer()
     {
-
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Checks if the current environment exists
+            if ($this->getConfig()->isCurrent()) {
+                // This checks if the current environment has a ServerConfig
+                if ($this->getConfig()->current()->isServer()) {
+                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuilds();
+                }
+            }
+        }
     }
 
     /**
