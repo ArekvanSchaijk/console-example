@@ -1,11 +1,11 @@
 <?php
-namespace AlterNET\Cli\App\Apache;
+namespace AlterNET\Cli\App\Service\Apache\Log;
 
 /**
- * Class ErrorLog
+ * Class Error
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class ErrorLog
+class Error
 {
 
     /**
@@ -36,6 +36,17 @@ class ErrorLog
     public function getTimestamp()
     {
         return $this->timestamp;
+    }
+
+    /**
+     * Gets the Date
+     *
+     * @param string $format
+     * @return false
+     */
+    public function getDate($format)
+    {
+        return date($format, $this->getTimestamp());
     }
 
     /**

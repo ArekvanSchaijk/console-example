@@ -93,7 +93,7 @@ class Application extends SymfonyConsoleApplication
             new Command\Local\LocalHostsDeleteCommand(),
 
             new Command\App\AppBackupCommand(),
-            new Command\App\AppEvaluateCommand(),
+            new Command\App\AppAssistMeCommand(),
             new Command\App\AppShareCommand(),
             new Command\App\AppGetCommand(),
             new Command\App\AppRemoveCommand(),
@@ -103,7 +103,7 @@ class Application extends SymfonyConsoleApplication
             new Command\App\AppHostsAddCommand(),
             new Command\App\AppHostsDeleteCommand(),
             new Command\App\AppDomainsCommand(),
-            new Command\App\AppLogCommand(),
+            new Command\App\AppErrorLogCommand(),
             new Command\App\AppBuildCommand(),
             new Command\App\AppBuildLocalCommand(),
             new Command\App\AppClearLogsCommand(),
