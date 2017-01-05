@@ -47,6 +47,11 @@ class ServerConfig
     protected $build;
 
     /**
+     * @var array|null
+     */
+    protected $postBuild;
+
+    /**
      * ServerConfig constructor.
      * @param EnvironmentConfig $environmentConfig
      */
@@ -196,6 +201,24 @@ class ServerConfig
             }
         }
         return $this->build;
+    }
+
+    /**
+     * Gets the Post Builds
+     *
+     * @return array
+     */
+    public function getPostBuilds()
+    {
+        if (is_null($this->postBuild)) {
+            $this->postBuild = [];
+            if (isset($this->server['post_build']) && is_array($this->server['post_build'])) {
+                foreach ($this->server['post_build'] as $build) {
+                    $this->postBuild[] = $this->renderVariables($build);
+                }
+            }
+        }
+        return $this->postBuild;
     }
 
 }
