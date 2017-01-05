@@ -53,7 +53,7 @@ class GitService implements AppServiceInterface
      */
     public function commit($message)
     {
-        $this->app->process('git commit -m "' . $message . '""');
+        $this->app->process('git commit -m "' . $message . '"');
     }
 
     /**
