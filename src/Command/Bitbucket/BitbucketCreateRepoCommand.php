@@ -303,6 +303,10 @@ class BitbucketCreateRepoCommand extends CommandBase
             $app->git()->deleteRemoteBranch($branch->getName());
             // And finally show some success :-)
             $this->io->success('The composer.json file is successfully generated and added to the master branch.');
+            // Asks the user for confirmation if he would like to generate a new satis.json file
+            if ($this->io->confirm('Would you perform a satis:generate right away?')) {
+                $this->runCommand('satis:generate', []);
+            }
         }
     }
 
