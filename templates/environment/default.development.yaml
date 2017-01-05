@@ -7,5 +7,14 @@ server:
   port: 22
   username: 'alternetcli'
   document_root: '/home/{application.key}/{environment.server_name}'
-  build:
-    - 'sudo chown -R {application.key}.webusers {server.document_root}'
+  post_build:
+    - 'sudo chown -R {application.key}.webusers *'
+    - 'sudo chmod '
+    - 'find * -type d -exec chmod 770 {} +'
+    - 'find * -type f -exec chmod 660 {} +'
+
+database:
+  default:
+    username: 'root'
+    password: 'e.<0$I:/NQ4(.Jf'
+    port: 3306

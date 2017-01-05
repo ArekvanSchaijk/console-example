@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli;
 
+use AlterNET\Cli\App\Service\ApacheService;
 use AlterNET\Cli\Config as CliConfig;
 use AlterNET\Cli\App\Config as AppConfig;
 use AlterNET\Cli\App\Exception;
@@ -54,6 +55,11 @@ class App
      * @var ComposerService
      */
     protected $composer;
+
+    /**
+     * @var ApacheService
+     */
+    protected $apache;
 
     /**
      * App constructor.
@@ -500,6 +506,22 @@ class App
     }
 
     /**
+     * Gets the Local Directories And Files
+     *
+     * @return array
+     */
+    public function getLocalDirectoriesAndFiles()
+    {
+        return [
+            $this->getLocalWorkingDirectory() => 'dir',
+            $this->getLocalLogsWorkingDirectory() => 'dir',
+            $this->getVirtualHostFilePath() => 'file',
+            $this->getErrorLogFilePath() => 'file',
+            $this->getAccessLogFilePath() => 'file'
+        ];
+    }
+
+    /**
      * Builds all Directories And Files
      *
      * @return void
@@ -507,15 +529,10 @@ class App
     public function createDirectoriesAndFiles()
     {
         if ($this->isApplicationDirectory()) {
-            $filesOrDirectory = [
-                $this->getWebWorkingDirectory() => 'dir',
-                $this->getLocalWorkingDirectory() => 'dir',
-                $this->getLocalLogsWorkingDirectory() => 'dir',
-                $this->getVirtualHostFilePath() => 'file',
-                $this->getErrorLogFilePath() => 'file',
-                $this->getAccessLogFilePath() => 'file'
+            $additionalFilesOrDirectory = [
+                $this->getWebWorkingDirectory() => 'dir'
             ];
-            foreach ($filesOrDirectory as $path => $type) {
+            foreach (array_merge($additionalFilesOrDirectory, $this->getLocalDirectoriesAndFiles()) as $path => $type) {
                 if (!file_exists($path)) {
                     switch ($type) {
                         case 'file':
@@ -687,6 +704,19 @@ class App
     }
 
     /**
+     * Apache
+     *
+     * @return ApacheService
+     */
+    public function apache()
+    {
+        if (!$this->apache) {
+            $this->apache = new ApacheService($this);
+        }
+        return $this->apache;
+    }
+
+    /**
      * Executes a Process
      *
      * @param string $commandLine The command line to run
@@ -809,24 +839,6 @@ class App
     public function getRemoteUrl()
     {
         return $this->git()->getRemoteUrl();
-    }
-
-    /**
-     * Parses the Error Log
-     *
-     * @return array|bool
-     */
-    public function parseErrorLog()
-    {
-        if (file_exists($this->getErrorLogFilePath())) {
-            $contents = file_get_contents($this->getErrorLogFilePath());
-            if (!empty(trim($contents))) {
-                $regex = '/^\[([^\]]+)\] \[([^\]]+)\] (?:\[client ([^\]]+)\])?\s*(.*)$/i';
-                preg_match($regex, $contents, $matches);
-                print_r($matches);
-            }
-        }
-        return false;
     }
 
 }
