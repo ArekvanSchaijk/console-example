@@ -78,7 +78,7 @@ class AppUtility
      */
     static public function load($workingDirectory = null)
     {
-        $workingDirectory = ($workingDirectory ?: AppUtility::getAppWorkingDirectory());
+        $workingDirectory = (($workingDirectory ?: AppUtility::getAppWorkingDirectory()) ?: getcwd());
         return new App($workingDirectory);
     }
 

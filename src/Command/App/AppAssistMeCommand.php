@@ -16,6 +16,11 @@ class AppAssistMeCommand extends CommandBase
 {
 
     /**
+     * @var bool
+     */
+    protected $isReport = false;
+
+    /**
      * Configure
      *
      */
@@ -34,8 +39,6 @@ class AppAssistMeCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // This prevents that the command is being executed outside an app
-        $this->preventNotBeingInAnApp();
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
         $search = 'evaluate';
@@ -45,6 +48,22 @@ class AppAssistMeCommand extends CommandBase
                 $this->$method($app);
             }
         }
+        // Checks if there were reports
+        if (!$this->isReport) {
+            $this->io->success('There is nothing to report.');
+        }
+    }
+
+    /**
+     * Report
+     *
+     * @param string $message
+     * @return void
+     */
+    protected function report($message)
+    {
+        $this->isReport = true;
+        $this->io->warning($message);
     }
 
     /**
@@ -56,7 +75,7 @@ class AppAssistMeCommand extends CommandBase
     protected function evaluateRelativeWorkingDirectory(App $app)
     {
         if (!$app->isApplicationDirectory()) {
-            $this->io->warning('The application has no application directory (' .
+            $this->report('The application has no application directory (' .
                 $this->config->app()->getRelativeWorkingDirectory() . ')');
         }
     }
@@ -70,7 +89,7 @@ class AppAssistMeCommand extends CommandBase
     protected function evaluateConfigurationFile(App $app)
     {
         if (!$app->hasConfigFile()) {
-            $this->io->warning('The application has no "' . $this->config->app()->getRelativeConfigFilePath() . '" file.');
+            $this->report('The application has no "' . $this->config->app()->getRelativeConfigFilePath() . '" file.');
             // Stops further evaluations
             exit;
         }
@@ -88,11 +107,11 @@ class AppAssistMeCommand extends CommandBase
             if (!file_exists($path)) {
                 switch ($type) {
                     case 'file':
-                        $this->io->warning('The file "' . $path . '" does not exists. This might be fixed with the'
+                        $this->report('The file "' . $path . '" does not exists. This might be fixed with the'
                             . ' command: \'app:buildlocal\'.');
                         break;
                     default:
-                        $this->io->warning('The directory "' . $path . '" does not exists. This might be fixed with'
+                        $this->report('The directory "' . $path . '" does not exists. This might be fixed with'
                             . ' the command: \'app:buildlocal\'.');
                 }
             }
@@ -111,7 +130,7 @@ class AppAssistMeCommand extends CommandBase
             foreach ($app->apache()->getErrors(10) as $error) {
                 // Shows a maximum of 10 errors from the log in the past 2 hours
                 if ($error->getTimestamp() && $error->getTimestamp() > time() - 7200) {
-                    $this->io->warning('An ' . $error->getSeverity() . ' from the apache error log ('
+                    $this->report('An ' . $error->getSeverity() . ' from the apache error log ('
                         . StringUtility::timeElapsed('@' . $error->getTimestamp()) . ')'
                         . PHP_EOL . PHP_EOL . $error->getMessage() . PHP_EOL . PHP_EOL . 'Please check the'
                         . ' apache error log for more details.');
