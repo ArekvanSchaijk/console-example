@@ -48,6 +48,7 @@ class AppEditorCommand extends CommandBase
             $commands = [
                 '/usr/local/bin/pstorm' => $this->getFile($app),
                 '/usr/bin/pstorm' => $this->getFile($app),
+                'C:\\Program Files (x86)\\JetBrains\\PhpStorm 2016.1\\bin\\PhpStorm.exe' => $this->getFile($app)
             ];
             foreach ($commands as $executable => $command) {
                 if (file_exists($executable)) {
