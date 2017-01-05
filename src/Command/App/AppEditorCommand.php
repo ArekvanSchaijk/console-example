@@ -41,6 +41,16 @@ class AppEditorCommand extends CommandBase
         $this->preventNotBeingInAnApp();
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
+        // Checks if the editor management is enabled
+        if (!$app->editor()->isEnabled()) {
+            $this->io->error('Editor management is disabled by config.');
+            if ($this->io->confirm('Would you like to enable it?', false)) {
+                $app->editor()->enable();
+            } else {
+                $this->io->note('Command aborted.');
+                exit;
+            }
+        }
         // This checks if the user is working on a local machine
         if (!Environment::isLocalEnvironment()) {
             $this->io->error('This command can only be used on a local machine.');

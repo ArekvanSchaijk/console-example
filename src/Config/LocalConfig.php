@@ -15,7 +15,8 @@ class LocalConfig extends AbstractConfig
 
     const
 
-        OPTION_HOST_FILE_MANAGEMENT = 'host_file_management';
+        OPTION_HOST_FILE_MANAGEMENT = 'host_file_management',
+        OPTION_EDITOR_MANAGEMENT = 'editor_management';
 
     /**
      * @var array
@@ -224,27 +225,63 @@ class LocalConfig extends AbstractConfig
     /**
      * Is Option
      *
+     * @param string $name
      * @return bool
      */
-    public function isOptionHostFileManagement()
+    public function isOption($name)
     {
-        if (isset($this->config['options'][self::OPTION_HOST_FILE_MANAGEMENT])) {
-            return (bool)$this->config['options'][self::OPTION_HOST_FILE_MANAGEMENT];
-        }
-        // Returns the default value
-        return true;
+        return isset($this->config['options'][$name]);
+    }
+
+    /**
+     * Gets an Option
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getOption($name)
+    {
+        return $this->config['options'][$name];
     }
 
     /**
      * Sets a Option's value
      *
      * @param string $name
-     * @param bool $value
+     * @param mixed $value
      * @return void
      */
     public function setOption($name, $value)
     {
-        $this->config['options'][$name] = (bool)$value;
+        $this->config['options'][$name] = $value;
+    }
+
+    /**
+     * Is Option
+     *
+     * @return bool
+     */
+    public function isOptionHostFileManagement()
+    {
+        $option = self::OPTION_HOST_FILE_MANAGEMENT;
+        if ($this->isOption($option)) {
+            return (bool)$this->getOption($option);
+        }
+        return true;
+    }
+
+    /**
+     * Is Option Editor Management
+     *
+     * @return bool
+     */
+    public function isOptionEditorManagement()
+    {
+        $option = self::OPTION_EDITOR_MANAGEMENT;
+        if ($this->isOption($option)) {
+            return (bool)$this->getOption($option);
+        }
+        return true;
     }
 
 }

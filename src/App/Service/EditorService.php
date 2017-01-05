@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\App\Service;
 
 use AlterNET\Cli\App;
+use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Utility\StringUtility;
 use AlterNET\Package\Environment;
 
@@ -24,6 +25,39 @@ class EditorService implements AppServiceInterface
     public function __construct(App $app)
     {
         $this->app = $app;
+    }
+
+    /**
+     * Is Enabled
+     * Checks if the editor management is enabled
+     *
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->app->getLocalConfig()->isOptionEditorManagement();
+    }
+
+    /**
+     * Enable
+     *
+     * @return void
+     */
+    public function enable()
+    {
+        $this->app->getLocalConfig()->setOption(LocalConfig::OPTION_EDITOR_MANAGEMENT, true);
+        $this->app->getLocalConfig()->write();
+    }
+
+    /**
+     * Enable
+     *
+     * @return void
+     */
+    public function disable()
+    {
+        $this->app->getLocalConfig()->setOption(LocalConfig::OPTION_EDITOR_MANAGEMENT, false);
+        $this->app->getLocalConfig()->write();
     }
 
     /**
