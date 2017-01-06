@@ -2,6 +2,7 @@
 namespace AlterNET\Cli\Utility;
 
 use AlterNET\Cli\Config;
+use AlterNET\Cli\Container\Cli\DataContainer;
 use AlterNET\Cli\Local\Service\HostFileService;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -34,6 +35,17 @@ class ConsoleUtility
     static public function getHostFileService()
     {
         return HostFileService::create();
+    }
+
+    /**
+     * Gets the Data Container
+     *
+     * @return DataContainer
+     * @static
+     */
+    static public function getDataContainer()
+    {
+        return DataContainer::create();
     }
 
     /**

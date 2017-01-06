@@ -70,7 +70,6 @@ abstract class CommandBase extends Command
     public function __construct($name = null)
     {
         parent::__construct($name);
-        $this->config = ConsoleUtility::getConfig();
     }
 
     /**
@@ -86,6 +85,7 @@ abstract class CommandBase extends Command
         $this->io = new SymfonyStyle($input, $output);
         $this->input = $input;
         $this->output = $output;
+        $this->config = ConsoleUtility::getConfig();
     }
 
     /**
