@@ -53,7 +53,7 @@ class AppShareCommand extends CommandBase
             ],
             'error_log' => [
                 'method' => 'executeErrorLog',
-                'description' => 'Shares the last 10 lines of the error log.'
+                'description' => 'Shares the last 5 lines of the error log.'
             ],
             'important_message' => [
                 'method' => 'executeCategoryImportantMessage',
@@ -174,7 +174,7 @@ class AppShareCommand extends CommandBase
     protected function executeErrorLog($app, $roomId)
     {
         if ($app->apache()->hasErrorLog()) {
-            $this->hipChatFileContent($roomId, null, $app->apache()->getString(10));
+            $this->hipChatFileContent($roomId, null, $app->apache()->getString(5));
         } else {
             $this->io->error('The application has no error log.');
             exit;
