@@ -51,10 +51,14 @@ class AppShareCommand extends CommandBase
                 'method' => 'executeCategoryConfig',
                 'description' => 'Shares the application config file in the room.'
             ],
+            'error_log' => [
+                'method' => 'executeErrorLog',
+                'description' => 'Shares the last 10 lines of the error log.'
+            ],
             'important_message' => [
                 'method' => 'executeCategoryImportantMessage',
                 'description' => 'Send a important message to the room.',
-            ]
+            ],
         ];
     }
 
@@ -123,7 +127,7 @@ class AppShareCommand extends CommandBase
             if (StringUtility::isAbsolutePath($subject)) {
                 $filePath = $app->getWorkingDirectory() . $subject;
             }
-            $this->hipChatFileContent($filePath, $roomId);
+            $this->hipChatFileContent($roomId, $filePath);
         }
     }
 
@@ -161,6 +165,23 @@ class AppShareCommand extends CommandBase
     }
 
     /**
+     * Executes the Error Log
+     *
+     * @param App $app
+     * @param int $roomId
+     * @return void
+     */
+    protected function executeErrorLog($app, $roomId)
+    {
+        if ($app->apache()->hasErrorLog()) {
+            $this->hipChatFileContent($roomId, null, $app->apache()->getString(10));
+        } else {
+            $this->io->error('The application has no error log.');
+            exit;
+        }
+    }
+
+    /**
      * Executes the Category Config
      *
      * @param App $app
@@ -169,7 +190,7 @@ class AppShareCommand extends CommandBase
      */
     protected function executeCategoryConfig(App $app, $roomId)
     {
-        $this->hipChatFileContent($app->getConfigFilePath(), $roomId);
+        $this->hipChatFileContent($roomId, $app->getConfigFilePath());
     }
 
     /**
@@ -197,23 +218,27 @@ class AppShareCommand extends CommandBase
     /**
      * HipChat File Content
      *
-     * @param string $filePath
      * @param int $roomId
+     * @param string|null $filePath
+     * @param string|null $content
      * @return void
      */
-    protected function hipChatFileContent($filePath, $roomId)
+    protected function hipChatFileContent($roomId, $filePath = null, $content = null)
     {
-        // Shows an error if the file does not exists or the path is not a file
-        if (!file_exists($filePath)) {
-            $this->io->error('The file "' . $filePath . '" does not exists.');
-            exit;
-        } elseif (!is_file($filePath)) {
-            $this->io->error('"' . $filePath . '" is not a file.');
-            exit;
+        if (is_null($content)) {
+            // Shows an error if the file does not exists or the path is not a file
+            if (!file_exists($filePath)) {
+                $this->io->error('The file "' . $filePath . '" does not exists.');
+                exit;
+            } elseif (!is_file($filePath)) {
+                $this->io->error('"' . $filePath . '" is not a file.');
+                exit;
+            }
+            $content = file_get_contents($filePath);
         }
         // Gets the contents of the file and binds it in a new HipChat message
         $message = HipChatDriver::createMessage();
-        $message->setMessage('/code ' . file_get_contents($filePath));
+        $message->setMessage('/code ' . $content);
         $message->setColor(Message::COLOR_YELLOW);
         // And sends it
         $this->hipChatDriver()->sendMessage($message, $roomId);
