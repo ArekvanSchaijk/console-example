@@ -3,7 +3,6 @@ namespace AlterNET\Cli\App\Service;
 
 use AlterNET\Cli\App;
 use AlterNET\Cli\Config\LocalConfig;
-use AlterNET\Cli\Utility\StringUtility;
 use AlterNET\Package\Environment;
 
 /**
@@ -68,9 +67,6 @@ class EditorService implements AppServiceInterface
      */
     public function open($filePath = null)
     {
-        if (!StringUtility::isAbsolutePath($filePath)) {
-            $filePath = $this->app->getWorkingDirectory() . '/' . $filePath;
-        }
         // PhpStorm support
         if ($this->openPhpStorm($filePath)) {
             return true;
@@ -105,10 +101,15 @@ class EditorService implements AppServiceInterface
         }
         foreach ($executables as $executable) {
             if (file_exists($executable)) {
-                if (!$filePath) {
-                    $filePath = '.';
+                if (Environment::isWindowsOs()) {
+                    $filePath = $this->app->getWorkingDirectory() . ($filePath ? '/' . $filePath : null);
+                    $this->app->process('PhpStorm.bat ' . $this->app->getWorkingDirectory(), dirname($executable));
+                } else {
+                    if (!$filePath) {
+                        $filePath = '.';
+                    }
+                    $this->app->process($executable . ' ' . $filePath);
                 }
-                $this->app->process($executable . ' ' . $filePath);
                 return true;
             }
         }
