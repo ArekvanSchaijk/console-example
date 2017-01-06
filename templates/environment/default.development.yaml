@@ -7,11 +7,6 @@ server:
   port: 22
   username: 'alternetcli'
   document_root: '/home/alternetcli/{environment.server_name}'
-  post_build:
-    - 'sudo chown -R {application.key}.webusers *'
-    - 'sudo chmod '
-    - 'find * -type d -exec chmod 770 {} +'
-    - 'find * -type f -exec chmod 660 {} +'
 
 database:
   default:
