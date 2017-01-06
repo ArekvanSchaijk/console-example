@@ -52,6 +52,21 @@ class ApacheService implements AppServiceInterface
     }
 
     /**
+     * Gets the String
+     *
+     * @param int $limit
+     * @return string|null
+     */
+    public function getString($limit = 100)
+    {
+        $string = null;
+        foreach ($this->getErrors($limit) as $error) {
+            $string .= $error->getString() . PHP_EOL;
+        }
+        return $string;
+    }
+
+    /**
      * Parses the Error Log
      *
      * @param int $limit
@@ -72,6 +87,7 @@ class ApacheService implements AppServiceInterface
                     preg_match($regex, $row, $matches);
                     list($string, $date, $severity, $client, $message) = $matches;
                     $row = new Error();
+                    $row->setString($string);
                     $row->setTimestamp((is_string($date) ? strtotime($date) : 0));
                     $row->setSeverity($severity);
                     $row->setClient($client);

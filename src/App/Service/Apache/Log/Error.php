@@ -9,6 +9,11 @@ class Error
 {
 
     /**
+     * @var string
+     */
+    protected $string;
+
+    /**
      * @var int
      */
     protected $timestamp;
@@ -29,16 +34,6 @@ class Error
     protected $message;
 
     /**
-     * Gets the Timestamp
-     *
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
-    }
-
-    /**
      * Gets the Date
      *
      * @param string $format
@@ -47,6 +42,36 @@ class Error
     public function getDate($format)
     {
         return date($format, $this->getTimestamp());
+    }
+
+    /**
+     * Gets the String
+     *
+     * @return string
+     */
+    public function getString()
+    {
+        return $this->string;
+    }
+
+    /**
+     * Sets the String
+     *
+     * @param string $string
+     */
+    public function setString($string)
+    {
+        $this->string = trim($string);
+    }
+
+    /**
+     * Gets the Timestamp
+     *
+     * @return int
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
     }
 
     /**

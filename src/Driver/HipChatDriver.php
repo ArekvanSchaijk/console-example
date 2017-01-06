@@ -10,6 +10,7 @@ use GorkaLaucirica\HipchatAPIv2Client\API\UserAPI;
 use GorkaLaucirica\HipchatAPIv2Client\Auth\OAuth2;
 use GorkaLaucirica\HipchatAPIv2Client\Client;
 use GorkaLaucirica\HipchatAPIv2Client\Model\Message;
+use GorkaLaucirica\HipchatAPIv2Client\Model\Room;
 
 /**
  * Class HipChatDriver
@@ -100,6 +101,35 @@ class HipChatDriver
             $this->roomApi = new RoomAPI($this->client);
         }
         return $this->roomApi;
+    }
+
+    /**
+     * Gets the Rooms
+     *
+     * @param string|null $search
+     * @return Room[]
+     */
+    public function getRooms($search = null)
+    {
+        $rooms = [];
+        /* @var Room $room */
+        foreach ($this->roomApi()->getRooms() as $room) {
+            if (!$search || strpos(strtolower($room->getName()), strtolower($search)) !== false) {
+                $rooms[] = $room;
+            }
+        }
+        return $rooms;
+    }
+
+    /**
+     * Gets the Room
+     *
+     * @param int $roomId
+     * @return Room
+     */
+    public function getRoom($roomId)
+    {
+        return $this->roomApi()->getRoom($roomId);
     }
 
     /**

@@ -10,6 +10,7 @@ use AlterNET\Cli\Utility\StringUtility;
 use GorkaLaucirica\HipchatAPIv2Client\Model\Message;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -34,6 +35,7 @@ class AppShareCommand extends CommandBase
         $this->setName('app:share');
         $this->setDescription('Share things about the application on HipChat');
         $this->addArgument('subject', InputArgument::OPTIONAL, 'Relative file path or an option between brackets ([..])');
+        $this->addOption('room', null, InputOption::VALUE_REQUIRED, 'The HipChat room (room id or room name)');
     }
 
     /**
@@ -49,10 +51,14 @@ class AppShareCommand extends CommandBase
                 'method' => 'executeCategoryConfig',
                 'description' => 'Shares the application config file in the room.'
             ],
+            'error_log' => [
+                'method' => 'executeErrorLog',
+                'description' => 'Shares the last 10 lines of the error log.'
+            ],
             'important_message' => [
                 'method' => 'executeCategoryImportantMessage',
                 'description' => 'Send a important message to the room.',
-            ]
+            ],
         ];
     }
 
@@ -85,8 +91,10 @@ class AppShareCommand extends CommandBase
         $this->preventNotBeingInAnApp();
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
+        // Gets the room id
+        $roomId = $this->collectHipChatRoomId($app);
         // This checks if the app has a HipChat integration (if the room id is known)
-        if (!$app->getConfig()->getHipChatRoomId()) {
+        if (!$roomId) {
             $this->io->error('The application has no HipChat configuration.');
             exit;
         }
@@ -109,7 +117,7 @@ class AppShareCommand extends CommandBase
             $method = $categories[$category]['method'];
             // Executes the category method
             if (method_exists($this, $method)) {
-                $this->$method($app);
+                $this->$method($app, $roomId);
             } else {
                 throw new Exception('The method belonging to the category [' . $category . '] does not exists.');
             }
@@ -119,7 +127,57 @@ class AppShareCommand extends CommandBase
             if (StringUtility::isAbsolutePath($subject)) {
                 $filePath = $app->getWorkingDirectory() . $subject;
             }
-            $this->hipChatFileContent($filePath, $app->getConfig()->getHipChatRoomId());
+            $this->hipChatFileContent($roomId, $filePath);
+        }
+    }
+
+    /**
+     * Collects the HipChat RoomId
+     *
+     * @param App $app
+     * @return int|null
+     */
+    protected function collectHipChatRoomId(App $app)
+    {
+        $roomId = ($app->getConfig()->getHipChatRoomId() ?: null);
+        if (($search = $this->input->getOption('room'))) {
+            if (ctype_digit($search)) {
+                $roomId = $this->hipChatDriver()->getRoom($search)->getId();
+            } else {
+                $rooms = $this->hipChatDriver()->getRooms($search);
+                if ($rooms) {
+                    if (count($rooms) === 1) {
+                        $roomId = $rooms[0]->getId();
+                    } else {
+                        $choices = [];
+                        foreach ($rooms as $room) {
+                            $choices[$room->getName()] = $room->getId();
+                        }
+                        $roomId = $this->io->choice('Select the room where you would like to share', $choices);
+                    }
+                } else {
+                    $this->io->error('Could not find any room with "' . $search . '".');
+                    exit;
+                }
+            }
+        }
+        return $roomId;
+    }
+
+    /**
+     * Executes the Error Log
+     *
+     * @param App $app
+     * @param int $roomId
+     * @return void
+     */
+    protected function executeErrorLog($app, $roomId)
+    {
+        if ($app->apache()->hasErrorLog()) {
+            $this->hipChatFileContent($roomId, null, $app->apache()->getString(10));
+        } else {
+            $this->io->error('The application has no error log.');
+            exit;
         }
     }
 
@@ -127,20 +185,22 @@ class AppShareCommand extends CommandBase
      * Executes the Category Config
      *
      * @param App $app
+     * @param int $roomId
      * @return void
      */
-    protected function executeCategoryConfig(App $app)
+    protected function executeCategoryConfig(App $app, $roomId)
     {
-        $this->hipChatFileContent($app->getConfigFilePath(), $app->getConfig()->getHipChatRoomId());
+        $this->hipChatFileContent($roomId, $app->getConfigFilePath());
     }
 
     /**
      * Executes the Important Message
      *
      * @param App $app
+     * @param int $roomId
      * @return void
      */
-    protected function executeCategoryImportantMessage(App $app)
+    protected function executeCategoryImportantMessage(App $app, $roomId)
     {
         if (($setMessage = $this->io->ask('Set the message'))) {
             // Makes a new HipChat message
@@ -150,7 +210,7 @@ class AppShareCommand extends CommandBase
             $message->setNotify(true);
             $message->setFrom('Important message');
             // And sends it
-            $this->hipChatDriver()->sendMessage($message, $app->getConfig()->getHipChatRoomId());
+            $this->hipChatDriver()->sendMessage($message, $roomId);
             $this->io->success('The message was sent successfully.');
         }
     }
@@ -158,23 +218,27 @@ class AppShareCommand extends CommandBase
     /**
      * HipChat File Content
      *
-     * @param string $filePath
      * @param int $roomId
+     * @param string|null $filePath
+     * @param string|null $content
      * @return void
      */
-    protected function hipChatFileContent($filePath, $roomId)
+    protected function hipChatFileContent($roomId, $filePath = null, $content = null)
     {
-        // Shows an error if the file does not exists or the path is not a file
-        if (!file_exists($filePath)) {
-            $this->io->error('The file "' . $filePath . '" does not exists.');
-            exit;
-        } elseif (!is_file($filePath)) {
-            $this->io->error('"' . $filePath . '" is not a file.');
-            exit;
+        if (is_null($content)) {
+            // Shows an error if the file does not exists or the path is not a file
+            if (!file_exists($filePath)) {
+                $this->io->error('The file "' . $filePath . '" does not exists.');
+                exit;
+            } elseif (!is_file($filePath)) {
+                $this->io->error('"' . $filePath . '" is not a file.');
+                exit;
+            }
+            $content = file_get_contents($filePath);
         }
         // Gets the contents of the file and binds it in a new HipChat message
         $message = HipChatDriver::createMessage();
-        $message->setMessage('/code ' . file_get_contents($filePath));
+        $message->setMessage('/code ' . $content);
         $message->setColor(Message::COLOR_YELLOW);
         // And sends it
         $this->hipChatDriver()->sendMessage($message, $roomId);
