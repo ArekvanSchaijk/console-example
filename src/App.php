@@ -576,30 +576,42 @@ class App
      */
     public function buildVirtualHostFile()
     {
-        if ($this->isApplicationDirectory() && $this->hasConfigFile()) {
+        if ($this->hasConfigFile()) {
             $environmentConfig = $this->getConfig()->current();
             if (($domains = $environmentConfig->getDomains())) {
                 $contents = '';
-                $default = function ($port) use ($environmentConfig, $domains) {
+                $template = function ($port, $rows = null) use ($environmentConfig, $domains) {
                     return ApacheUtility::generateVirtualHostString(
                         $port,
                         $this->getWebWorkingDirectory(),
                         $domains,
                         $this->getErrorLogFilePath(),
                         $this->getAccessLogFilePath(),
-                        $this->getCliConfig()->getApplicationServerAdmin()
+                        $this->getCliConfig()->getApplicationServerAdmin(),
+                        $rows
                     ) . PHP_EOL . PHP_EOL;
                 };
                 if ($environmentConfig->isSsl() && $environmentConfig->isForceHttps()) {
                     $contents .= ApacheUtility::generateVirtualHostString(
-                            $environmentConfig->getHttpPort(), null, $domains, null, null, null, true
+                            $environmentConfig->getHttpPort(),
+                            null,
+                            $domains,
+                            null,
+                            null,
+                            null,
+                            $this->getConfig()->current()->getVirtualHost()->getHttpRows()
                         ) . PHP_EOL . PHP_EOL;
                 } else {
-                    $contents .= $default($environmentConfig->getHttpPort());
+                    $contents .= $template(
+                        $environmentConfig->getHttpPort(),
+                        $this->getConfig()->current()->getVirtualHost()->getHttpRows()
+                    );
                 }
                 if ($environmentConfig->isSsl()) {
-                    $contents .= $default(($environmentConfig->isSsl() ?
-                        $environmentConfig->getSslPort() : $environmentConfig->getHttpPort()));
+                    $contents .= $template(
+                        $environmentConfig->getSslPort(),
+                        $this->getConfig()->current()->getVirtualHost()->getSslRows()
+                    );
                 }
                 file_put_contents($this->getVirtualHostFilePath(), trim($contents));
             }

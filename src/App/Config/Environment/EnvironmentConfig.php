@@ -58,6 +58,11 @@ class EnvironmentConfig
     protected $buildDatabase = [];
 
     /**
+     * @var VirtualHost
+     */
+    protected $virtualHost;
+
+    /**
      * EnvironmentConfig constructor.
      * @param Config $appConfig
      * @param string $name
@@ -68,35 +73,52 @@ class EnvironmentConfig
     {
         $this->name = $name;
         $this->appConfig = $appConfig;
+        $this->virtualHost = new VirtualHost($this);
         $templates = [
             (isset($environment['template']) ? TemplateUtility::get(strtolower($environment['template']) . '.'
                 . strtolower($this->name), TemplateUtility::TYPE_ENVIRONMENT) : []),
             ($defaultEnvironmentConfig ?: []),
             $environment
         ];
-        foreach ($templates as $template) {
-            foreach (self::getSubjectsToMerge() as $subject => $property) {
+        $virtualHostSubjects = self::getVirtualHostSubjectsToMerge();
+        foreach ($templates as $key => $template) {
+            foreach (self::getBuildSubjectsToMerge() as $subject => $property) {
                 if (isset($template[$subject]) && is_array($template[$subject])) {
                     $this->$property = array_merge($this->$property, $template[$subject]);
                 }
-                unset($template['subject']);
+                unset($templates[$key][$subject]);
             }
+            foreach ($virtualHostSubjects as $subject => $method) {
+                if (isset($template['virtual_host'][$subject]) && is_array($template['virtual_host'][$subject])) {
+                    $this->virtualHost->$method($template['virtual_host'][$subject]);
+                }
+            }
+            unset($templates[$key]['virtual_host']);
         }
         $this->environment = array_replace_recursive($templates[0], $templates[1], $templates[2]);
     }
 
     /**
-     * Gets the Application Subjects To Merge array
+     * Gets the Build Subjects To Merge array
      *
      * @return array
      * @static
      */
-    static protected function getSubjectsToMerge()
+    static protected function getBuildSubjectsToMerge()
     {
         return [
             'build' => 'build',
             'post_build' => 'postBuild',
             'build_database' => 'buildDatabase'
+        ];
+    }
+
+    static protected function getVirtualHostSubjectsToMerge()
+    {
+        return [
+            'default' => 'addDefault',
+            'extra_ssl' => 'addExtraSsl',
+            'extra_http' => 'addExtraHttp'
         ];
     }
 
@@ -307,6 +329,16 @@ class EnvironmentConfig
             return (bool)$this->getOption(self::OPTION_FORCE_HTTPS);
         }
         return false;
+    }
+
+    /**
+     * Gets the Virtual Host
+     *
+     * @return VirtualHost
+     */
+    public function getVirtualHost()
+    {
+        return $this->virtualHost;
     }
 
 }

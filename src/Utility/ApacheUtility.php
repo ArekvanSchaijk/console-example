@@ -17,7 +17,7 @@ class ApacheUtility
      * @param string|null $errorLogPath
      * @param string|null $accessLogPath
      * @param string|null $serverAdmin
-     * @param bool $redirectToHttps
+     * @param array|null $rows
      * @return string
      * @static
      */
@@ -28,7 +28,7 @@ class ApacheUtility
         $errorLogPath = null,
         $accessLogPath = null,
         $serverAdmin = null,
-        $redirectToHttps = false
+        array $rows = null
     )
     {
         $string = '<VirtualHost *:' . $port . '>' . PHP_EOL;
@@ -57,10 +57,10 @@ class ApacheUtility
         if ($accessLogPath) {
             $string .= chr(9) . 'CustomLog "' . realpath($accessLogPath) . '" common' . PHP_EOL;
         }
-        if ($redirectToHttps) {
-            $string .= chr(9) . 'RewriteEngine On' . PHP_EOL;
-            $string .= chr(9) . 'RewriteCond %{HTTPS} off' . PHP_EOL;
-            $string .= chr(9) . 'RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI}' . PHP_EOL;
+        if ($rows) {
+            foreach ($rows as $row) {
+                $string .= chr(9) . $row . PHP_EOL;
+            }
         }
         $string .= '</VirtualHost>';
         return $string;

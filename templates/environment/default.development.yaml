@@ -7,6 +7,8 @@ server:
   port: 22
   username: 'alternetcli'
   document_root: '/home/alternetcli/{environment.server_name}'
+  post_build:
+    - 'sudo systemctl restart httpd'
 
 database:
   default:
