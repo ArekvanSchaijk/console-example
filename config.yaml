@@ -46,6 +46,8 @@ bitbucket:
           - 'validator_default'
           - 'excute_hipchat_integration'
           - 'execute_create_master_branch'
+    DEVOPS:
+      hipchat: 3087688
     T3EXT:
       satis: true
       hipchat: 3176502
