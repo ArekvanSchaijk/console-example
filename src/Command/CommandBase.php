@@ -8,6 +8,7 @@ use AlterNET\Cli\Driver\BitbucketDriver;
 use AlterNET\Cli\Driver\HipChatDriver;
 use AlterNET\Cli\Utility\AppUtility;
 use AlterNET\Cli\Utility\ConsoleUtility;
+use AlterNET\Package\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -156,7 +157,7 @@ abstract class CommandBase extends Command
             // Retrieving the credentials from the local configuration file
             $username = $this->config->local()->getCrowdUsername();
             $password = $this->config->local()->getCrowdPassword();
-            if (!$username) {
+            if (!Environment::isLocalEnvironment() || !$username) {
                 $remember = true;
                 $this->io->note($openingsMessage);
                 // This asks the user for the crowd username
@@ -172,7 +173,7 @@ abstract class CommandBase extends Command
                 $password = $this->askCrowdPassword();
             }
             // Asks the user if the CLI should remember the credentials
-            if ($remember) {
+            if ($remember && Environment::isLocalEnvironment()) {
                 if ($this->io->confirm('Would you like the CLI to remember your credentials?', false)) {
                     $this->config->local()->setCrowdUsername($username);
                     $this->config->local()->setCrowdPassword($password);

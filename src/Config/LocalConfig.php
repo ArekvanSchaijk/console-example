@@ -4,6 +4,7 @@ namespace AlterNET\Cli\Config;
 use AlterNET\Cli\Exception;
 use AlterNET\Cli\Utility\ConsoleUtility;
 use AlterNET\Cli\Utility\GeneralUtility;
+use AlterNET\Package\Environment;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -128,7 +129,7 @@ class LocalConfig extends AbstractConfig
      */
     public function getCrowdUsername()
     {
-        if ($this->config['crowd']['username']) {
+        if (Environment::isLocalEnvironment() && $this->config['crowd']['username']) {
             return $this->config['crowd']['username'];
         }
         return $this->getDefaultCrowdUsername();
@@ -162,7 +163,7 @@ class LocalConfig extends AbstractConfig
      */
     public function getCrowdPassword()
     {
-        if ($this->config['crowd']['password']) {
+        if (Environment::isLocalEnvironment() && $this->config['crowd']['password']) {
             return $this->config['crowd']['password'];
         }
         return $this->getDefaultCrowdPassword();
