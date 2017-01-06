@@ -18,6 +18,7 @@ development:
     - 'box build'
   virtual_host:
     extra_ssl:
+      - 'SSLEngine on'
       - 'SSLCertificateFile "/etc/httpd/ssl/star.alternet.nl.crt"'
       - 'SSLCertificateKeyFile "/etc/httpd/ssl/star.alternet.nl.key"'
       - 'SSLCertificateChainFile "/etc/httpd/ssl/star.alternet.nl.cacrt"'
