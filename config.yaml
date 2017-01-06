@@ -6,8 +6,8 @@ application:
 
 self:
   remote_url: 'ssh://git@source.alternet.nl:7999/devops/cli-alternet.git'
-  manifest_url: 'http://cli.alternet.nl/manifest.json'
-  download_url: 'http://cli.alternet.nl/download/'
+  manifest_url: 'https://cli.alternet.nl/manifest.json'
+  download_url: 'https://cli.alternet.nl/downloads/%s'
 
 hipchat:
   token: 'ByiCT5cO3WGOR03NLzvbqt9MP7m7hMVVDKEmcoCB'
