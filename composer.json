@@ -32,6 +32,6 @@
     }
   ],
   "bin": [
-    "bin/alternet.php"
+    "bin/alternet"
   ]
 }

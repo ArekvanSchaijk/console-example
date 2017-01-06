@@ -24,7 +24,7 @@
       "name": "*"
     }
   ],
-  "main": "bin/alternet.php",
+  "main": "bin/alternet",
   "output": "alternet.phar",
   "stub": true,
   "key": "private.key"
