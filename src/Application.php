@@ -57,6 +57,9 @@ class Application extends SymfonyConsoleApplication
         if (!file_exists(CLI_HOME)) {
             ConsoleUtility::fileSystem()->mkdir(CLI_HOME);
         }
+        if (!file_exists(CLI_HOME_PRIVATE)) {
+            ConsoleUtility::fileSystem()->mkdir(CLI_HOME_PRIVATE);
+        }
         if (!file_exists(CLI_HOME_BUILDS)) {
             ConsoleUtility::fileSystem()->mkdir(CLI_HOME_BUILDS);
         }
