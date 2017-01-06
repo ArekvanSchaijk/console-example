@@ -39,7 +39,7 @@ class LocalConfigureCommand extends CommandBase
      */
     static protected function getCategories()
     {
-        return [
+        $categories = [
             'options' => [
                 'method' => 'configureOptions',
                 'description' => 'Configures the CLI options',
@@ -69,6 +69,10 @@ class LocalConfigureCommand extends CommandBase
                 'description' => 'Resets the backups configuration'
             ]
         ];
+        if (!Environment::isLocalEnvironment()) {
+            unset($categories['crowd'], $categories['reset_crowd']);
+        }
+        return $categories;
     }
 
     /**
