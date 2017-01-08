@@ -60,7 +60,7 @@ class SatisGenerateCommand extends CommandBase
             $process->run();
             ConsoleUtility::unSuccessfulProcessExceptionHandler($process, function ($workingDirectories) {
                 foreach ($workingDirectories as $workingDirectory) {
-                    ConsoleUtility::fileSystem()->remove($workingDirectory);
+                    ConsoleUtility::getFileSystem()->remove($workingDirectory);
                 }
             });
             // Checks if there is an composer.json file
@@ -93,7 +93,7 @@ class SatisGenerateCommand extends CommandBase
                         . ' has an invalid composer.json file.');
                 }
             }
-            ConsoleUtility::fileSystem()->remove($currentWorkingDirectory);
+            ConsoleUtility::getFileSystem()->remove($currentWorkingDirectory);
         }
         // Creates a json string of the satis array
         $contents = json_encode($satis, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

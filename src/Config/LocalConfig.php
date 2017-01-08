@@ -47,7 +47,7 @@ class LocalConfig extends AbstractConfig
      */
     public function write()
     {
-        ConsoleUtility::fileSystem()->touch(CLI_HOME_CONFIG_FILE_PATH);
+        ConsoleUtility::getFileSystem()->touch(CLI_HOME_CONFIG_FILE_PATH);
         file_put_contents(
             CLI_HOME_CONFIG_FILE_PATH,
             Yaml::dump($this->config)

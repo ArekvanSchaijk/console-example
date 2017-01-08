@@ -284,7 +284,7 @@ class App
      */
     public function touch($file)
     {
-        ConsoleUtility::fileSystem()->touch($this->getAbsoluteFilePath($file));
+        ConsoleUtility::getFileSystem()->touch($this->getAbsoluteFilePath($file));
         return $file;
     }
 
@@ -335,7 +335,7 @@ class App
      */
     public function remove()
     {
-        ConsoleUtility::fileSystem()->remove($this->getWorkingDirectory());
+        ConsoleUtility::getFileSystem()->remove($this->getWorkingDirectory());
     }
 
     /**
@@ -355,7 +355,7 @@ class App
         if ($this->hasConfigFile() && $this->getConfig()->getApplicationKey()) {
             $backupDirectory = $rootBackupDirectory . '/' . $this->getConfig()->getApplicationKey() . '/' . $date;
         }
-        ConsoleUtility::fileSystem()->mkdir($backupDirectory);
+        ConsoleUtility::getFileSystem()->mkdir($backupDirectory);
         return $backupDirectory;
     }
 
@@ -559,10 +559,10 @@ class App
                 if (!file_exists($path)) {
                     switch ($type) {
                         case 'file':
-                            ConsoleUtility::fileSystem()->touch($path);
+                            ConsoleUtility::getFileSystem()->touch($path);
                             break;
                         default:
-                            ConsoleUtility::fileSystem()->mkdir($path);
+                            ConsoleUtility::getFileSystem()->mkdir($path);
                     }
                 }
             }

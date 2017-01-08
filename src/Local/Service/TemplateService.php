@@ -101,7 +101,7 @@ class TemplateService
     protected function createDirectoryIfNotExists()
     {
         if (!file_exists(CLI_HOME_TEMPLATES)) {
-            ConsoleUtility::fileSystem()->mkdir(CLI_HOME_TEMPLATES);
+            ConsoleUtility::getFileSystem()->mkdir(CLI_HOME_TEMPLATES);
         }
     }
 
@@ -167,7 +167,7 @@ class TemplateService
      */
     public function remove()
     {
-        ConsoleUtility::fileSystem()->remove(CLI_HOME_TEMPLATES);
+        ConsoleUtility::getFileSystem()->remove(CLI_HOME_TEMPLATES);
     }
 
     /**

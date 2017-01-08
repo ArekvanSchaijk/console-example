@@ -70,7 +70,7 @@ class Application extends SymfonyConsoleApplication
     {
         foreach (self::getApplicationDirectories() as $directory) {
             if (!file_exists($directory)) {
-                ConsoleUtility::fileSystem()->mkdir($directory);
+                ConsoleUtility::getFileSystem()->mkdir($directory);
             }
         }
     }
