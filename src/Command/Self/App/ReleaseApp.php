@@ -65,7 +65,8 @@ class ReleaseApp extends TemporaryApp
                     'name' => 'alternet.phar',
                     'sha1' => sha1_file($this->getDownloadWorkingDirectory() . '/' . $fileName),
                     'url' => sprintf($this->cliConfig->self()->getDownloadUrl(), $fileName),
-                    'version' => rtrim(ltrim($fileName, 'alternet-'), '.phar')
+                    'publicKey' => sprintf($this->cliConfig->self()->getDownloadUrl(), $fileName) . '.pubkey',
+                    'version' => rtrim(ltrim($fileName, 'alternet-'), '.phar'),
                 ];
             }
         }
