@@ -7,20 +7,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AppBuildCommand
+ * Class AppBuildApplicationCommand
  * @author Arek van Schaijk <arek@alternet.nl>
  */
-class AppBuildCommand extends CommandBase
+class AppBuildApplicationCommand extends CommandBase
 {
 
     /**
      * Configure
      *
+     * @return void
      */
     protected function configure()
     {
-        $this->setName('app:build');
-        $this->setDescription('Runs all builds');
+        $this->setName('app:buildapplication');
+        $this->setDescription('Runs the application builds');
     }
 
     /**
@@ -38,7 +39,8 @@ class AppBuildCommand extends CommandBase
         $app = AppUtility::load();
         if ($app->isApplicationDirectory()) {
             $this->io->note('Building...');
-            $app->build();
+            $app->buildApplication();
+            $app->postBuildApplication();
             $this->io->success('The application is successfully build.');
         } else {
             $this->io->warning('This application has no environments set.');

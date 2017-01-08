@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Container\Cli;
+namespace AlterNET\Cli\Container;
 
 /**
  * Class DataContainer
@@ -12,6 +12,11 @@ class DataContainer
      * @var DataContainer
      */
     static protected $container;
+
+    /**
+     * @var int
+     */
+    protected $templatesTimestamp;
 
     /**
      * Create
@@ -48,6 +53,30 @@ class DataContainer
     static public function getDataFilePath()
     {
         return CLI_HOME_PRIVATE . '/data';
+    }
+
+    /**
+     * Gets the Templates Timestamp
+     *
+     * @return int
+     */
+    public function getTemplatesTimestamp()
+    {
+        if ($this->templatesTimestamp > time()) {
+            return null;
+        }
+        return $this->templatesTimestamp;
+    }
+
+    /**
+     * Sets the Templates Timestamp
+     *
+     * @param int $templatesTimestamp
+     * @return void
+     */
+    public function setTemplatesTimestamp($templatesTimestamp)
+    {
+        $this->templatesTimestamp = $templatesTimestamp;
     }
 
     /**

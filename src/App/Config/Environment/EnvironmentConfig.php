@@ -3,7 +3,8 @@ namespace AlterNET\Cli\App\Config\Environment;
 
 use AlterNET\Cli\App\Config;
 use AlterNET\Cli\App\Config\Environment\Server\ServerConfig;
-use AlterNET\Cli\Utility\TemplateUtility;
+use AlterNET\Cli\App\Traits;
+use AlterNET\Cli\Local\Service\TemplateService;
 
 /**
  * Class EnvironmentConfig
@@ -11,6 +12,8 @@ use AlterNET\Cli\Utility\TemplateUtility;
  */
 class EnvironmentConfig
 {
+
+    use Traits\Local\TemplateServiceTrait;
 
     const
 
@@ -74,9 +77,10 @@ class EnvironmentConfig
         $this->name = $name;
         $this->appConfig = $appConfig;
         $this->virtualHost = new VirtualHost($this);
+        // Gets the templates
         $templates = [
-            (isset($environment['template']) ? TemplateUtility::get(strtolower($environment['template']) . '.'
-                . strtolower($this->name), TemplateUtility::TYPE_ENVIRONMENT) : []),
+            (isset($environment['template']) ? $this->getTemplateService()->retrieve(strtolower($environment['template']) . '.'
+                . strtolower($this->name), TemplateService::TYPE_APPLICATION) : []),
             ($defaultEnvironmentConfig ?: []),
             $environment
         ];

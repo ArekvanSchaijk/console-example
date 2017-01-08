@@ -64,7 +64,7 @@ class ReleaseApp extends TemporaryApp
                 $manifest[] = [
                     'name' => 'alternet.phar',
                     'sha1' => sha1_file($this->getDownloadWorkingDirectory() . '/' . $fileName),
-                    'url' => $this->cliConfig->self()->getDownloadUrl() . $fileName,
+                    'url' => sprintf($this->cliConfig->self()->getDownloadUrl(), $fileName),
                     'version' => rtrim(ltrim($fileName, 'alternet-'), '.phar')
                 ];
             }

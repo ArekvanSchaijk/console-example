@@ -1,7 +1,0 @@
-application:
-  build:
-    - 'vendor/bin/typo3cms install:fixfolderstructure'
-  build_database:
-    - 'vendor/bin/typo3cms cacheapi:clearallactiveopcodecache'
-    - 'vendor/bin/typo3cms database:updateschema "*.add,*change"'
-    - 'vendor/bin/typo3cms cacheapi:clearallcaches'
