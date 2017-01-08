@@ -94,6 +94,7 @@ class Application extends SymfonyConsoleApplication
             new Command\Bitbucket\BitbucketDeleteRepoCommand(),
 
             new Command\Bamboo\BambooListCommand(),
+            new Command\Bamboo\BambooBuildCommand(),
 
             new Command\HipChat\HipChatListCommand(),
             new Command\HipChat\HipChatListUsersCommand(),
