@@ -139,8 +139,8 @@ class SelfService
     {
         $version = $this->getNewestVersion();
         if ($version) {
+            $this->storeTimestamp();
             if ($this->getUpdateManager()->update($this->getCurrentVersion(), self::$lockMajor, self::$preRelease)) {
-                $this->storeTimestamp();
                 return $version;
             }
         }
