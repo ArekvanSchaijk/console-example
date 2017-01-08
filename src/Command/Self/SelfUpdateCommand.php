@@ -35,7 +35,11 @@ class SelfUpdateCommand extends CommandBase
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $manager = new Manager(Manifest::loadFile($this->config->self()->getManifestUrl()));
-        $manager->update($this->getApplication()->getVersion(), true);
+        if ($manager->update($this->getApplication()->getVersion())) {
+            $this->io->success('The CLI is successfully updated.');
+        } else {
+            $this->io->error('Could not update the CLI');
+        }
     }
 
 }
