@@ -8,6 +8,7 @@ use AlterNET\Cli\Config\ComposerConfig;
 use AlterNET\Cli\Config\HostFileConfig;
 use AlterNET\Cli\Config\LocalConfig;
 use AlterNET\Cli\Config\SelfConfig;
+use AlterNET\Cli\Config\TemplateConfig;
 use AlterNET\Cli\Utility\GeneralUtility;
 
 /**
@@ -26,6 +27,11 @@ class Config
      * @var SelfConfig
      */
     protected $self;
+
+    /**
+     * @var TemplateConfig
+     */
+    protected $templates;
 
     /**
      * @var ComposerConfig
@@ -90,6 +96,19 @@ class Config
             $this->self = new SelfConfig($this->config['self']);
         }
         return $this->self;
+    }
+
+    /**
+     * Templates
+     *
+     * @return TemplateConfig
+     */
+    public function templates()
+    {
+        if (!$this->templates) {
+            $this->templates = new TemplateConfig($this->config['templates']);
+        }
+        return $this->templates;
     }
 
     /**

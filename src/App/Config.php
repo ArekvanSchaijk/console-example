@@ -3,9 +3,10 @@ namespace AlterNET\Cli\App;
 
 use AlterNET\Cli\App\Config\Environment\EnvironmentConfig;
 use AlterNET\Cli\App\Config\Environment\EnvironmentSelector;
+use AlterNET\Cli\App\Traits;
 use AlterNET\Cli\Exception;
+use AlterNET\Cli\Local\Service\TemplateService;
 use AlterNET\Cli\Utility\GeneralUtility;
-use AlterNET\Cli\Utility\TemplateUtility;
 use AlterNET\Package\Environment;
 
 /**
@@ -14,6 +15,8 @@ use AlterNET\Package\Environment;
  */
 class Config
 {
+
+    use Traits\Local\TemplateServiceTrait;
 
     /**
      * @var array
@@ -77,8 +80,8 @@ class Config
     protected function parseConfig()
     {
         $templates = [
-            TemplateUtility::get($this->getApplicationName(), TemplateUtility::TYPE_APPLICATION),
-            TemplateUtility::get($this->getApplicationTemplate(), TemplateUtility::TYPE_APPLICATION),
+            $this->getTemplateService()->retrieve($this->getApplicationName(), TemplateService::TYPE_APPLICATION),
+            $this->getTemplateService()->retrieve($this->getApplicationTemplate(), TemplateService::TYPE_APPLICATION),
             $this->config
         ];
         foreach ($templates as $template) {

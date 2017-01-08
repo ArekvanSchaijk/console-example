@@ -104,6 +104,7 @@ class Application extends SymfonyConsoleApplication
             new Command\Local\LocalConfigureCommand(),
             new Command\Local\LocalHostsAddCommand(),
             new Command\Local\LocalHostsDeleteCommand(),
+            new Command\Local\LocalUpdateTemplatesCommand(),
 
             new Command\App\AppBackupCommand(),
             new Command\App\AppAssistMeCommand(),

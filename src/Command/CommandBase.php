@@ -79,7 +79,7 @@ abstract class CommandBase extends Command
      * @param OutputInterface $output
      * @return void
      */
-    public function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
         $this->io = new SymfonyStyle($input, $output);

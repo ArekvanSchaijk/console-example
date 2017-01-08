@@ -20,7 +20,7 @@ class AppBuildCommand extends CommandBase
     protected function configure()
     {
         $this->setName('app:build');
-        $this->setDescription('Builds the application');
+        $this->setDescription('Runs all builds');
     }
 
     /**
@@ -37,6 +37,7 @@ class AppBuildCommand extends CommandBase
         // This loads the app where we are in (working directory)
         $app = AppUtility::load();
         if ($app->isApplicationDirectory()) {
+            $this->io->note('Building...');
             $app->build();
             $this->io->success('The application is successfully build.');
         } else {

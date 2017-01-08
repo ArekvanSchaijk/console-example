@@ -18,10 +18,6 @@
     {
       "in": "vendor",
       "name": "*"
-    },
-    {
-      "in": "templates",
-      "name": "*"
     }
   ],
   "main": "bin/alternet",
