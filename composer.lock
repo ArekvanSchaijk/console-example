@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "470a3d0ef20ac43fd60b793db92cb599",
+    "hash": "9898d1a1cec72f5f7a5a8d1b2d33886c",
     "content-hash": "89e3dca75a2ebc07f4dcfa58216097d3",
     "packages": [
         {
@@ -74,12 +74,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArekvanSchaijk/bamboo-server-client.git",
-                "reference": "bef57501eff9b7c1e74e9b1fbbaf26b79b671372"
+                "reference": "af4d60810aaee8cb27e007919507ec51e5c9b3cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArekvanSchaijk/bamboo-server-client/zipball/bef57501eff9b7c1e74e9b1fbbaf26b79b671372",
-                "reference": "bef57501eff9b7c1e74e9b1fbbaf26b79b671372",
+                "url": "https://api.github.com/repos/ArekvanSchaijk/bamboo-server-client/zipball/af4d60810aaee8cb27e007919507ec51e5c9b3cc",
+                "reference": "af4d60810aaee8cb27e007919507ec51e5c9b3cc",
                 "shasum": ""
             },
             "require": {
@@ -93,7 +93,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Bamboo Server Client for PHP",
-            "time": "2017-01-01 14:14:00"
+            "time": "2017-01-03 17:50:46"
         },
         {
             "name": "arekvanschaijk/bitbucket-server-client",

@@ -4,6 +4,7 @@ namespace AlterNET\Cli\Utility;
 use AlterNET\Cli\Config;
 use AlterNET\Cli\Container\DataContainer;
 use AlterNET\Cli\Local\Service\HostFileService;
+use AlterNET\Cli\Local\Service\SelfService;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -54,6 +55,17 @@ class ConsoleUtility
     static public function getHostFileService()
     {
         return HostFileService::create();
+    }
+
+    /**
+     * Gets the Self Service
+     *
+     * @return SelfService
+     * @static
+     */
+    static public function getSelfService()
+    {
+        return SelfService::create();
     }
 
     /**

@@ -2,8 +2,7 @@
 namespace AlterNET\Cli\Command\Self;
 
 use AlterNET\Cli\Command\CommandBase;
-use Herrera\Phar\Update\Manager;
-use Herrera\Phar\Update\Manifest;
+use AlterNET\Cli\Utility\ConsoleUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,11 +33,18 @@ class SelfUpdateCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $manager = new Manager(Manifest::loadFile($this->config->self()->getManifestUrl()));
-        if ($manager->update($this->getApplication()->getVersion())) {
-            $this->io->success('The CLI is successfully updated.');
+        // This checks if there is an newer version of the CLI
+        if (ConsoleUtility::getSelfService()->isNewVersion()) {
+            // This (self) updates the CLI
+            $update = ConsoleUtility::getSelfService()->update();
+            // Checks if the update was successful
+            if ($update === false) {
+                $this->io->error('Something went wrong while updating the CLI. Please contact the CLI administrator.');
+            } else {
+                $this->io->success('The CLI is successfully updated to version: \'' . $update . '\'.');
+            }
         } else {
-            $this->io->error('Could not update the CLI');
+            $this->io->success('The CLI is already up to date.');
         }
     }
 

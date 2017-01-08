@@ -16,6 +16,11 @@ class DataContainer
     /**
      * @var int
      */
+    protected $selfUpdateTimestamp;
+
+    /**
+     * @var int
+     */
     protected $templatesTimestamp;
 
     /**
@@ -53,6 +58,26 @@ class DataContainer
     static public function getDataFilePath()
     {
         return CLI_HOME_PRIVATE . '/data';
+    }
+
+    /**
+     * Gets the Self Update Timestamp
+     *
+     * @return int
+     */
+    public function getSelfUpdateTimestamp()
+    {
+        return $this->selfUpdateTimestamp;
+    }
+
+    /**
+     * Sets the Self Update Timestamp
+     *
+     * @param int $selfUpdateTimestamp
+     */
+    public function setSelfUpdateTimestamp($selfUpdateTimestamp)
+    {
+        $this->selfUpdateTimestamp = $selfUpdateTimestamp;
     }
 
     /**
