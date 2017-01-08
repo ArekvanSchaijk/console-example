@@ -42,14 +42,19 @@ class ServerConfig
     protected $documentRoot;
 
     /**
-     * @var array|null
+     * @var array
      */
     protected $build;
 
     /**
-     * @var array|null
+     * @var array
      */
     protected $postBuild;
+
+    /**
+     * @var array
+     */
+    protected $postBuildLocal;
 
     /**
      * ServerConfig constructor.
@@ -219,6 +224,24 @@ class ServerConfig
             }
         }
         return $this->postBuild;
+    }
+
+    /**
+     * Gets the Post Build Local
+     *
+     * @return array
+     */
+    public function getPostBuildLocal()
+    {
+        if (is_null($this->postBuildLocal)) {
+            $this->postBuildLocal = [];
+            if (isset($this->server['post_build_local']) && is_array($this->server['post_build_local'])) {
+                foreach ($this->server['post_build_local'] as $build) {
+                    $this->postBuildLocal[] = $this->renderVariables($build);
+                }
+            }
+        }
+        return $this->postBuildLocal;
     }
 
 }
