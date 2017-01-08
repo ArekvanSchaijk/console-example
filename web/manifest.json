@@ -1,6 +1,12 @@
 [
     {
         "name": "alternet.phar",
+        "sha1": "026024894532bdfd57d1517f9496113c4f6f8371",
+        "url": "https://cli.alternet.nl/downloads/alternet-0.1.5.phar",
+        "version": "0.1.5"
+    },
+    {
+        "name": "alternet.phar",
         "sha1": "669d021d4087096c46a337be6fcb3e06b25a5be0",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.4.phar",
         "version": "0.1.4"
