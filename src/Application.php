@@ -43,25 +43,35 @@ class Application extends SymfonyConsoleApplication
         $this->addCommands(
             $this->getCommands()
         );
-        $this->prepare();
+        $this->createApplicationDirectories();
     }
 
     /**
-     * Prepare
-     * Prepares the console application
+     * Gets the Application Directories
+     *
+     * @return array
+     * @static
+     */
+    static public function getApplicationDirectories()
+    {
+        return [
+            CLI_HOME,
+            CLI_HOME_PRIVATE,
+            CLI_HOME_BUILDS
+        ];
+    }
+
+    /**
+     * Creates the Application Directories
      *
      * @return void
      */
-    protected function prepare()
+    protected function createApplicationDirectories()
     {
-        if (!file_exists(CLI_HOME)) {
-            ConsoleUtility::fileSystem()->mkdir(CLI_HOME);
-        }
-        if (!file_exists(CLI_HOME_PRIVATE)) {
-            ConsoleUtility::fileSystem()->mkdir(CLI_HOME_PRIVATE);
-        }
-        if (!file_exists(CLI_HOME_BUILDS)) {
-            ConsoleUtility::fileSystem()->mkdir(CLI_HOME_BUILDS);
+        foreach (self::getApplicationDirectories() as $directory) {
+            if (!file_exists($directory)) {
+                ConsoleUtility::fileSystem()->mkdir($directory);
+            }
         }
     }
 
