@@ -24,7 +24,6 @@ class LocalHostsAddCommand extends CommandBase
     {
         $this->setName('local:hostsadd');
         $this->setDescription('Adds an entry to your host file');
-        $this->setDescription('Deletes a domain entry to your host file');
     }
 
     /**
