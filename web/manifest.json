@@ -1,6 +1,13 @@
 [
     {
         "name": "alternet.phar",
+        "sha1": "659b358bfd8fe3cca01abcfae48f7d88bc30d2d5",
+        "url": "https://cli.alternet.nl/downloads/alternet-0.1.9.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.9.phar.pubkey",
+        "version": "0.1.9"
+    },
+    {
+        "name": "alternet.phar",
         "sha1": "6ed356995dae0c8889f641f32451b36038937fba",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.8.phar",
         "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.8.phar.pubkey",
