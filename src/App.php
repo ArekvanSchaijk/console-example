@@ -375,11 +375,14 @@ class App
      * Build
      * Builds the application
      *
+     * @param bool $local
      * @return void
      */
-    public function build()
+    public function build($local = true)
     {
-        $this->buildLocal();
+        if ($local) {
+            $this->buildLocal();
+        }
         $this->buildServer();
         $this->buildEnvironment();
         $this->buildApplication();
@@ -409,6 +412,26 @@ class App
     {
         $this->createDirectoriesAndFiles();
         $this->buildVirtualHostFile();
+        $this->postBuildLocal();
+    }
+
+    /**
+     * Post Build Local
+     *
+     * @return void
+     */
+    public function postBuildLocal()
+    {
+        // This checks if the application has a configuration
+        if ($this->hasConfigFile()) {
+            // Checks if the current environment exists
+            if ($this->getConfig()->isCurrent()) {
+                // This checks if the current environment has a ServerConfig
+                if ($this->getConfig()->current()->isServer()) {
+                    $this->multiProcess($this->getConfig()->current()->server()->getPostBuildLocal());
+                }
+            }
+        }
     }
 
     /**
