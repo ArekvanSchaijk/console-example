@@ -224,7 +224,7 @@ abstract class CommandBase extends Command
     /**
      * Destroys the CrowdContainer
      *
-     * @return bool Returns true if the container was destroyed succesfully
+     * @return bool Returns true if the container was destroyed successfully
      */
     protected function destroyCrowdContainer()
     {
