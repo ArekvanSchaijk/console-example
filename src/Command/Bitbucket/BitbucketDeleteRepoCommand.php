@@ -1,6 +1,7 @@
 <?php
 namespace AlterNET\Cli\Command\Bitbucket;
 
+use AlterNET\Cli\App\TemporaryApp;
 use AlterNET\Cli\Command\CommandBase;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
@@ -72,8 +73,20 @@ class BitbucketDeleteRepoCommand extends CommandBase
         $repositoryName = $repository->getProject()->getKey() . '/' . $repository->getName();
         // This asks for some confirmation
         if ($this->io->confirm('Are you sure you want to delete the repository: "' . $repositoryName . '"?"', false)) {
+            // Clones the repository before deleting it
+            $regenerateSatis = false;
+            $tempApp = new TemporaryApp();
+            $tempApp->git()->cloneUrl($repository->getSshCloneUrl());
+            if ($tempApp->hasFile('composer.json')) {
+                $regenerateSatis = true;
+            }
+            // Here we definitely delete the repository
             $repository->delete();
             $this->io->success('The repository "' . $repositoryName . '" is successfully deleted.');
+            // Here we regenerate satis
+            if ($regenerateSatis) {
+                $this->runCommand('satis:generate', []);
+            }
         } else {
             $this->io->note('Command aborted. Keep calm and carry on.');
         }
