@@ -1,44 +1,58 @@
 [
     {
         "name": "alternet.phar",
+        "sha1": "6ed356995dae0c8889f641f32451b36038937fba",
+        "url": "https://cli.alternet.nl/downloads/alternet-0.1.8.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.8.phar.pubkey",
+        "version": "0.1.8"
+    },
+    {
+        "name": "alternet.phar",
         "sha1": "53286a39feb8bfb56bfeb85ae7bcf8865e902398",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.7.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.7.phar.pubkey",
         "version": "0.1.7"
     },
     {
         "name": "alternet.phar",
         "sha1": "8996097fb1817d6b76984e854a1d12b69098e4cb",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.6.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.6.phar.pubkey",
         "version": "0.1.6"
     },
     {
         "name": "alternet.phar",
         "sha1": "026024894532bdfd57d1517f9496113c4f6f8371",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.5.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.5.phar.pubkey",
         "version": "0.1.5"
     },
     {
         "name": "alternet.phar",
         "sha1": "669d021d4087096c46a337be6fcb3e06b25a5be0",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.4.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.4.phar.pubkey",
         "version": "0.1.4"
     },
     {
         "name": "alternet.phar",
         "sha1": "69645eb68efd2e1dbdd9de0c21befaf6f91c68eb",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.3.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.3.phar.pubkey",
         "version": "0.1.3"
     },
     {
         "name": "alternet.phar",
         "sha1": "8f042f9b6a82e6cf01d9ffd9f122b1628858177e",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.2.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.2.phar.pubkey",
         "version": "0.1.2"
     },
     {
         "name": "alternet.phar",
         "sha1": "6469bd9ab401cd3440b3f902f2e6dd35dfa69079",
         "url": "https://cli.alternet.nl/downloads/alternet-0.1.1.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.1.1.phar.pubkey",
         "version": "0.1.1"
     }
 ]
