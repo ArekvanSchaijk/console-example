@@ -102,7 +102,6 @@ class EditorService implements AppServiceInterface
         foreach ($executables as $executable) {
             if (file_exists($executable)) {
                 if (Environment::isWindowsOs()) {
-                    $filePath = $this->app->getWorkingDirectory() . ($filePath ? '/' . $filePath : null);
                     $this->app->process('PhpStorm.bat ' . $this->app->getWorkingDirectory(), dirname($executable));
                 } else {
                     if (!$filePath) {
