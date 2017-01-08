@@ -2,7 +2,7 @@
 namespace AlterNET\Cli\Utility;
 
 use AlterNET\Cli\Config;
-use AlterNET\Cli\Container\Cli\DataContainer;
+use AlterNET\Cli\Container\DataContainer;
 use AlterNET\Cli\Local\Service\HostFileService;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;

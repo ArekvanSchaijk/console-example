@@ -1,5 +1,5 @@
 <?php
-namespace AlterNET\Cli\Container\Cli;
+namespace AlterNET\Cli\Container;
 
 /**
  * Class DataContainer
