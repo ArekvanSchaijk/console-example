@@ -80,7 +80,7 @@ class EnvironmentConfig
         // Gets the templates
         $templates = [
             (isset($environment['template']) ? $this->getTemplateService()->retrieve(strtolower($environment['template']) . '.'
-                . strtolower($this->name), TemplateService::TYPE_APPLICATION) : []),
+                . strtolower($this->name), TemplateService::TYPE_ENVIRONMENT) : []),
             ($defaultEnvironmentConfig ?: []),
             $environment
         ];
