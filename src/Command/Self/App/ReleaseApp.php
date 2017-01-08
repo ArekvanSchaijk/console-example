@@ -124,12 +124,12 @@ class ReleaseApp extends TemporaryApp
         $this->composer()->install();
         $this->process('box build');
         $this->git()->checkout('master');
-        ConsoleUtility::fileSystem()->copy(
+        ConsoleUtility::getFileSystem()->copy(
             $this->getWorkingDirectory() . '/alternet.phar',
             $this->getNewVersionFilePath()
         );
 
-        ConsoleUtility::fileSystem()->copy(
+        ConsoleUtility::getFileSystem()->copy(
             $this->getWorkingDirectory() . '/alternet.phar.pubkey',
             $this->getNewVersionFilePath() . '.pubkey'
         );

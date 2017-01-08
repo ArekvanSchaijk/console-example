@@ -74,8 +74,8 @@ class AppComposerUpdateCommand extends CommandBase
             $tempApp->remove();
             throw new Exception('The application has no Composer.json file.');
         }
-        ConsoleUtility::fileSystem()->remove($tempApp->getWorkingDirectory() . '/composer.json');
-        ConsoleUtility::fileSystem()->copy(
+        ConsoleUtility::getFileSystem()->remove($tempApp->getWorkingDirectory() . '/composer.json');
+        ConsoleUtility::getFileSystem()->copy(
             $app->getWorkingDirectory() . '/composer.json',
             $tempApp->getWorkingDirectory() . '/composer.json'
         );

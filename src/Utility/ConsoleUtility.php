@@ -16,6 +16,11 @@ class ConsoleUtility
 {
 
     /**
+     * @var Filesystem
+     */
+    static protected $fileSystem;
+
+    /**
      * Gets the Config
      *
      * @return Config
@@ -24,6 +29,20 @@ class ConsoleUtility
     static public function getConfig()
     {
         return Config::create();
+    }
+
+    /**
+     * Gets the Filesystem
+     *
+     * @return Filesystem
+     * @static
+     */
+    static public function getFileSystem()
+    {
+        if (is_null(self::$fileSystem)) {
+            self::$fileSystem = new Filesystem();
+        }
+        return self::$fileSystem;
     }
 
     /**
@@ -79,20 +98,6 @@ class ConsoleUtility
     }
 
     /**
-     * File System
-     *
-     * @return Filesystem
-     * @static
-     */
-    static public function fileSystem()
-    {
-        if (!isset($GLOBALS['ALTERNET_CLI_FILESYSTEM']) || !$GLOBALS['ALTERNET_CLI_FILESYSTEM'] instanceof Filesystem) {
-            $GLOBALS['ALTERNET_CLI_FILESYSTEM'] = new Filesystem();
-        }
-        return $GLOBALS['ALTERNET_CLI_FILESYSTEM'];
-    }
-
-    /**
      * Creates a Build Working Directory
      *
      * @param string $prefix
@@ -102,7 +107,7 @@ class ConsoleUtility
     static public function createBuildWorkingDirectory($prefix)
     {
         $workingDirectory = CLI_HOME_BUILDS . '/' . $prefix . GeneralUtility::generateRandomString(40 - strlen($prefix));
-        self::fileSystem()->mkdir($workingDirectory);
+        self::getFileSystem()->mkdir($workingDirectory);
         return $workingDirectory;
     }
 
