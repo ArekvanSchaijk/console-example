@@ -32,10 +32,7 @@ class AppSyncCommand extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // This prevents that the command is being executed outside an app
-        $this->preventNotBeingInAnApp();
-        $app = AppUtility::load();
-
+        
     }
 
 }
