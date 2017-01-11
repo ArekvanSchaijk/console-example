@@ -260,7 +260,7 @@ class BitbucketCreateRepoCommand extends CommandBase
                     return $value;
                 }
             );
-            $composer['name'] = $vendor . '/' . $app->getRepository()->getName();
+            $composer['name'] = $vendor . '/' . str_replace('_', '-', $app->getRepository()->getName());
             // Sets the description
             $composer['description'] = (string)$this->io->ask('Set the description', null, function ($value) {
                 return trim($value);
