@@ -1,3 +1,9 @@
 [
-
+    {
+        "name": "alternet.phar",
+        "sha1": "79a5f8ae6df1ba6d38d053d3a53f89b51aed7120",
+        "url": "https://cli.alternet.nl/downloads/alternet-0.6.0.phar",
+        "publicKey": "https://cli.alternet.nl/downloads/alternet-0.6.0.phar.pubkey",
+        "version": "0.6.0"
+    }
 ]
